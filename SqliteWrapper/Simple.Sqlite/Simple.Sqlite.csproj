@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>0.1.0</Version>
+    <Authors>RafaelEstevam.net</Authors>
+    <Company>Rafael Estevam</Company>
+    <Description>A simple SqliteWrapper</Description>
+    <PackageProjectUrl>https://github.com/RafaelEstevamReis/SqliteWrapper</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/RafaelEstevamReis/SqliteWrapper.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Sqlite</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.6" />
+  </ItemGroup>
+</Project>
