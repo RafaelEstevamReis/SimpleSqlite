@@ -25,7 +25,8 @@ namespace Test
                 MyName = "My name is bob",
                 MyBirthDate = DateTime.Now,
                 MyDecimalValue = 123.4M,
-                MyDoubleValue = 456.7
+                MyDoubleValue = 456.7,
+                MyFloatValue = 789.3f
             };
             Console.WriteLine($"New data isnerted: Id={d.MyId}");
             db.InsertInto("MyInfo", d);
@@ -47,5 +48,6 @@ namespace Test
         public DateTime MyBirthDate { get; set; }
         public decimal MyDecimalValue { get; set; }
         public double MyDoubleValue { get; set; }
+        public float MyFloatValue { get; set; }
     }
 }

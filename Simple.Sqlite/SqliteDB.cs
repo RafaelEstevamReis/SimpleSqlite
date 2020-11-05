@@ -203,10 +203,18 @@ namespace Simple.Sqlite
                     {
                         if (!colNames.Contains(p.Name)) continue;
 
-                        object objVal = reader.GetValue(p.Name);
-                        if (objVal is DBNull) objVal = null;
-                        else if (p.PropertyType == typeof(int)) objVal = reader.GetInt32(p.Name);
+                        object objVal;
+
+                        if (p.PropertyType == typeof(int)) objVal = reader.GetInt32(p.Name);
                         else if (p.PropertyType == typeof(DateTime)) objVal = reader.GetDateTime(p.Name);
+                        else if (p.PropertyType == typeof(double)) objVal = reader.GetDouble(p.Name);
+                        else if (p.PropertyType == typeof(float)) objVal = reader.GetFloat(p.Name);
+                        else if (p.PropertyType == typeof(bool)) objVal = reader.GetBoolean(p.Name);
+                        else if (p.PropertyType == typeof(long)) objVal = reader.GetInt64(p.Name);
+                        else objVal = reader.GetValue(p.Name);
+                        
+                        if (objVal is DBNull) objVal = null;
+
                         p.SetValue(t, objVal);
                     }
                     yield return t;
