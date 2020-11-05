@@ -205,6 +205,8 @@ namespace Simple.Sqlite
 
                         object objVal = reader.GetValue(p.Name);
                         if (objVal is DBNull) objVal = null;
+                        else if (p.PropertyType == typeof(int)) objVal = reader.GetInt32(p.Name);
+                        else if (p.PropertyType == typeof(DateTime)) objVal = reader.GetDateTime(p.Name);
                         p.SetValue(t, objVal);
                     }
                     yield return t;
