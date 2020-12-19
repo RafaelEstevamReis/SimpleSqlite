@@ -179,10 +179,13 @@ namespace Simple.Sqlite
             else if (p.PropertyType == typeof(float)) objVal = reader.GetFloat(p.Name);
             else if (p.PropertyType == typeof(decimal)) objVal = reader.GetDecimal(p.Name);
             else if (p.PropertyType == typeof(int)) objVal = reader.GetInt32(p.Name);
+            else if (p.PropertyType == typeof(uint)) objVal = Convert.ToUInt32(reader.GetValue(p.Name));
             else if (p.PropertyType == typeof(long)) objVal = reader.GetInt64(p.Name);
+            else if (p.PropertyType == typeof(ulong)) objVal = Convert.ToUInt64(reader.GetValue(p.Name));
             else if (p.PropertyType == typeof(bool)) objVal = reader.GetBoolean(p.Name);
             else if (p.PropertyType == typeof(DateTime)) objVal = reader.GetDateTime(p.Name);
             else if (p.PropertyType == typeof(byte[])) objVal = (byte[])reader.GetValue(p.Name);
+            else if (p.PropertyType == typeof(Guid)) objVal = new Guid((byte[])reader.GetValue(p.Name));
             else objVal = reader.GetValue(p.Name);
 
             if (objVal is DBNull) objVal = null;

@@ -57,13 +57,16 @@ namespace Simple.Sqlite
                 // Fixed FloatPoint
                 else if (info.PropertyType == typeof(decimal)) dataType = SqliteType.NUMERIC;
                 // Integers
-                else if (info.PropertyType == typeof(int)) dataType = SqliteType.INTEGER;
                 else if (info.PropertyType == typeof(byte)) dataType = SqliteType.INTEGER;
+                else if (info.PropertyType == typeof(int)) dataType = SqliteType.INTEGER;
+                else if (info.PropertyType == typeof(uint)) dataType = SqliteType.INTEGER;
                 else if (info.PropertyType == typeof(long)) dataType = SqliteType.INTEGER;
+                else if (info.PropertyType == typeof(ulong)) dataType = SqliteType.INTEGER;
                 // Others Mapped of NUMERIC
                 else if (info.PropertyType == typeof(bool)) dataType = SqliteType.NUMERIC;
                 else if (info.PropertyType == typeof(DateTime)) dataType = SqliteType.NUMERIC;
                 // Other
+                else if (info.PropertyType == typeof(Guid)) dataType = SqliteType.BLOB;
                 else if (info.PropertyType == typeof(byte[])) dataType = SqliteType.BLOB;
                 else
                 {
