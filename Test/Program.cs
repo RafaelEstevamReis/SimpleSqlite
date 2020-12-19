@@ -13,11 +13,9 @@ namespace Test
             Console.WriteLine($"Database is at {db.DatabaseFileName}");
 
             // Create a DB Schema
-            var table = SimpleTableSchema.BuildFromType<MyData>("MyInfo");
-            if (db.CreateTables(new[] { table }) > 0)
-            {
-                Console.WriteLine($"A table was created");
-            }
+            db.CreateTables()
+              .Add<MyData>()
+              .Commit();
 
             var d = new MyData()
             {
@@ -28,11 +26,11 @@ namespace Test
                 MyDoubleValue = 456.7,
                 MyFloatValue = 789.3f
             };
-            Console.WriteLine($"New data isnerted: Id={d.MyId}");
-            db.InsertInto("MyInfo", d);
+            Console.WriteLine($"New data inserted: Id={d.MyId}");
+            db.Insert(d);
 
             // get all data
-            var allData = db.ExecuteQuery<MyData>("SELECT * FROM MyInfo", null).ToArray();
+            var allData = db.GetAll<MyData>();
 
             Console.WriteLine("All data:");
             foreach (var rowData in allData)

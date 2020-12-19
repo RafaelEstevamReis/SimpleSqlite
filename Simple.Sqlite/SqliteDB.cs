@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
@@ -12,34 +13,49 @@ namespace Simple.Sqlite
     /// </summary>
     public class SqliteDB
     {
-        public string DatabaseFileName { get; }
+        // Manual lock on Writes to avoid Exceptions
+        private readonly object lockNonQuery;
+        private readonly string cnnString;
 
-        public SqliteDB(string DatabaseFile)
-        {
-            var fi = new FileInfo(DatabaseFile);
-            DatabaseFileName = fi.FullName;
-            // if now exists, creates one (can be done in the ConnectionString)
-            if (!fi.Exists) SQLiteConnection.CreateFile(DatabaseFileName);
-        }
-
-        #region Database initialization and manage
         /// <summary>
-        /// Creates a table if it not exists, returns total number of tables created
+        /// Database file full path
         /// </summary>
-        public int CreateTables(SimpleTableSchema[] tables)
+        public string DatabaseFileName { get; }
+        /// <summary>
+        /// Creates a new instance
+        /// </summary>
+        public SqliteDB(string fileName)
         {
-            int tablesCreated = 0;
-            foreach (var table in tables)
-            {
-                var sql = table.ExportCreateTableStatement(true);
+            lockNonQuery = new object();
+            DatabaseFileName = new FileInfo(fileName).FullName;
+            // if now exists, creates one (can be done in the ConnectionString)
+            if (!File.Exists(DatabaseFileName)) SQLiteConnection.CreateFile(DatabaseFileName);
 
-                int result = ExecuteNonReader(sql, null);
-                // -1: Table already exists
-                if (result == 0) tablesCreated++;
-            }
-            return tablesCreated;
+            // uses builder to avoid escape issues
+            SQLiteConnectionStringBuilder sb = new SQLiteConnectionStringBuilder
+            {
+                DataSource = DatabaseFileName,
+                Version = 3
+            };
+            cnnString = sb.ToString();
         }
 
+        private SQLiteConnection getConnection()
+        {
+            var sqliteConnection = new SQLiteConnection(cnnString);
+            sqliteConnection.Open();
+            return sqliteConnection;
+        }
+        /// <summary>
+        /// Builds the table creation sequence, should be finished with Commit()
+        /// </summary>
+        public TableMapper CreateTables()
+        {
+            return new TableMapper(this);
+        }
+        /// <summary>
+        /// Get a list of all tables
+        /// </summary>
         public string[] GetAllTables()
         {
             var dt = ExecuteReader(@"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", null);
@@ -47,6 +63,9 @@ namespace Simple.Sqlite
                           .Select(row => (string)row[0])
                           .ToArray();
         }
+        /// <summary>
+        /// Gets the schema for a table
+        /// </summary>
         public DataTable GetTableSchema(string TableName)
         {
             using var cnn = getConnection();
@@ -58,24 +77,10 @@ namespace Simple.Sqlite
 
             return reader.GetSchemaTable();
         }
-        #endregion
-
-        #region Basic Sql Operations
-        private SQLiteConnection getConnection()
-        {
-            // uses builder to avoid escape issues
-            SQLiteConnectionStringBuilder sb = new SQLiteConnectionStringBuilder
-            {
-                DataSource = DatabaseFileName,
-                Version = 3
-            };
-
-            var sqliteConnection = new SQLiteConnection(sb.ToString());
-            sqliteConnection.Open();
-            return sqliteConnection;
-        }
-
-        public int ExecuteNonReader(string Text, Dictionary<string, object> Parameters)
+        /// <summary>
+        /// Executes a NonQUery command, this method locks the execution
+        /// </summary>
+        public int ExecuteNonQuery(string Text, object Parameters = null)
         {
             using var cnn = getConnection();
             using var cmd = cnn.CreateCommand();
@@ -83,9 +88,40 @@ namespace Simple.Sqlite
             cmd.CommandText = Text;
             fillParameters(cmd, Parameters);
 
-            return cmd.ExecuteNonQuery();
+            lock (lockNonQuery)
+            {
+                return cmd.ExecuteNonQuery();
+            }
         }
-        public DataTable ExecuteReader(string Text, Dictionary<string, object> Parameters)
+        /// <summary>
+        /// Executes a Scalar commands and return the value as T
+        /// </summary>
+        public T ExecuteScalar<T>(string Text, object Parameters)
+        {
+            using var cnn = getConnection();
+            using var cmd = cnn.CreateCommand();
+
+            cmd.CommandText = Text;
+            fillParameters(cmd, Parameters);
+
+            var obj = cmd.ExecuteScalar();
+
+            // In SQLite DateTime is returned as STRING after aggregate operations
+            if (typeof(T) == typeof(DateTime))
+            {
+                if (DateTime.TryParse(obj.ToString(), out DateTime dt))
+                {
+                    return (T)(object)dt;
+                }
+                return default;
+            }
+
+            return (T)Convert.ChangeType(obj, typeof(T));
+        }
+        /// <summary>
+        /// Executes a query and returns as DataTable
+        /// </summary>
+        public DataTable ExecuteReader(string Text, object Parameters)
         {
             using var cnn = getConnection();
             using var cmd = cnn.CreateCommand();
@@ -98,85 +134,11 @@ namespace Simple.Sqlite
             da.Fill(dt);
             return dt;
         }
-
-        private static void fillParameters(SQLiteCommand cmd, Dictionary<string, object> parameters)
-        {
-            if (parameters == null) return;
-
-            foreach (var p in parameters)
-            {
-                cmd.Parameters.AddWithValue(p.Key, p.Value);
-            }
-        }
-        #endregion
-
-        #region Helpers
         /// <summary>
-        /// Exports all object properties as Parameteres
+        /// Executes a query and returns the value as a T collection
         /// </summary>
-        public Dictionary<string, object> BuildParameters<T>(T Object) where T : new()
-        {
-            var dic = new Dictionary<string, object>();
-            foreach (var p in typeof(T).GetProperties())
-            {
-                dic.Add(p.Name, p.GetValue(Object));
-            }
-            return dic;
-        }
-
-        #endregion
-
-        #region Automatic Type actions
-        /// <summary>
-        /// Inserts an Object into a table converting all properties to parameters
-        /// </summary>
-        public int InsertInto<T>(string TableName, T Object) where T : new()
-        {
-            // build parameters
-            var pars = BuildParameters(Object);
-
-            string values = string.Join(',', pars.Select(o => $"@{o.Key}"));
-            string fields = string.Join(',', pars.Select(o => o.Key));
-
-            // build Sql
-            string sql = $"INSERT INTO {TableName} ({fields}) VALUES ({values})";
-
-            // execute
-            return ExecuteNonReader(sql, pars);
-        }
-        /// <summary>
-        /// Inserts all objects in a single transaction
-        /// </summary>
-        public void BulkInsertInto<T>(string TableName, IEnumerable<T> Objects) where T : new()
-        {
-            using var cnn = getConnection();
-            using var tr = cnn.BeginTransaction();
-
-            var objProps = typeof(T).GetProperties();
-            var values = string.Join(',', objProps.Select(o => $"@{o.Name}"));
-            var fields = string.Join(',', objProps.Select(o => o.Name));
-
-            // build Sql
-            var sql = $"INSERT INTO {TableName} ({fields}) VALUES ({values})";
-
-            foreach (var o in Objects)
-            {
-                using var cmd = new SQLiteCommand(sql, cnn, tr);
-
-                foreach (var p in objProps)
-                {
-                    cmd.Parameters.AddWithValue(p.Name, p.GetValue(o));
-                }
-
-                cmd.ExecuteNonQuery();
-            }
-            tr.Commit();
-        }
-
-        /// <summary>
-        /// Executes a query and parse the results as an IEnumerable of T objects
-        /// </summary>
-        public IEnumerable<T> ExecuteQuery<T>(string Text, Dictionary<string, object> Parameters) where T : new()
+        public IEnumerable<T> ExecuteQuery<T>(string Text, object Parameters)
+            where T : new()
         {
             using var cnn = getConnection();
             using var cmd = cnn.CreateCommand();
@@ -188,11 +150,7 @@ namespace Simple.Sqlite
 
             if (reader.HasRows)
             {
-                var schema = reader.GetSchemaTable();
-                var colNames = schema.Rows
-                    .Cast<DataRow>()
-                    .Select(r => (string)r["ColumnName"])
-                    .ToArray();
+                var colNames = getSchemaColumns(reader);
 
                 while (reader.Read())
                 {
@@ -203,25 +161,153 @@ namespace Simple.Sqlite
                     {
                         if (!colNames.Contains(p.Name)) continue;
 
-                        object objVal;
-
-                        if (p.PropertyType == typeof(int)) objVal = reader.GetInt32(p.Name);
-                        else if (p.PropertyType == typeof(DateTime)) objVal = reader.GetDateTime(p.Name);
-                        else if (p.PropertyType == typeof(double)) objVal = reader.GetDouble(p.Name);
-                        else if (p.PropertyType == typeof(float)) objVal = reader.GetFloat(p.Name);
-                        else if (p.PropertyType == typeof(bool)) objVal = reader.GetBoolean(p.Name);
-                        else if (p.PropertyType == typeof(long)) objVal = reader.GetInt64(p.Name);
-                        else objVal = reader.GetValue(p.Name);
-                        
-                        if (objVal is DBNull) objVal = null;
-
-                        p.SetValue(t, objVal);
+                        mapColumn(t, p, reader);
                     }
                     yield return t;
                 }
             }
-
         }
-        #endregion
+
+        private static void mapColumn<T>(T obj, System.Reflection.PropertyInfo p, SQLiteDataReader reader)
+            where T : new()
+        {
+            object objVal;
+
+            if (p.PropertyType == typeof(string)) objVal = reader.GetValue(p.Name);
+            else if (p.PropertyType == typeof(Uri)) objVal = new Uri((string)reader.GetValue(p.Name));
+            else if (p.PropertyType == typeof(double)) objVal = reader.GetDouble(p.Name);
+            else if (p.PropertyType == typeof(float)) objVal = reader.GetFloat(p.Name);
+            else if (p.PropertyType == typeof(decimal)) objVal = reader.GetDecimal(p.Name);
+            else if (p.PropertyType == typeof(int)) objVal = reader.GetInt32(p.Name);
+            else if (p.PropertyType == typeof(long)) objVal = reader.GetInt64(p.Name);
+            else if (p.PropertyType == typeof(bool)) objVal = reader.GetBoolean(p.Name);
+            else if (p.PropertyType == typeof(DateTime)) objVal = reader.GetDateTime(p.Name);
+            else if (p.PropertyType == typeof(byte[])) objVal = (byte[])reader.GetValue(p.Name);
+            else objVal = reader.GetValue(p.Name);
+
+            if (objVal is DBNull) objVal = null;
+
+            p.SetValue(obj, objVal);
+        }
+
+        /// <summary>
+        /// Gets a single T with specified table KeyValue on KeyColumn
+        /// </summary>
+        public T Get<T>(object KeyValue)
+                 where T : new()
+        {
+            return Get<T>(null, KeyValue);
+        }
+        /// <summary>
+        /// Gets a single T with specified table KeyValue on KeyColumn
+        /// </summary>
+        public T Get<T>(string KeyColumn, object KeyValue)
+            where T : new()
+        {
+            var TypeT = typeof(T);
+
+            string keyColumn = KeyColumn
+                            ?? TypeT.GetProperties()
+                                    .Where(p => p.GetCustomAttributes(true)
+                                                 .Any(a => a is KeyAttribute))
+                                    .FirstOrDefault()
+                                    ?.Name
+                            ?? "_rowid_";
+
+            var tableName = TypeT.Name;
+
+            return ExecuteQuery<T>($"SELECT * FROM {tableName} WHERE {keyColumn} = @KeyValue ", new { KeyValue })
+                    .FirstOrDefault();
+        }
+        /// <summary>
+        /// Queries the database to all T rows in the table
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetAll<T>()
+            where T : new()
+        {
+            var tableName = typeof(T).Name;
+
+            return ExecuteQuery<T>($"SELECT * FROM {tableName} ", null);
+        }
+
+        private HashSet<string> getSchemaColumns(SQLiteDataReader reader)
+        {
+            var schema = reader.GetSchemaTable();
+            return schema.Rows
+                .Cast<DataRow>()
+                .Select(r => (string)r["ColumnName"])
+                .ToHashSet();
+        }
+
+        /// <summary>
+        /// Inserts a new T and return it's ID, this method locks the execution
+        /// </summary>
+        public long Insert<T>(T Item)
+        {
+            string sql = buildInsertSql<T>();
+            // lock(lockWrite) // NonQuery already locks
+            return ExecuteScalar<long>(sql, Item);
+        }
+        private static string buildInsertSql<T>()
+        {
+            var TypeT = typeof(T);
+            var tableName = TypeT.Name;
+
+            var names = getNames(TypeT, false); // Not the Keys
+            var fields = string.Join(',', names);
+            var values = string.Join(',', names.Select(n => $"@{n}"));
+
+            return $"INSERT INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
+        }
+        /// <summary>
+        /// Inserts many T items into the database and return their IDs, this method locks the execution
+        /// </summary>
+        public long[] BulkInsert<T>(IEnumerable<T> Items)
+        {
+            List<long> ids = new List<long>();
+            string sql = buildInsertSql<T>();
+
+            using var cnn = getConnection();
+
+            lock (lockNonQuery)
+            {
+                using var trn = cnn.BeginTransaction();
+
+                foreach (var item in Items)
+                {
+                    using var cmd = new SQLiteCommand(sql, cnn, trn);
+                    fillParameters(cmd, item);
+                    ids.Add((long)cmd.ExecuteScalar());
+                }
+
+                trn.Commit();
+            }
+            return ids.ToArray();
+        }
+
+        private static void fillParameters(SQLiteCommand cmd, object Parameters)
+        {
+            if (Parameters == null) return;
+            foreach (var p in Parameters.GetType().GetProperties())
+            {
+                cmd.Parameters.AddWithValue(p.Name, p.GetValue(Parameters));
+            }
+        }
+        private static IEnumerable<string> getNames(Type type, bool IncludeKey = true)
+        {
+            foreach (var info in type.GetProperties())
+            {
+                if (!IncludeKey)
+                {
+                    var keyAttrib = info.CustomAttributes
+                                        .OfType<KeyAttribute>();
+                    if (keyAttrib.Count() > 0) continue;
+                }
+
+                yield return info.Name;
+            }
+        }
     }
 }
