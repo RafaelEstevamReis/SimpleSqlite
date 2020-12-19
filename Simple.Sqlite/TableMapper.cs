@@ -94,11 +94,22 @@ namespace Simple.Sqlite
             }
             return null;
         }
-
+        /// <summary>
+        /// Class for the table commit results
+        /// </summary>
         public class TableCommitResult
         {
+            /// <summary>
+            /// Name of the table added/altered
+            /// </summary>
             public string TableName { get; set; }
+            /// <summary>
+            /// Gets if the table was altered
+            /// </summary>
             public bool WasTableCreated { get; set; }
+            /// <summary>
+            /// Gets the new added columns, if any
+            /// </summary>
             public string[] ColumnsAdded { get; set; }
 
         }

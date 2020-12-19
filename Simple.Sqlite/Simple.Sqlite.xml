@@ -54,10 +54,17 @@
             Creates a column schema from a Type
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.TableMapper.Column.ExportColumnAsStatement">
+        <member name="M:Simple.Sqlite.TableMapper.Column.ExportColumnDefinitionAsStatement">
             <summary>
             Creates a CREATE TABLE column statment from current schema
             </summary>
+        </member>
+        <member name="M:Simple.Sqlite.TableMapper.Column.ExportAddColumnAsStatement">
+            <summary>
+            Creates a ADD COLUMN from current schema. 
+            This MAY change de [DefaultValue] when [NotNull] to Comply with Sqlite
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Simple.Sqlite.TableMapper.#ctor(Simple.Sqlite.SqliteDB)">
             <summary>
@@ -77,6 +84,26 @@
         <member name="M:Simple.Sqlite.TableMapper.Commit">
             <summary>
             Commit all new tables to the db (old schemas are not updated (yet)
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.TableMapper.TableCommitResult">
+            <summary>
+            Class for the table commit results
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.TableMapper.TableCommitResult.TableName">
+            <summary>
+            Name of the table added/altered
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.TableMapper.TableCommitResult.WasTableCreated">
+            <summary>
+            Gets if the table was altered
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.TableMapper.TableCommitResult.ColumnsAdded">
+            <summary>
+            Gets the new added columns, if any
             </summary>
         </member>
         <member name="T:Simple.Sqlite.TableMapper.Table">
@@ -209,11 +236,6 @@
         <member name="M:Simple.Sqlite.SqliteDB.BulkInsert``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Inserts many T items into the database and return their IDs, this method locks the execution
-            </summary>
-        </member>
-        <member name="T:System.ComponentModel.DataAnnotations.KeyAttribute">
-            <summary>
-            Replacement for.NetCore System.ComponentModel.DataAnnotations
             </summary>
         </member>
     </members>
