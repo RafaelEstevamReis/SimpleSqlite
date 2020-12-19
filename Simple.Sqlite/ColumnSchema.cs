@@ -70,6 +70,8 @@ namespace Simple.Sqlite
                 // Other
                 else if (info.PropertyType == typeof(Guid)) dataType = SqliteType.BLOB;
                 else if (info.PropertyType == typeof(byte[])) dataType = SqliteType.BLOB;
+                //Int enums
+                else if (info.PropertyType.IsEnum) dataType = SqliteType.INTEGER;
                 else
                 {
                     throw new Exception($"Type {info.PropertyType.Name} is not supported on field {info.Name}");
@@ -97,9 +99,8 @@ namespace Simple.Sqlite
             /// <summary>
             /// Creates a CREATE TABLE column statment from current schema
             /// </summary>
-            public string ExportColumnAsStatement()
+            public string ExportColumnDefinitionAsStatement()
             {
-                {
                     if (string.IsNullOrEmpty(ColumnName)) throw new ArgumentNullException("ColumnName can not be null");
                     if (ColumnName.Any(c => char.IsWhiteSpace(c))) throw new ArgumentNullException("ColumnName can not contain whitespaces");
                     if (ColumnName.Any(c => char.IsSymbol(c))) throw new ArgumentNullException("ColumnName can not contain symbols");
@@ -123,9 +124,7 @@ namespace Simple.Sqlite
                     }
 
                     return sb.ToString();
-                }
             }
-
         }
     }
 }

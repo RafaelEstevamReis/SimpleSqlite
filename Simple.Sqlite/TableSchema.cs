@@ -51,7 +51,7 @@ namespace Simple.Sqlite
                 sb.Append(TableName);
                 sb.Append("(\n");
 
-                var columns = string.Join(',', Columns.Select(c => c.ExportColumnAsStatement()));
+                var columns = string.Join(',', Columns.Select(c => c.ExportColumnDefinitionAsStatement()));
                 sb.Append(columns);
                 sb.Append("\n);");
 
