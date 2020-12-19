@@ -173,6 +173,12 @@ namespace Simple.Sqlite
         {
             object objVal;
 
+            if (reader.IsDBNull(p.Name))
+            {
+                objVal = null;
+            }
+            else
+            {
             if (p.PropertyType == typeof(string)) objVal = reader.GetValue(p.Name);
             else if (p.PropertyType == typeof(Uri)) objVal = new Uri((string)reader.GetValue(p.Name));
             else if (p.PropertyType == typeof(double)) objVal = reader.GetDouble(p.Name);
@@ -187,8 +193,7 @@ namespace Simple.Sqlite
             else if (p.PropertyType == typeof(byte[])) objVal = (byte[])reader.GetValue(p.Name);
             else if (p.PropertyType == typeof(Guid)) objVal = new Guid((byte[])reader.GetValue(p.Name));
             else objVal = reader.GetValue(p.Name);
-
-            if (objVal is DBNull) objVal = null;
+            }
 
             p.SetValue(obj, objVal);
         }
