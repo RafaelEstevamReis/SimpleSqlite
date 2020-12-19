@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 
 namespace Simple.Sqlite
 {
+    /// <summary>
+    /// Class to map a table schema
+    /// </summary>
     partial class TableMapper
     {
         /// <summary>

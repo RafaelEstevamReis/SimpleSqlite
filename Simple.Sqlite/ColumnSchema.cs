@@ -8,6 +8,9 @@ namespace Simple.Sqlite
 {
     partial class TableMapper
     {
+        /// <summary>
+        /// Class to map a column schema
+        /// </summary>
         public class Column
 
         {
