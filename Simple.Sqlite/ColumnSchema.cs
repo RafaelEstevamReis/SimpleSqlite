@@ -12,7 +12,6 @@ namespace Simple.Sqlite
         /// Class to map a column schema
         /// </summary>
         public class Column
-
         {
             /// <summary>
             /// Column name
