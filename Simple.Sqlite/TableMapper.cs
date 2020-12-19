@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace Simple.Sqlite
 {
@@ -35,14 +37,71 @@ namespace Simple.Sqlite
         /// <summary>
         /// Commit all new tables to the db (old schemas are not updated (yet)
         /// </summary>
-        public void Commit()
+        public TableCommitResult[] Commit()
         {
+            var results = new List<TableCommitResult>();
+
             foreach (var t in tables)
             {
-                db.ExecuteNonQuery(t.ExportCreateTable(), null);
+                var tResult = commitTable(t);
+                if (tResult != null) results.Add(tResult);
             }
 
             tables.Clear();
+            return results.ToArray();
         }
+
+        private TableCommitResult commitTable(Table t)
+        {
+            int val = db.ExecuteNonQuery(t.ExportCreateTable(), null);
+            if (val == 0) // table created
+            {
+                return new TableCommitResult()
+                {
+                    TableName = t.TableName,
+                    WasTableCreated = true,
+                    ColumnsAdded = new string[0],
+                };
+            }
+
+            if (val == -1) // Table not created
+            {
+                // migrate ?
+                var dbColumns = db.GetTableSchema(t.TableName)
+                                  .Rows.Cast<DataRow>()
+                                  .Select(r => (string)r["ColumnName"]);
+
+                var newColumns = t.Columns
+                                  .Where(c => !dbColumns.Contains(c.ColumnName))
+                                  .ToArray();
+
+                foreach (var c in newColumns)
+                {
+                    string addColumn = c.ExportAddColumnAsStatement();
+                    db.ExecuteNonQuery($"ALTER TABLE {t.TableName} {addColumn}", null);
+                }
+
+                if (newColumns.Length > 0)
+                {
+                    return new TableCommitResult()
+                    {
+                        TableName = t.TableName,
+                        WasTableCreated = false,
+                        ColumnsAdded = newColumns.Select(o => o.ColumnName)
+                                                   .ToArray(),
+                    };
+                }
+            }
+            return null;
+        }
+
+        public class TableCommitResult
+        {
+            public string TableName { get; set; }
+            public bool WasTableCreated { get; set; }
+            public string[] ColumnsAdded { get; set; }
+
+        }
+
     }
 }

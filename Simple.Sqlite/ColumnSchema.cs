@@ -125,6 +125,70 @@ namespace Simple.Sqlite
 
                     return sb.ToString();
             }
+            /// <summary>
+            /// Creates a ADD COLUMN from current schema. 
+            /// This MAY change de [DefaultValue] when [NotNull] to Comply with Sqlite
+            /// </summary>
+            /// <returns></returns>
+            public string ExportAddColumnAsStatement()
+            {
+                if (string.IsNullOrEmpty(ColumnName)) throw new ArgumentNullException("ColumnName can not be null");
+                if (ColumnName.Any(c => char.IsWhiteSpace(c))) throw new ArgumentNullException("ColumnName can not contain whitespaces");
+                if (ColumnName.Any(c => char.IsSymbol(c))) throw new ArgumentNullException("ColumnName can not contain symbols");
+
+                StringBuilder sb = new StringBuilder();
+
+                sb.Append(" ADD COLUMN ");
+
+                sb.Append(ColumnName);
+                sb.Append(" ");
+
+                sb.Append(SqliteType.ToString());
+                sb.Append(" ");
+
+                if (IsAI) sb.Append("AUTOINCREMENT ");
+
+                // Columns with PK cannot be added in Sqlite
+                // Columns with UNIQUE cannot be added in Sqlite
+                // Columns with [NOT NULL] MUST HAVE a [DEFAULT VALUE]
+                if (!AllowNulls)
+                {
+                    sb.Append("NOT NULL ");
+
+                    if (DefaultValue == null)
+                    {
+                        setReasonableDefault(this);
+                    }
+                }
+
+                if (DefaultValue != null)
+                {
+                    sb.Append($"DEFAULT '{DefaultValue}'");
+                }
+
+                return sb.ToString();
+            }
+
+            private void setReasonableDefault(Column column)
+            {
+                if (column.NativeType == typeof(DateTime))
+                {
+                    column.DefaultValue = DateTime.MinValue;
+                    return;
+                }
+
+                switch (SqliteType)
+                {
+                    case SqliteType.NUMERIC:
+                    case SqliteType.INTEGER:
+                    case SqliteType.REAL:
+                        column.DefaultValue = 0;
+                        break;
+                    case SqliteType.TEXT: // NotNull text, is empty
+                        column.DefaultValue = string.Empty;
+                        break;
+                }
+            }
         }
     }
 }
