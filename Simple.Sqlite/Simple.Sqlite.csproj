@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
-    <Version>0.4.21</Version>
+    <Version>0.4.24</Version>
     <Authors>RafaelEstevam.net</Authors>
     <Company>Rafael Estevam</Company>
     <Description>A simple SqliteWrapper</Description>
@@ -11,7 +11,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Sqlite</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes>Paired with commit 2e46da2
+    <PackageReleaseNotes>Paired with commit 45aaf0d
 https://github.com/RafaelEstevamReis/SqliteWrapper</PackageReleaseNotes>
   </PropertyGroup>
 
