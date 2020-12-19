@@ -19,7 +19,8 @@ var d = new MyData()
     MyWebsite = new Uri("http://example.com"),
     MyDecimalValue = 123.4M,
     MyDoubleValue = 456.7,
-    MyFloatValue = 789.3f
+    MyFloatValue = 789.3f,
+    MyEnum = MyData.eIntEnum.Zero,
 };
 Console.WriteLine($"New data inserted: Id={d.MyId}");
 db.Insert(d);
@@ -44,6 +45,13 @@ foreach (var rowData in allData)
 
 public class MyData
 {
+    public enum eIntEnum
+    {
+        Zero = 0,
+        One = 1,
+        Two = 2,
+    }
+
     public Guid MyUID { get; set; }
     public int MyId { get; set; }
     public string MyName { get; set; }
@@ -52,5 +60,6 @@ public class MyData
     public decimal MyDecimalValue { get; set; }
     public double MyDoubleValue { get; set; }
     public float MyFloatValue { get; set; }
+    public eIntEnum MyEnum { get; set; }
 }
 

@@ -101,29 +101,29 @@ namespace Simple.Sqlite
             /// </summary>
             public string ExportColumnDefinitionAsStatement()
             {
-                    if (string.IsNullOrEmpty(ColumnName)) throw new ArgumentNullException("ColumnName can not be null");
-                    if (ColumnName.Any(c => char.IsWhiteSpace(c))) throw new ArgumentNullException("ColumnName can not contain whitespaces");
-                    if (ColumnName.Any(c => char.IsSymbol(c))) throw new ArgumentNullException("ColumnName can not contain symbols");
+                if (string.IsNullOrEmpty(ColumnName)) throw new ArgumentNullException("ColumnName can not be null");
+                if (ColumnName.Any(c => char.IsWhiteSpace(c))) throw new ArgumentNullException("ColumnName can not contain whitespaces");
+                if (ColumnName.Any(c => char.IsSymbol(c))) throw new ArgumentNullException("ColumnName can not contain symbols");
 
-                    StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
 
-                    sb.Append(ColumnName);
-                    sb.Append(" ");
+                sb.Append(ColumnName);
+                sb.Append(" ");
 
-                    sb.Append(SqliteType.ToString());
-                    sb.Append(" ");
+                sb.Append(SqliteType.ToString());
+                sb.Append(" ");
 
-                    if (IsPK) sb.Append("PRIMARY KEY ");
-                    if (IsAI) sb.Append("AUTOINCREMENT ");
+                if (IsPK) sb.Append("PRIMARY KEY ");
+                if (IsAI) sb.Append("AUTOINCREMENT ");
 
-                    if (!AllowNulls) sb.Append("NOT NULL ");
+                if (!AllowNulls) sb.Append("NOT NULL ");
 
-                    if (DefaultValue != null)
-                    {
-                        sb.Append($"DEFAULT '{DefaultValue}'");
-                    }
+                if (DefaultValue != null)
+                {
+                    sb.Append($"DEFAULT '{DefaultValue}'");
+                }
 
-                    return sb.ToString();
+                return sb.ToString();
             }
             /// <summary>
             /// Creates a ADD COLUMN from current schema. 
