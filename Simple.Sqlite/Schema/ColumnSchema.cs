@@ -52,9 +52,42 @@ namespace Simple.Sqlite
             /// </summary>
             public static Column FromType(Type t, PropertyInfo info)
             {
+                SqliteType dataType = mapType(info);
 
+                //Props
+                bool isKey = IsKeyProp(info) || IsPKProp(info);
+                // Auto select
+                bool allowNulls = dataType == SqliteType.TEXT
+                                  || dataType == SqliteType.BLOB;
+                // was specified ?
+                if (IsAllowNullsProp(info)) allowNulls = true;
+                if (IsNotNullsProp(info)) allowNulls = false;
+
+                bool isUnique = IsUniqueProp(info);
+
+                object defVal = null;
+                if (IsDefaultValueProp(info, out object outObj))
+                {
+                    defVal = outObj;
+                }
+
+                // create
+                return new Column()
+                {
+                    ColumnName = info.Name,
+                    AllowNulls = allowNulls,
+                    NativeType = info.PropertyType,
+                    SqliteType = dataType,
+                    DefaultValue = defVal,
+                    IsPK = isKey,
+                    IsAI = isKey && dataType == SqliteType.INTEGER,
+                    IsUnique = isUnique,
+                };
+            }
+
+            private static SqliteType mapType(PropertyInfo info)
+            {
                 SqliteType dataType;
-
                 // Texts
                 if (info.PropertyType == typeof(string)) dataType = SqliteType.TEXT;
                 else if (info.PropertyType == typeof(Uri)) dataType = SqliteType.TEXT;
@@ -81,32 +114,7 @@ namespace Simple.Sqlite
                 {
                     throw new Exception($"Type {info.PropertyType.Name} is not supported on field {info.Name}");
                 }
-                //Props
-                bool isKey = IsKeyProp(info) || IsPKProp(info);
-
-                bool allowNulls = dataType == SqliteType.TEXT
-                                  || dataType == SqliteType.BLOB;
-                if (IsAllowNullsProp(info)) allowNulls = true;
-
-                bool isUnique = IsUniqueProp(info);
-
-                object defVal = null;
-                if (IsDefaultValueProp(info, out object outObj))
-                {
-                    defVal = outObj;
-                }
-                // create
-                return new Column()
-                {
-                    ColumnName = info.Name,
-                    AllowNulls = allowNulls,
-                    NativeType = info.PropertyType,
-                    SqliteType = dataType,
-                    DefaultValue = defVal,
-                    IsPK = isKey,
-                    IsAI = isKey && dataType == SqliteType.INTEGER,
-                    IsUnique = isUnique,
-                };
+                return dataType;
             }
 
             internal static bool IsKeyProp(PropertyInfo info)
@@ -127,6 +135,11 @@ namespace Simple.Sqlite
             internal static bool IsAllowNullsProp(PropertyInfo info)
             {
                 return info.GetCustomAttributes(typeof(AllowNullAttribute), true)
+                           .FirstOrDefault() != null;
+            }
+            internal static bool IsNotNullsProp(PropertyInfo info)
+            {
+                return info.GetCustomAttributes(typeof(NotNullAttribute), true)
                            .FirstOrDefault() != null;
             }
             internal static bool IsDefaultValueProp(PropertyInfo info, out object Value)
