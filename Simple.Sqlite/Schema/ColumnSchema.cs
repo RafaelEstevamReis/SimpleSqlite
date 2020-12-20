@@ -127,6 +127,13 @@ namespace Simple.Sqlite
                 return info.GetCustomAttributes(typeof(PrimaryKeyAttribute), true)
                            .FirstOrDefault() != null;
             }
+            internal static string GetKeyColumn(Type typeT)
+            {
+                return typeT.GetProperties()
+                            .Where(p => IsPKProp(p) || IsKeyProp(p))
+                            .FirstOrDefault()
+                            ?.Name;
+            }
             internal static bool IsUniqueProp(PropertyInfo info)
             {
                 return info.GetCustomAttributes(typeof(UniqueAttribute), true)
@@ -182,6 +189,7 @@ namespace Simple.Sqlite
 
                 return sb.ToString();
             }
+
             /// <summary>
             /// Creates a ADD COLUMN from current schema. 
             /// This MAY change de [DefaultValue] when [NotNull] to Comply with Sqlite

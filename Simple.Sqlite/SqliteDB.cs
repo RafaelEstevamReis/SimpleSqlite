@@ -214,12 +214,10 @@ namespace Simple.Sqlite
         {
             var TypeT = typeof(T);
 
+            string keuColumn1 = TableMapper.Column.GetKeyColumn(TypeT);
+
             string keyColumn = KeyColumn
-                            ?? TypeT.GetProperties()
-                                    .Where(p => p.GetCustomAttributes(true)
-                                                 .Any(a => a is KeyAttribute))
-                                    .FirstOrDefault()
-                                    ?.Name
+                            ?? TableMapper.Column.GetKeyColumn(TypeT)
                             ?? "_rowid_";
 
             var tableName = TypeT.Name;
@@ -305,13 +303,12 @@ namespace Simple.Sqlite
         }
         private static IEnumerable<string> getNames(Type type, bool IncludeKey = true)
         {
+            var keyName = TableMapper.Column.GetKeyColumn(type);
             foreach (var info in type.GetProperties())
             {
                 if (!IncludeKey)
                 {
-                    var keyAttrib = info.CustomAttributes
-                                        .OfType<KeyAttribute>();
-                    if (keyAttrib.Count() > 0) continue;
+                    if (info.Name == keyName) continue;
                 }
 
                 yield return info.Name;

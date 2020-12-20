@@ -4,6 +4,36 @@
         <name>Simple.Sqlite</name>
     </assembly>
     <members>
+        <member name="T:Simple.Sqlite.SqliteType">
+            <summary>
+            Represents a Sqlite internal type
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.SqliteType.INTEGER">
+            <summary>
+            Numeric without decimal places
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.SqliteType.TEXT">
+            <summary>
+            Sqlite text
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.SqliteType.BLOB">
+            <summary>
+            Binary data or anythng (sqlite is dynamic typed)
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.SqliteType.REAL">
+            <summary>
+            Numeric with decimal places
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.SqliteType.NUMERIC">
+            <summary>
+            Numeric value. Includes Bool, Date and Datetime
+            </summary>
+        </member>
         <member name="T:Simple.Sqlite.TableMapper">
             <summary>
             Class to map a table schema
@@ -37,6 +67,11 @@
         <member name="P:Simple.Sqlite.TableMapper.Column.IsAI">
             <summary>
             Is Auto-Increment ?
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.TableMapper.Column.IsUnique">
+            <summary>
+            Is Unique indexed ?
             </summary>
         </member>
         <member name="P:Simple.Sqlite.TableMapper.Column.AllowNulls">
@@ -131,36 +166,6 @@
             Creates a table schema from a Type
             </summary>
         </member>
-        <member name="T:Simple.Sqlite.SqliteType">
-            <summary>
-            Represents a Sqlite internal type
-            </summary>
-        </member>
-        <member name="F:Simple.Sqlite.SqliteType.INTEGER">
-            <summary>
-            Numeric without decimal places
-            </summary>
-        </member>
-        <member name="F:Simple.Sqlite.SqliteType.TEXT">
-            <summary>
-            Sqlite text
-            </summary>
-        </member>
-        <member name="F:Simple.Sqlite.SqliteType.BLOB">
-            <summary>
-            Binary data or anythng (sqlite is dynamic typed)
-            </summary>
-        </member>
-        <member name="F:Simple.Sqlite.SqliteType.REAL">
-            <summary>
-            Numeric with decimal places
-            </summary>
-        </member>
-        <member name="F:Simple.Sqlite.SqliteType.NUMERIC">
-            <summary>
-            Numeric value. Includes Bool, Date and Datetime
-            </summary>
-        </member>
         <member name="T:Simple.Sqlite.SqliteDB">
             <summary>
             Easy access a local database
@@ -236,6 +241,11 @@
         <member name="M:Simple.Sqlite.SqliteDB.BulkInsert``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Inserts many T items into the database and return their IDs, this method locks the execution
+            </summary>
+        </member>
+        <member name="T:System.ComponentModel.DataAnnotations.KeyAttribute">
+            <summary>
+            Replacement for.NetCore System.ComponentModel.DataAnnotations
             </summary>
         </member>
     </members>
