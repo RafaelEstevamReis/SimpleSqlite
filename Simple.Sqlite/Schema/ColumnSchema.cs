@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Simple.Sqlite.Attributes;
 
 namespace Simple.Sqlite
 {
@@ -80,18 +81,31 @@ namespace Simple.Sqlite
                 {
                     throw new Exception($"Type {info.PropertyType.Name} is not supported on field {info.Name}");
                 }
-                bool isKey = IsKeyProp(info);
+                //Props
+                bool isKey = IsKeyProp(info) || IsPKProp(info);
 
+                bool allowNulls = dataType == SqliteType.TEXT
+                                  || dataType == SqliteType.BLOB;
+                if (IsAllowNullsProp(info)) allowNulls = true;
+
+                bool isUnique = IsUniqueProp(info);
+
+                object defVal = null;
+                if (IsDefaultValueProp(info, out object outObj))
+                {
+                    defVal = outObj;
+                }
+                // create
                 return new Column()
                 {
                     ColumnName = info.Name,
-                    AllowNulls = dataType == SqliteType.TEXT
-                                 || dataType == SqliteType.BLOB,
+                    AllowNulls = allowNulls,
                     NativeType = info.PropertyType,
                     SqliteType = dataType,
-                    DefaultValue = null,
+                    DefaultValue = defVal,
                     IsPK = isKey,
-                    IsAI = isKey && dataType == SqliteType.INTEGER
+                    IsAI = isKey && dataType == SqliteType.INTEGER,
+                    IsUnique = isUnique,
                 };
             }
 
@@ -99,6 +113,31 @@ namespace Simple.Sqlite
             {
                 return info.GetCustomAttributes(typeof(KeyAttribute), true)
                            .FirstOrDefault() != null;
+            }
+            internal static bool IsPKProp(PropertyInfo info)
+            {
+                return info.GetCustomAttributes(typeof(PrimaryKeyAttribute), true)
+                           .FirstOrDefault() != null;
+            }
+            internal static bool IsUniqueProp(PropertyInfo info)
+            {
+                return info.GetCustomAttributes(typeof(UniqueAttribute), true)
+                           .FirstOrDefault() != null;
+            }
+            internal static bool IsAllowNullsProp(PropertyInfo info)
+            {
+                return info.GetCustomAttributes(typeof(AllowNullAttribute), true)
+                           .FirstOrDefault() != null;
+            }
+            internal static bool IsDefaultValueProp(PropertyInfo info, out object Value)
+            {
+                Value = null;
+                var prop = info.GetCustomAttributes(typeof(DefaultValueAttribute), true)
+                           .FirstOrDefault() as DefaultValueAttribute;
+                if (prop == null) return false;
+
+                Value = prop.DefaultValue;
+                return true;
             }
             /// <summary>
             /// Creates a CREATE TABLE column statment from current schema
