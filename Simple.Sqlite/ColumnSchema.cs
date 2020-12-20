@@ -34,6 +34,10 @@ namespace Simple.Sqlite
             /// </summary>
             public bool IsAI { get; set; }
             /// <summary>
+            /// Is Unique indexed ?
+            /// </summary>
+            public bool IsUnique { get; set; }
+            /// <summary>
             /// Allow null values ?
             /// </summary>
             public bool AllowNulls { get; set; }
@@ -115,6 +119,7 @@ namespace Simple.Sqlite
 
                 if (IsPK) sb.Append("PRIMARY KEY ");
                 if (IsAI) sb.Append("AUTOINCREMENT ");
+                if (IsUnique) sb.Append("UNIQUE ");
 
                 if (!AllowNulls) sb.Append("NOT NULL ");
 
