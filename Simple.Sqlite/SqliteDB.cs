@@ -10,6 +10,7 @@ namespace Simple.Sqlite
 {
     /// <summary>
     /// Easy access a local database
+    /// How to use: Create new instance, call CreateTables(), chain Add[T] to add tables to it then Commit(), after that just call the other methods
     /// </summary>
     public class SqliteDB
     {
