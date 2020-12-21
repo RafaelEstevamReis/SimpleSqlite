@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Simple.Sqlite;
-
+using Simple.Sqlite.Attributes;
 
 SqliteDB db = new SqliteDB("myStuff.db");
 Console.WriteLine($"Database is at {db.DatabaseFileName}");
@@ -22,7 +23,7 @@ var d = new MyData()
     MyFloatValue = 789.3f,
     MyEnum = MyData.eIntEnum.Zero,
 };
-Console.WriteLine($"New data inserted: Id={d.MyId}");
+Console.WriteLine($"New data inserted: Id={d.MyId} MyUID={d.MyUID}");
 db.Insert(d);
 
 // get all data
@@ -31,15 +32,26 @@ var allData = db.GetAll<MyData>();
 Console.WriteLine("All data:");
 foreach (var rowData in allData)
 {
-    Console.WriteLine($" > {rowData.MyId} {rowData.MyName}");
+    Console.WriteLine($" > {rowData.MyId} {rowData.MyName} {rowData.MyUID}");
 }
 
 //get "bob" data
-var bob = db.ExecuteQuery<MyData>("SELECT * FROM MyData WHERE MyName LIKE @name ", new { name = "%bob%" });
+var bobs = db.ExecuteQuery<MyData>("SELECT * FROM MyData WHERE MyName LIKE @name ", new { name = "%bob%" });
 Console.WriteLine("All bob data:");
+foreach (var rowData in bobs)
+{
+    Console.WriteLine($" > {rowData.MyId} {rowData.MyName} {rowData.MyUID}");
+}
+
+// change frst bob
+var firstBob = bobs.First();
+firstBob.MyName = "Changed bob";
+db.InsertOrReplace(firstBob);
+// show all data again
+Console.WriteLine("All data:");
 foreach (var rowData in allData)
 {
-    Console.WriteLine($" > {rowData.MyId} {rowData.MyName}");
+    Console.WriteLine($" > {rowData.MyId} {rowData.MyName} {rowData.MyUID}");
 }
 
 
@@ -52,6 +64,7 @@ public class MyData
         Two = 2,
     }
 
+    [PrimaryKey]
     public Guid MyUID { get; set; }
     public int MyId { get; set; }
     public string MyName { get; set; }
