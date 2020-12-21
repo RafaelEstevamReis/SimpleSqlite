@@ -169,6 +169,7 @@
         <member name="T:Simple.Sqlite.SqliteDB">
             <summary>
             Easy access a local database
+            How to use: Create new instance, call CreateTables(), chain Add[T] to add tables to it then Commit(), after that just call the other methods
             </summary>
         </member>
         <member name="P:Simple.Sqlite.SqliteDB.DatabaseFileName">
@@ -237,10 +238,17 @@
             <summary>
             Inserts a new T and return it's ID, this method locks the execution
             </summary>
+            <returns>Returns `sqlite3:last_insert_rowid()`</returns>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.BulkInsert``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Inserts many T items into the database and return their IDs, this method locks the execution
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.InsertOrReplace``1(``0)">
+            <summary>
+            Inserts a new T or replace with current T and return it's ID, this method locks the execution
+            Must have a [Unique] or PK column
             </summary>
         </member>
         <member name="T:System.ComponentModel.DataAnnotations.KeyAttribute">
