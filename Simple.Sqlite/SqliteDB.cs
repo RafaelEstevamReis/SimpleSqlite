@@ -192,6 +192,7 @@ namespace Simple.Sqlite
                 else if (p.PropertyType == typeof(DateTime)) objVal = reader.GetDateTime(p.Name);
                 else if (p.PropertyType == typeof(byte[])) objVal = (byte[])reader.GetValue(p.Name);
                 else if (p.PropertyType == typeof(Guid)) objVal = new Guid((byte[])reader.GetValue(p.Name));
+                else if (p.PropertyType.IsEnum) objVal = reader.GetInt32(p.Name);
                 else objVal = reader.GetValue(p.Name);
             }
 
@@ -250,22 +251,29 @@ namespace Simple.Sqlite
         /// <summary>
         /// Inserts a new T and return it's ID, this method locks the execution
         /// </summary>
+        /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
         public long Insert<T>(T Item)
         {
             string sql = buildInsertSql<T>();
-            // lock(lockWrite) // NonQuery already locks
             return ExecuteScalar<long>(sql, Item);
         }
-        private static string buildInsertSql<T>()
+        private static string buildInsertSql<T>(bool addReplace = false)
         {
             var TypeT = typeof(T);
             var tableName = TypeT.Name;
 
-            var names = getNames(TypeT, false); // Not the Keys
+            var names = getNames(TypeT, isInsert: true);
             var fields = string.Join(',', names);
             var values = string.Join(',', names.Select(n => $"@{n}"));
 
-            return $"INSERT INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
+            if (addReplace)
+            {
+                return $"INSERT OR REPLACE INTO {tableName} ({fields}) VALUES ({values});";
+            }
+            else
+            {
+                return $"INSERT INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
+            }
         }
         /// <summary>
         /// Inserts many T items into the database and return their IDs, this method locks the execution
@@ -292,6 +300,15 @@ namespace Simple.Sqlite
             }
             return ids.ToArray();
         }
+        /// <summary>
+        /// Inserts a new T or replace with current T and return it's ID, this method locks the execution
+        /// Must have a [Unique] or PK column
+        /// </summary>
+        public void InsertOrReplace<T>(T Item)
+        {
+            string sql = buildInsertSql<T>(addReplace: true);
+            ExecuteNonQuery(sql, Item);
+        }
 
         private static void fillParameters(SQLiteCommand cmd, object Parameters)
         {
@@ -301,14 +318,21 @@ namespace Simple.Sqlite
                 cmd.Parameters.AddWithValue(p.Name, p.GetValue(Parameters));
             }
         }
-        private static IEnumerable<string> getNames(Type type, bool IncludeKey = true)
+        private static IEnumerable<string> getNames(Type type, bool isInsert = true)
         {
             var keyName = TableMapper.Column.GetKeyColumn(type);
             foreach (var info in type.GetProperties())
             {
-                if (!IncludeKey)
+                if (isInsert && info.Name == keyName)
                 {
-                    if (info.Name == keyName) continue;
+                    if (info.PropertyType.FullName == "System.Guid")
+                    {
+                        // Keep Guids
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
 
                 yield return info.Name;
