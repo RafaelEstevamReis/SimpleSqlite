@@ -156,15 +156,14 @@ namespace Simple.Sqlite
                 while (reader.Read())
                 {
                     // build new
-                    T t = new T();
-
+                    object t = new T();
                     foreach (var p in typeof(T).GetProperties())
                     {
                         if (!colNames.Contains(p.Name)) continue;
 
                         mapColumn(t, p, reader);
                     }
-                    yield return t;
+                    yield return (T)t;
                 }
             }
         }
