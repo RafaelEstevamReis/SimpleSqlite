@@ -196,7 +196,6 @@ namespace Simple.Sqlite
                 else if (p.PropertyType.IsEnum) objVal = reader.GetInt32(p.Name);
                 else objVal = reader.GetValue(p.Name);
             }
-
             p.SetValue(obj, objVal);
         }
 
@@ -215,8 +214,6 @@ namespace Simple.Sqlite
             where T : new()
         {
             var TypeT = typeof(T);
-
-            string keuColumn1 = TableMapper.Column.GetKeyColumn(TypeT);
 
             string keyColumn = KeyColumn
                             ?? TableMapper.Column.GetKeyColumn(TypeT)
