@@ -4,6 +4,42 @@
         <name>Simple.Sqlite</name>
     </assembly>
     <members>
+        <member name="T:Simple.Sqlite.Attributes.AllowNullAttribute">
+            <summary>
+            Specify that this column should allow nulls
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.Attributes.DefaultValueAttribute">
+            <summary>
+            Specify default value for this column
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.Attributes.DefaultValueAttribute.DefaultValue">
+            <summary>
+            Default value specified
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Attributes.DefaultValueAttribute.#ctor(System.Object)">
+            <summary>
+            Creates a new instance
+            </summary>
+            <param name="defaultValue"></param>
+        </member>
+        <member name="T:Simple.Sqlite.Attributes.NotNullAttribute">
+            <summary>
+            Specify that this column should not allow nulls
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.Attributes.PrimaryKeyAttribute">
+            <summary>
+            Specify that this column is PrimaryKey
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.Attributes.UniqueAttribute">
+            <summary>
+            Specify that this column should only have unique values
+            </summary>
+        </member>
         <member name="T:Simple.Sqlite.SqliteType">
             <summary>
             Represents a Sqlite internal type
@@ -37,6 +73,42 @@
         <member name="T:Simple.Sqlite.NoSqliteDoc">
             <summary>
             Easy access a local no-sql document storage
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.NoSqliteDoc.CompressEachEntry">
+            <summary>
+            Specify if new values should be compressed before storage
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.NoSqliteDoc.DatabaseFileName">
+            <summary>
+            Database file full path
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteDoc.#ctor(System.String)">
+            <summary>
+            Creates a new instance
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteDoc.Store``1(System.String,``0)">
+            <summary>
+            Stores a new item
+            </summary>
+            <typeparam name="T">Type of stored item</typeparam>
+            <param name="Key">A Key to locate the item later</param>
+            <param name="Object">The item to be stored</param>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteDoc.Retrieve``1(System.String)">
+            <summary>
+            Retrieves a stored item
+            </summary>
+            <typeparam name="T">Type of stored item</typeparam>
+            <param name="Key">The Key to locate the stored item</param>
+            <returns>Stored item or Defult(T)</returns>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteDoc.GetAllKeys">
+            <summary>
+            Retrieves all stored Keys
             </summary>
         </member>
         <member name="T:Simple.Sqlite.TableMapper">
@@ -254,11 +326,6 @@
             <summary>
             Inserts a new T or replace with current T and return it's ID, this method locks the execution
             Must have a [Unique] or PK column
-            </summary>
-        </member>
-        <member name="T:System.ComponentModel.DataAnnotations.KeyAttribute">
-            <summary>
-            Replacement for.NetCore System.ComponentModel.DataAnnotations
             </summary>
         </member>
     </members>
