@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Simple.Sqlite;
 
 namespace Test.Sample
@@ -11,7 +8,7 @@ namespace Test.Sample
     {
         public static void run()
         {
-            NoSqliteDoc db = new NoSqliteDoc("myStuff.db");
+            NoSqliteStorage db = new NoSqliteStorage("myStuff.db");
             Console.WriteLine($"Database is at {db.DatabaseFileName}");
 
             var d = new MyData()
@@ -30,10 +27,7 @@ namespace Test.Sample
             string id = d.MyUID.ToString();
 
             db.Store(id, d);
-
             var d2 = db.Retrieve<MyData>(id);
-            d2 = d2;
-
             var allKeys = db.GetAllKeys().ToArray();
         }
     }

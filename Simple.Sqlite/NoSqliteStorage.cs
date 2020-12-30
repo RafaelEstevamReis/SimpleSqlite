@@ -6,7 +6,7 @@ namespace Simple.Sqlite
     /// <summary>
     /// Easy access a local no-sql document storage
     /// </summary>
-    public class NoSqliteDoc
+    public class NoSqliteStorage
     {
         private SqliteDB internalDb;
         /// <summary>
@@ -20,7 +20,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Creates a new instance
         /// </summary>
-        public NoSqliteDoc(string fileName)
+        public NoSqliteStorage(string fileName)
         {
             internalDb = new SqliteDB(fileName);
             createDocumentTable();

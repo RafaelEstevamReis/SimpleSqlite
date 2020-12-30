@@ -70,27 +70,27 @@
             Numeric value. Includes Bool, Date and Datetime
             </summary>
         </member>
-        <member name="T:Simple.Sqlite.NoSqliteDoc">
+        <member name="T:Simple.Sqlite.NoSqliteStorage">
             <summary>
             Easy access a local no-sql document storage
             </summary>
         </member>
-        <member name="P:Simple.Sqlite.NoSqliteDoc.CompressEachEntry">
+        <member name="P:Simple.Sqlite.NoSqliteStorage.CompressEachEntry">
             <summary>
             Specify if new values should be compressed before storage
             </summary>
         </member>
-        <member name="P:Simple.Sqlite.NoSqliteDoc.DatabaseFileName">
+        <member name="P:Simple.Sqlite.NoSqliteStorage.DatabaseFileName">
             <summary>
             Database file full path
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.NoSqliteDoc.#ctor(System.String)">
+        <member name="M:Simple.Sqlite.NoSqliteStorage.#ctor(System.String)">
             <summary>
             Creates a new instance
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.NoSqliteDoc.Store``1(System.String,``0)">
+        <member name="M:Simple.Sqlite.NoSqliteStorage.Store``1(System.String,``0)">
             <summary>
             Stores a new item
             </summary>
@@ -98,7 +98,7 @@
             <param name="Key">A Key to locate the item later</param>
             <param name="Object">The item to be stored</param>
         </member>
-        <member name="M:Simple.Sqlite.NoSqliteDoc.Retrieve``1(System.String)">
+        <member name="M:Simple.Sqlite.NoSqliteStorage.Retrieve``1(System.String)">
             <summary>
             Retrieves a stored item
             </summary>
@@ -106,7 +106,7 @@
             <param name="Key">The Key to locate the stored item</param>
             <returns>Stored item or Defult(T)</returns>
         </member>
-        <member name="M:Simple.Sqlite.NoSqliteDoc.GetAllKeys">
+        <member name="M:Simple.Sqlite.NoSqliteStorage.GetAllKeys">
             <summary>
             Retrieves all stored Keys
             </summary>
@@ -326,6 +326,11 @@
             <summary>
             Inserts a new T or replace with current T and return it's ID, this method locks the execution
             Must have a [Unique] or PK column
+            </summary>
+        </member>
+        <member name="T:System.ComponentModel.DataAnnotations.KeyAttribute">
+            <summary>
+            Replacement for.NetCore System.ComponentModel.DataAnnotations
             </summary>
         </member>
     </members>
