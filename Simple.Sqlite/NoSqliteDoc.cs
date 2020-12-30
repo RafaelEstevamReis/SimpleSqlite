@@ -46,17 +46,16 @@ namespace Simple.Sqlite
             return doc.Unpack<T>();
         }
 
-
         private class nsDocuments
         {
             [PrimaryKey]
-            public string Key { get; set; }
-            public byte[] Data { get; set; }
+            public string Id { get; set; }
+            public byte[] Object { get; set; }
             public bool Compressed { get; set; }
 
             internal T Unpack<T>()
             {
-                var ms = new MemoryStream(Data);
+                var ms = new MemoryStream(Object);
                 if (Compressed)
                 {
                     using (var compressionStream = new DeflateStream(ms, CompressionMode.Decompress))
@@ -75,7 +74,7 @@ namespace Simple.Sqlite
                 using (var reader = new BsonDataReader(ms))
                 {
                     JsonSerializer serializer = new JsonSerializer();
-                    return (T)serializer.Deserialize(reader);
+                    return (T)serializer.Deserialize(reader, typeof(T));
                 }
             }
 
@@ -97,8 +96,8 @@ namespace Simple.Sqlite
 
                 return new nsDocuments()
                 {
-                    Key = key,
-                    Data = ms.ToArray(),
+                    Id = key,
+                    Object = ms.ToArray(),
                     Compressed = compress,
                 };
             }

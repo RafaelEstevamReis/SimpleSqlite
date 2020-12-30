@@ -2,7 +2,7 @@
 using Simple.Sqlite.Attributes;
 
 // Choose your example
-Test.Sample.FullCycle.run();
+//Test.Sample.FullCycle.run();
 Test.Sample.DocumentStorage.run();
 
 

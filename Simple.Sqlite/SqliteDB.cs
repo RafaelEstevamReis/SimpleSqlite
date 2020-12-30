@@ -322,11 +322,11 @@ namespace Simple.Sqlite
             {
                 if (isInsert && info.Name == keyName)
                 {
-                    if (info.PropertyType.FullName == "System.Guid")
+                    if (info.PropertyType.FullName == "System.Int32")
                     {
-                        // Keep Guids
+                        continue;
                     }
-                    else
+                    if (info.PropertyType.FullName == "System.Int64")
                     {
                         continue;
                     }
