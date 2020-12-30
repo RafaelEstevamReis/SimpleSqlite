@@ -222,7 +222,12 @@ namespace Simple.Sqlite
                 else if (type == typeof(bool)) objVal = reader.GetBoolean(name);
                 else if (type == typeof(DateTime)) objVal = reader.GetDateTime(name);
                 else if (type == typeof(byte[])) objVal = (byte[])reader.GetValue(name);
-                else if (type == typeof(Guid)) objVal = new Guid((byte[])reader.GetValue(name));
+                else if (type == typeof(Guid))
+                {
+                    objVal = reader.GetValue(name);
+                    if (objVal is string) objVal = Guid.Parse((string)objVal);
+                    else objVal = new Guid((byte[])objVal);
+                }
                 else if (type.IsEnum) objVal = reader.GetInt32(name);
                 else objVal = reader.GetValue(name);
             }
