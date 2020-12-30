@@ -4,6 +4,42 @@
         <name>Simple.Sqlite</name>
     </assembly>
     <members>
+        <member name="T:Simple.Sqlite.Attributes.AllowNullAttribute">
+            <summary>
+            Specify that this column should allow nulls
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.Attributes.DefaultValueAttribute">
+            <summary>
+            Specify default value for this column
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.Attributes.DefaultValueAttribute.DefaultValue">
+            <summary>
+            Default value specified
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Attributes.DefaultValueAttribute.#ctor(System.Object)">
+            <summary>
+            Creates a new instance
+            </summary>
+            <param name="defaultValue"></param>
+        </member>
+        <member name="T:Simple.Sqlite.Attributes.NotNullAttribute">
+            <summary>
+            Specify that this column should not allow nulls
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.Attributes.PrimaryKeyAttribute">
+            <summary>
+            Specify that this column is PrimaryKey
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.Attributes.UniqueAttribute">
+            <summary>
+            Specify that this column should only have unique values
+            </summary>
+        </member>
         <member name="T:Simple.Sqlite.SqliteType">
             <summary>
             Represents a Sqlite internal type
@@ -32,6 +68,47 @@
         <member name="F:Simple.Sqlite.SqliteType.NUMERIC">
             <summary>
             Numeric value. Includes Bool, Date and Datetime
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.NoSqliteStorage">
+            <summary>
+            Easy access a local no-sql document storage
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.NoSqliteStorage.CompressEachEntry">
+            <summary>
+            Specify if new values should be compressed before storage
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.NoSqliteStorage.DatabaseFileName">
+            <summary>
+            Database file full path
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteStorage.#ctor(System.String)">
+            <summary>
+            Creates a new instance
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteStorage.Store``1(System.String,``0)">
+            <summary>
+            Stores a new item
+            </summary>
+            <typeparam name="T">Type of stored item</typeparam>
+            <param name="Key">A Key to locate the item later</param>
+            <param name="Object">The item to be stored</param>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteStorage.Retrieve``1(System.String)">
+            <summary>
+            Retrieves a stored item
+            </summary>
+            <typeparam name="T">Type of stored item</typeparam>
+            <param name="Key">The Key to locate the stored item</param>
+            <returns>Stored item or Defult(T)</returns>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteStorage.GetAllKeys">
+            <summary>
+            Retrieves all stored Keys
             </summary>
         </member>
         <member name="T:Simple.Sqlite.TableMapper">
