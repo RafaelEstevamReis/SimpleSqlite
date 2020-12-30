@@ -29,7 +29,7 @@ namespace Test.Sample
 
             string id = d.MyUID.ToString();
 
-            db.Insert(id, d);
+            db.Store(id, d);
 
             var d2 = db.Retrieve<MyData>(id);
             d2 = d2;
