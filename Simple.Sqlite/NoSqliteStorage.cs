@@ -36,7 +36,7 @@ namespace Simple.Sqlite
     Object     BLOB,
     Compressed BOOL DEFAULT(0) NOT NULL,
     PRIMARY KEY(Id)
-);"); 
+);");
         }
         /// <summary>
         /// Stores a new item
@@ -91,5 +91,4 @@ namespace Simple.Sqlite
             return internalDb.ExecuteQuery<Guid>("SELECT Id FROM nsDocuments", null);
         }
     }
-
 }

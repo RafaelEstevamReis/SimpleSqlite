@@ -149,89 +149,21 @@ namespace Simple.Sqlite
 
             using var reader = cmd.ExecuteReader();
 
-            if (reader.HasRows)
+            if (!reader.HasRows) yield break;
+
+            var colNames = getSchemaColumns(reader);
+            while (reader.Read())
             {
-                var colNames = getSchemaColumns(reader);
-
-                while (reader.Read())
+                // build new
+                if (typeT.CheckIfSimpleType())
                 {
-                    // build new
-                    if (checkIfSimpleType(typeT))
-                    {
-                        yield return (T)readValue(reader, typeT, colNames.First());
-                    }
-                    else
-                    {
-                        object t = Activator.CreateInstance<T>();
-                        foreach (var p in typeof(T).GetProperties())
-                        {
-                            if (!colNames.Contains(p.Name)) continue;
-
-                            mapColumn(t, p, reader);
-                        }
-                        yield return (T)t;
-                    }
+                    yield return (T)TypeMapper.ReadValue(reader, typeT, colNames.First());
+                }
+                else
+                {
+                    yield return TypeMapper.MapObject<T>(colNames, reader);
                 }
             }
-        }
-
-        static bool checkIfSimpleType(Type typeT)
-        {
-            if (typeT.IsPrimitive) return true;
-            if (typeT == typeof(string)) return true;
-            if (typeT == typeof(decimal)) return true;
-            if (typeT == typeof(DateTime)) return true;
-            if (typeT == typeof(DateTimeOffset)) return true;
-            if (typeT == typeof(TimeSpan)) return true;
-            if (typeT == typeof(Guid)) return true;
-
-            if (IsNullableSimpleType(typeT)) return true;
-
-            return false;
-        }
-        static bool IsNullableSimpleType(Type typeT)
-        {
-            var underlyingType = Nullable.GetUnderlyingType(typeT);
-            return underlyingType != null && checkIfSimpleType(underlyingType);
-        }
-
-        private static void mapColumn<T>(T obj, System.Reflection.PropertyInfo p, SQLiteDataReader reader)
-            where T : new()
-        {
-            object objVal = readValue(reader, p.PropertyType, p.Name);
-            p.SetValue(obj, objVal);
-        }
-        private static object readValue(SQLiteDataReader reader, Type type, string name)
-        {
-            object objVal;
-            if (reader.IsDBNull(name))
-            {
-                objVal = null;
-            }
-            else
-            {
-                if (type == typeof(string)) objVal = reader.GetValue(name);
-                else if (type == typeof(Uri)) objVal = new Uri((string)reader.GetValue(name));
-                else if (type == typeof(double)) objVal = reader.GetDouble(name);
-                else if (type == typeof(float)) objVal = reader.GetFloat(name);
-                else if (type == typeof(decimal)) objVal = reader.GetDecimal(name);
-                else if (type == typeof(int)) objVal = reader.GetInt32(name);
-                else if (type == typeof(uint)) objVal = Convert.ToUInt32(reader.GetValue(name));
-                else if (type == typeof(long)) objVal = reader.GetInt64(name);
-                else if (type == typeof(ulong)) objVal = Convert.ToUInt64(reader.GetValue(name));
-                else if (type == typeof(bool)) objVal = reader.GetBoolean(name);
-                else if (type == typeof(DateTime)) objVal = reader.GetDateTime(name);
-                else if (type == typeof(byte[])) objVal = (byte[])reader.GetValue(name);
-                else if (type == typeof(Guid))
-                {
-                    objVal = reader.GetValue(name);
-                    if (objVal is string) objVal = Guid.Parse((string)objVal);
-                    else objVal = new Guid((byte[])objVal);
-                }
-                else if (type.IsEnum) objVal = reader.GetInt32(name);
-                else objVal = reader.GetValue(name);
-            }
-            return objVal;
         }
 
 
