@@ -139,7 +139,7 @@ namespace Simple.Sqlite
         /// Executes a query and returns the value as a T collection
         /// </summary>
         public IEnumerable<T> ExecuteQuery<T>(string Text, object Parameters)
-            where T : new()
+        //where T : new()
         {
             var typeT = typeof(T);
             using var cnn = getConnection();
@@ -157,21 +157,21 @@ namespace Simple.Sqlite
                 while (reader.Read())
                 {
                     // build new
-                    object t = new T();
-                    if (checkIfSimpleType(  typeT))
+                    if (checkIfSimpleType(typeT))
                     {
-                        t = readValue(reader, typeT, colNames.First());
+                        yield return (T)readValue(reader, typeT, colNames.First());
                     }
                     else
                     {
+                        object t = Activator.CreateInstance<T>();
                         foreach (var p in typeof(T).GetProperties())
                         {
                             if (!colNames.Contains(p.Name)) continue;
 
                             mapColumn(t, p, reader);
                         }
+                        yield return (T)t;
                     }
-                    yield return (T)t;
                 }
             }
         }

@@ -11,6 +11,10 @@ db.CreateTables()
   .Add<MyData>()
   .Commit();
 
+
+var allStrings = db.ExecuteQuery<string>("SELECT MyName FROM MyData", null).ToArray();
+
+
 var d = new MyData()
 {
     MyId = (int)DateTimeOffset.Now.ToUnixTimeSeconds(),
