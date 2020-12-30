@@ -3,10 +3,8 @@ using Simple.Sqlite.Attributes;
 
 // Choose your example
 //Test.Sample.FullCycle.run();
-Test.Sample.SimpleTypeQuery.run();
+//Test.Sample.SimpleTypeQuery.run();
 //Test.Sample.DocumentStorage.run();
-
-
 
 public class MyData
 {
