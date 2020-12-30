@@ -24,11 +24,12 @@ namespace Test.Sample
                 MyEnum = MyData.eIntEnum.Zero,
             };
 
-            string id = d.MyUID.ToString();
+            var id = d.MyUID;
 
             db.Store(id, d);
             var d2 = db.Retrieve<MyData>(id);
             var allKeys = db.GetAllKeys().ToArray();
+            var allGuids = db.GetAllGuids().ToArray();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Simple.Sqlite
@@ -43,11 +44,26 @@ namespace Simple.Sqlite
         /// <typeparam name="T">Type of stored item</typeparam>
         /// <param name="Key">A Key to locate the item later</param>
         /// <param name="Object">The item to be stored</param>
+        public void Store<T>(Guid Key, T Object) => Store(Key.ToString(), Object);
+
+        /// <summary>
+        /// Stores a new item
+        /// </summary>
+        /// <typeparam name="T">Type of stored item</typeparam>
+        /// <param name="Key">A Key to locate the item later</param>
+        /// <param name="Object">The item to be stored</param>
         public void Store<T>(string Key, T Object)
         {
             var doc = nsDocuments.Build(Key, Object, CompressEachEntry);
             internalDb.InsertOrReplace(doc);
         }
+        /// <summary>
+        /// Retrieves a stored item
+        /// </summary>
+        /// <typeparam name="T">Type of stored item</typeparam>
+        /// <param name="Key">The Key to locate the stored item</param>
+        /// <returns>Stored item or Defult(T)</returns>
+        public T Retrieve<T>(Guid Key) => Retrieve<T>(Key.ToString());
         /// <summary>
         /// Retrieves a stored item
         /// </summary>
@@ -65,8 +81,14 @@ namespace Simple.Sqlite
         /// </summary>
         public IEnumerable<string> GetAllKeys()
         {
-            return internalDb.ExecuteQuery<object>("SELECT Id FROM nsDocuments", null)
-                             .Cast<string>();
+            return internalDb.ExecuteQuery<string>("SELECT Id FROM nsDocuments", null);
+        }
+        /// <summary>
+        /// Retrieves all stored Guids
+        /// </summary>
+        public IEnumerable<Guid> GetAllGuids()
+        {
+            return internalDb.ExecuteQuery<Guid>("SELECT Id FROM nsDocuments", null);
         }
     }
 
