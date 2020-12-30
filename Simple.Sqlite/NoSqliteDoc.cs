@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using Newtonsoft.Json;
@@ -44,6 +46,10 @@ namespace Simple.Sqlite
             var doc = internalDb.Get<nsDocuments>(Key);
             if (doc == null) return default(T);
             return doc.Unpack<T>();
+        }
+        public IEnumerable<string> GetAllIds()
+        {
+            return null;
         }
 
         private class nsDocuments
