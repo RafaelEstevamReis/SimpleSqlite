@@ -141,6 +141,7 @@ namespace Simple.Sqlite
         public IEnumerable<T> ExecuteQuery<T>(string Text, object Parameters)
             where T : new()
         {
+            var typeT = typeof(T);
             using var cnn = getConnection();
             using var cmd = cnn.CreateCommand();
 
@@ -157,11 +158,18 @@ namespace Simple.Sqlite
                 {
                     // build new
                     object t = new T();
-                    foreach (var p in typeof(T).GetProperties())
+                    if (typeT.IsPrimitive)
                     {
-                        if (!colNames.Contains(p.Name)) continue;
+                        t = readValue(reader, typeT, colNames.First());
+                    }
+                    else
+                    {
+                        foreach (var p in typeof(T).GetProperties())
+                        {
+                            if (!colNames.Contains(p.Name)) continue;
 
-                        mapColumn(t, p, reader);
+                            mapColumn(t, p, reader);
+                        }
                     }
                     yield return (T)t;
                 }
@@ -171,32 +179,37 @@ namespace Simple.Sqlite
         private static void mapColumn<T>(T obj, System.Reflection.PropertyInfo p, SQLiteDataReader reader)
             where T : new()
         {
+            object objVal = readValue(reader, p.PropertyType, p.Name);
+            p.SetValue(obj, objVal);
+        }
+        private static object readValue(SQLiteDataReader reader, Type type, string name)
+        {
             object objVal;
-
-            if (reader.IsDBNull(p.Name))
+            if (reader.IsDBNull(name))
             {
                 objVal = null;
             }
             else
             {
-                if (p.PropertyType == typeof(string)) objVal = reader.GetValue(p.Name);
-                else if (p.PropertyType == typeof(Uri)) objVal = new Uri((string)reader.GetValue(p.Name));
-                else if (p.PropertyType == typeof(double)) objVal = reader.GetDouble(p.Name);
-                else if (p.PropertyType == typeof(float)) objVal = reader.GetFloat(p.Name);
-                else if (p.PropertyType == typeof(decimal)) objVal = reader.GetDecimal(p.Name);
-                else if (p.PropertyType == typeof(int)) objVal = reader.GetInt32(p.Name);
-                else if (p.PropertyType == typeof(uint)) objVal = Convert.ToUInt32(reader.GetValue(p.Name));
-                else if (p.PropertyType == typeof(long)) objVal = reader.GetInt64(p.Name);
-                else if (p.PropertyType == typeof(ulong)) objVal = Convert.ToUInt64(reader.GetValue(p.Name));
-                else if (p.PropertyType == typeof(bool)) objVal = reader.GetBoolean(p.Name);
-                else if (p.PropertyType == typeof(DateTime)) objVal = reader.GetDateTime(p.Name);
-                else if (p.PropertyType == typeof(byte[])) objVal = (byte[])reader.GetValue(p.Name);
-                else if (p.PropertyType == typeof(Guid)) objVal = new Guid((byte[])reader.GetValue(p.Name));
-                else if (p.PropertyType.IsEnum) objVal = reader.GetInt32(p.Name);
-                else objVal = reader.GetValue(p.Name);
+                if (type == typeof(string)) objVal = reader.GetValue(name);
+                else if (type == typeof(Uri)) objVal = new Uri((string)reader.GetValue(name));
+                else if (type == typeof(double)) objVal = reader.GetDouble(name);
+                else if (type == typeof(float)) objVal = reader.GetFloat(name);
+                else if (type == typeof(decimal)) objVal = reader.GetDecimal(name);
+                else if (type == typeof(int)) objVal = reader.GetInt32(name);
+                else if (type == typeof(uint)) objVal = Convert.ToUInt32(reader.GetValue(name));
+                else if (type == typeof(long)) objVal = reader.GetInt64(name);
+                else if (type == typeof(ulong)) objVal = Convert.ToUInt64(reader.GetValue(name));
+                else if (type == typeof(bool)) objVal = reader.GetBoolean(name);
+                else if (type == typeof(DateTime)) objVal = reader.GetDateTime(name);
+                else if (type == typeof(byte[])) objVal = (byte[])reader.GetValue(name);
+                else if (type == typeof(Guid)) objVal = new Guid((byte[])reader.GetValue(name));
+                else if (type.IsEnum) objVal = reader.GetInt32(name);
+                else objVal = reader.GetValue(name);
             }
-            p.SetValue(obj, objVal);
+            return objVal;
         }
+
 
         /// <summary>
         /// Gets a single T with specified table KeyValue on KeyColumn
