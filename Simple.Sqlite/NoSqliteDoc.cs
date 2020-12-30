@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using Simple.Sqlite.Attributes;
@@ -47,9 +48,10 @@ namespace Simple.Sqlite
             if (doc == null) return default(T);
             return doc.Unpack<T>();
         }
-        public IEnumerable<string> GetAllIds()
+        public IEnumerable<string> GetAllKeys()
         {
-            return null;
+            return internalDb.ExecuteQuery<object>("SELECT Id FROM nsDocuments", null)
+                             .Cast<string>();
         }
 
         private class nsDocuments

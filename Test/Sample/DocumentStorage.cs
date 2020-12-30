@@ -33,6 +33,8 @@ namespace Test.Sample
 
             var d2 = db.Retrieve<MyData>(id);
             d2 = d2;
+
+            var allKeys = db.GetAllKeys().ToArray();
         }
     }
 }
