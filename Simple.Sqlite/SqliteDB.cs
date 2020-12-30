@@ -158,7 +158,7 @@ namespace Simple.Sqlite
                 {
                     // build new
                     object t = new T();
-                    if (typeT.IsPrimitive)
+                    if (checkIfSimpleType(  typeT))
                     {
                         t = readValue(reader, typeT, colNames.First());
                     }
@@ -174,6 +174,26 @@ namespace Simple.Sqlite
                     yield return (T)t;
                 }
             }
+        }
+
+        static bool checkIfSimpleType(Type typeT)
+        {
+            if (typeT.IsPrimitive) return true;
+            if (typeT == typeof(string)) return true;
+            if (typeT == typeof(decimal)) return true;
+            if (typeT == typeof(DateTime)) return true;
+            if (typeT == typeof(DateTimeOffset)) return true;
+            if (typeT == typeof(TimeSpan)) return true;
+            if (typeT == typeof(Guid)) return true;
+
+            if (IsNullableSimpleType(typeT)) return true;
+
+            return false;
+        }
+        static bool IsNullableSimpleType(Type typeT)
+        {
+            var underlyingType = Nullable.GetUnderlyingType(typeT);
+            return underlyingType != null && checkIfSimpleType(underlyingType);
         }
 
         private static void mapColumn<T>(T obj, System.Reflection.PropertyInfo p, SQLiteDataReader reader)
