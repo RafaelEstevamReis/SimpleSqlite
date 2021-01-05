@@ -138,7 +138,6 @@ namespace Simple.Sqlite
         /// Executes a query and returns the value as a T collection
         /// </summary>
         public IEnumerable<T> ExecuteQuery<T>(string Text, object Parameters)
-        //where T : new()
         {
             var typeT = typeof(T);
             using var cnn = getConnection();
@@ -171,7 +170,6 @@ namespace Simple.Sqlite
         /// Gets a single T with specified table KeyValue on KeyColumn
         /// </summary>
         public T Get<T>(object KeyValue)
-                 where T : new()
         {
             return Get<T>(null, KeyValue);
         }
@@ -179,7 +177,6 @@ namespace Simple.Sqlite
         /// Gets a single T with specified table KeyValue on KeyColumn
         /// </summary>
         public T Get<T>(string KeyColumn, object KeyValue)
-            where T : new()
         {
             var TypeT = typeof(T);
 
@@ -198,7 +195,6 @@ namespace Simple.Sqlite
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public IEnumerable<T> GetAll<T>()
-            where T : new()
         {
             var tableName = typeof(T).Name;
 
