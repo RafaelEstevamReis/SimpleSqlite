@@ -192,13 +192,25 @@ namespace Simple.Sqlite
         /// <summary>
         /// Queries the database to all T rows in the table
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         public IEnumerable<T> GetAll<T>()
         {
             var tableName = typeof(T).Name;
 
             return ExecuteQuery<T>($"SELECT * FROM {tableName} ", null);
+        }
+
+        /// <summary>
+        /// Queries the database to all T rows in the table with specified table KeyValue on KeyColumn
+        /// </summary>
+        public IEnumerable<T> GetAll<T>(string KeyColumn, object KeyValue)
+        {
+            if (KeyColumn is null) throw new ArgumentNullException(nameof(KeyColumn));
+
+            var TypeT = typeof(T);
+
+            var tableName = TypeT.Name;
+
+            return ExecuteQuery<T>($"SELECT * FROM {tableName} WHERE {KeyColumn} = @KeyValue ", new { KeyValue });
         }
 
         private HashSet<string> getSchemaColumns(SQLiteDataReader reader)
