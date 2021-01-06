@@ -329,8 +329,11 @@
             <summary>
             Queries the database to all T rows in the table
             </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.Query``1(System.String,System.Object)">
+            <summary>
+            Queries the database to all T rows in the table with specified table KeyValue on KeyColumn
+            </summary>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.Insert``1(``0)">
             <summary>
@@ -347,6 +350,11 @@
             <summary>
             Inserts a new T or replace with current T and return it's ID, this method locks the execution
             Must have a [Unique] or PK column
+            </summary>
+        </member>
+        <member name="T:System.ComponentModel.DataAnnotations.KeyAttribute">
+            <summary>
+            Replacement for.NetCore System.ComponentModel.DataAnnotations
             </summary>
         </member>
     </members>

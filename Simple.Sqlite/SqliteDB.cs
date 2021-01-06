@@ -169,10 +169,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Gets a single T with specified table KeyValue on KeyColumn
         /// </summary>
-        public T Get<T>(object KeyValue)
-        {
-            return Get<T>(null, KeyValue);
-        }
+        public T Get<T>(object KeyValue) => Get<T>(null, KeyValue);
         /// <summary>
         /// Gets a single T with specified table KeyValue on KeyColumn
         /// </summary>
@@ -184,39 +181,28 @@ namespace Simple.Sqlite
                             ?? TableMapper.Column.GetKeyColumn(TypeT)
                             ?? "_rowid_";
 
-            var tableName = TypeT.Name;
-
-            return ExecuteQuery<T>($"SELECT * FROM {tableName} WHERE {keyColumn} = @KeyValue ", new { KeyValue })
+            return ExecuteQuery<T>($"SELECT * FROM {TypeT.Name} WHERE {keyColumn} = @KeyValue ", new { KeyValue })
                     .FirstOrDefault();
         }
         /// <summary>
         /// Queries the database to all T rows in the table
         /// </summary>
-        public IEnumerable<T> GetAll<T>()
-        {
-            var tableName = typeof(T).Name;
-
-            return ExecuteQuery<T>($"SELECT * FROM {tableName} ", null);
-        }
+        public IEnumerable<T> GetAll<T>() => ExecuteQuery<T>($"SELECT * FROM {typeof(T).Name} ", null);
 
         /// <summary>
         /// Queries the database to all T rows in the table with specified table KeyValue on KeyColumn
         /// </summary>
-        public IEnumerable<T> GetAll<T>(string KeyColumn, object KeyValue)
+        public IEnumerable<T> Query<T>(string FilterColumn, object FilterValue)
         {
-            if (KeyColumn is null) throw new ArgumentNullException(nameof(KeyColumn));
+            if (FilterColumn is null) throw new ArgumentNullException(nameof(FilterColumn));
 
-            var TypeT = typeof(T);
-
-            var tableName = TypeT.Name;
-
-            return ExecuteQuery<T>($"SELECT * FROM {tableName} WHERE {KeyColumn} = @KeyValue ", new { KeyValue });
+            return ExecuteQuery<T>($"SELECT * FROM {typeof(T).Name} WHERE {FilterColumn} = @KeyValue ", new { FilterValue });
         }
 
         private HashSet<string> getSchemaColumns(SQLiteDataReader reader)
         {
-            var schema = reader.GetSchemaTable();
-            return schema.Rows
+            return reader.GetSchemaTable()
+                .Rows
                 .Cast<DataRow>()
                 .Select(r => (string)r["ColumnName"])
                 .ToHashSet();
@@ -226,11 +212,8 @@ namespace Simple.Sqlite
         /// Inserts a new T and return it's ID, this method locks the execution
         /// </summary>
         /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
-        public long Insert<T>(T Item)
-        {
-            string sql = buildInsertSql<T>();
-            return ExecuteScalar<long>(sql, Item);
-        }
+        public long Insert<T>(T Item) => ExecuteScalar<long>(buildInsertSql<T>(), Item);
+
         private static string buildInsertSql<T>(bool addReplace = false)
         {
             var TypeT = typeof(T);
