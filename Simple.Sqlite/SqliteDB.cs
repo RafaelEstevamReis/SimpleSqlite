@@ -192,7 +192,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Queries the database to all T rows in the table with specified table KeyValue on KeyColumn
         /// </summary>
-        public IEnumerable<T> Query<T>(string FilterColumn, object FilterValue)
+        public IEnumerable<T> GetAllWhere<T>(string FilterColumn, object FilterValue)
         {
             if (FilterColumn is null) throw new ArgumentNullException(nameof(FilterColumn));
 
@@ -261,11 +261,7 @@ namespace Simple.Sqlite
         /// Inserts a new T or replace with current T and return it's ID, this method locks the execution
         /// Must have a [Unique] or PK column
         /// </summary>
-        public void InsertOrReplace<T>(T Item)
-        {
-            string sql = buildInsertSql<T>(addReplace: true);
-            ExecuteNonQuery(sql, Item);
-        }
+        public void InsertOrReplace<T>(T Item) => ExecuteNonQuery(buildInsertSql<T>(true), Item);
 
         private static void fillParameters(SQLiteCommand cmd, object Parameters)
         {

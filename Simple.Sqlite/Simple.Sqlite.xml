@@ -330,7 +330,7 @@
             Queries the database to all T rows in the table
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.SqliteDB.Query``1(System.String,System.Object)">
+        <member name="M:Simple.Sqlite.SqliteDB.GetAllWhere``1(System.String,System.Object)">
             <summary>
             Queries the database to all T rows in the table with specified table KeyValue on KeyColumn
             </summary>
