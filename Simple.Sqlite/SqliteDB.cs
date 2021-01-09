@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 
 namespace Simple.Sqlite
@@ -30,6 +31,7 @@ namespace Simple.Sqlite
             DatabaseFileName = new FileInfo(fileName).FullName;
             // if now exists, creates one (can be done in the ConnectionString)
             if (!File.Exists(DatabaseFileName)) SQLiteConnection.CreateFile(DatabaseFileName);
+            else backupDatabase();
 
             // uses builder to avoid escape issues
             SQLiteConnectionStringBuilder sb = new SQLiteConnectionStringBuilder
@@ -40,6 +42,24 @@ namespace Simple.Sqlite
             cnnString = sb.ToString();
         }
 
+        private void backupDatabase()
+        {
+            var temp = Path.GetTempFileName();
+            using var fsInput = File.OpenRead(DatabaseFileName);
+            using (var fsTempOut = File.OpenWrite(temp))
+            {
+                using var compressionStream = new GZipStream(fsTempOut, CompressionMode.Compress);
+                fsInput.CopyTo(compressionStream);
+            }
+            string bkp = $"{DatabaseFileName}.bak.gz";
+            string bkpOld = $"{DatabaseFileName}.old.gz";
+
+            // DO NOT replace this with "File.Replace"
+            if (File.Exists(bkpOld)) File.Delete(bkpOld);
+            if (File.Exists(bkp)) File.Move(bkp, bkpOld);
+            File.Move(temp, bkp);
+        }
+        
         private SQLiteConnection getConnection()
         {
             var sqliteConnection = new SQLiteConnection(cnnString);
