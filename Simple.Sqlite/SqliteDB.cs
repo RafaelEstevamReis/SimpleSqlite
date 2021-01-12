@@ -216,7 +216,7 @@ namespace Simple.Sqlite
         {
             if (FilterColumn is null) throw new ArgumentNullException(nameof(FilterColumn));
 
-            return ExecuteQuery<T>($"SELECT * FROM {typeof(T).Name} WHERE {FilterColumn} = @KeyValue ", new { FilterValue });
+            return ExecuteQuery<T>($"SELECT * FROM {typeof(T).Name} WHERE {FilterColumn} = @FilterValue ", new { FilterValue });
         }
 
         private HashSet<string> getSchemaColumns(SQLiteDataReader reader)
