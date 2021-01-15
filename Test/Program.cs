@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using Simple.Sqlite.Attributes;
 
 // Choose your example
@@ -22,6 +23,7 @@ public class MyData
     public string MyName { get; set; }
     public Uri MyWebsite { get; set; }
     public DateTime MyBirthDate { get; set; }
+    public Color MyFavColor { get; set; }
     public decimal MyDecimalValue { get; set; }
     public double MyDoubleValue { get; set; }
     public float MyFloatValue { get; set; }

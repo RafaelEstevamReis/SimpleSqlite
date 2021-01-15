@@ -352,5 +352,10 @@
             Must have a [Unique] or PK column
             </summary>
         </member>
+        <member name="T:System.ComponentModel.DataAnnotations.KeyAttribute">
+            <summary>
+            Replacement for.NetCore System.ComponentModel.DataAnnotations
+            </summary>
+        </member>
     </members>
 </doc>

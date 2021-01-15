@@ -45,7 +45,7 @@ namespace Simple.Sqlite
         private void backupDatabase()
         {
             var temp = Path.GetTempFileName();
-            using var fsInput = File.OpenRead(DatabaseFileName);
+            using var fsInput = File.Open(DatabaseFileName,  FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using (var fsTempOut = File.OpenWrite(temp))
             {
                 using var compressionStream = new GZipStream(fsTempOut, CompressionMode.Compress);
@@ -288,7 +288,8 @@ namespace Simple.Sqlite
             if (Parameters == null) return;
             foreach (var p in Parameters.GetType().GetProperties())
             {
-                cmd.Parameters.AddWithValue(p.Name, p.GetValue(Parameters));
+
+                cmd.Parameters.AddWithValue(p.Name, TypeMapper.ReadParam(p, Parameters));
             }
         }
         private static IEnumerable<string> getNames(Type type, bool isInsert = true)

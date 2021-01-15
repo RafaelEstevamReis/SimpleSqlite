@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -106,6 +107,7 @@ namespace Simple.Sqlite
                 else if (info.PropertyType == typeof(DateTime)) dataType = SqliteType.NUMERIC;
                 // Other
                 else if (info.PropertyType == typeof(Guid)) dataType = SqliteType.BLOB;
+                else if (info.PropertyType == typeof(Color)) dataType = SqliteType.BLOB;
                 else if (info.PropertyType == typeof(byte[])) dataType = SqliteType.BLOB;
                 //Int enums
                 else if (info.PropertyType.IsEnum) dataType = SqliteType.INTEGER;

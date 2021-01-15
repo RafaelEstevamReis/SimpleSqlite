@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SQLite;
+using System.Drawing;
 
 namespace Simple.Sqlite
 {
@@ -65,6 +66,11 @@ namespace Simple.Sqlite
                 else if (type == typeof(bool)) objVal = reader.GetBoolean(name);
                 else if (type == typeof(DateTime)) objVal = reader.GetDateTime(name);
                 else if (type == typeof(byte[])) objVal = (byte[])reader.GetValue(name);
+                else if (type == typeof(Color))
+                {
+                    var bytes = (byte[])reader.GetValue(name);
+                    objVal = Color.FromArgb(bytes[0], bytes[1], bytes[2], bytes[3]);
+                }
                 else if (type == typeof(Guid))
                 {
                     objVal = reader.GetValue(name);
@@ -110,5 +116,16 @@ namespace Simple.Sqlite
             return objVal;
         }
 
+        internal static object ReadParam(System.Reflection.PropertyInfo p, object parameters)
+        {
+            var objVal = p.GetValue(parameters);
+            if (p.PropertyType == typeof(Color)) 
+            {
+                var color = (Color)objVal;
+                return new byte[] { color.A, color.R, color.G, color.B };
+            }
+
+            return objVal;
+        }
     }
 }
