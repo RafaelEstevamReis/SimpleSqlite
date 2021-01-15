@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -51,7 +50,7 @@ namespace Simple.Sqlite
                 sb.Append(TableName);
                 sb.Append("(\n");
 
-                var columns = string.Join(',', Columns.Select(c => c.ExportColumnDefinitionAsStatement()));
+                var columns = string.Join(",", Columns.Select(c => c.ExportColumnDefinitionAsStatement()));
                 sb.Append(columns);
                 sb.Append("\n);");
 

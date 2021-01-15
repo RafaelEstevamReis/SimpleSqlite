@@ -31,7 +31,12 @@ namespace Simple.Sqlite
         /// </summary>
         public TableMapper ConfigureTable(Action<Table> Options)
         {
+#if !NET45
             Options(tables[^1]);
+#else
+            Options(tables.First());
+#endif
+
             return this;
         }
         /// <summary>

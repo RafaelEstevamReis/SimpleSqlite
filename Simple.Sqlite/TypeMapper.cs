@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.SQLite;
 
 namespace Simple.Sqlite
@@ -27,23 +25,25 @@ namespace Simple.Sqlite
             return underlyingType != null && CheckIfSimpleType(underlyingType);
         }
 
-        internal static T MapObject<T>(HashSet<string> colNames, SQLiteDataReader reader)
+        internal static T MapObject<T>(string[] colNames, SQLiteDataReader reader)
         {
             object t = Activator.CreateInstance<T>();
             foreach (var p in typeof(T).GetProperties())
             {
-                if (!colNames.Contains(p.Name)) continue;
+                var clnIdx = Array.IndexOf(colNames, p.Name);
+                if (clnIdx < 0) continue;
 
-                mapColumn(t, p, reader);
+                mapColumn(t, p, reader, clnIdx);
             }
             return (T)t;
         }
-        private static void mapColumn<T>(T obj, System.Reflection.PropertyInfo p, SQLiteDataReader reader)
+        private static void mapColumn<T>(T obj, System.Reflection.PropertyInfo p, SQLiteDataReader reader, int clnIdx)
             where T : new()
         {
-            object objVal = ReadValue(reader, p.PropertyType, p.Name);
+            object objVal = ReadValue(reader, p.PropertyType, clnIdx);
             p.SetValue(obj, objVal);
         }
+        /*
         internal static object ReadValue(SQLiteDataReader reader, Type type, string name)
         {
             object objVal;
@@ -73,6 +73,39 @@ namespace Simple.Sqlite
                 }
                 else if (type.IsEnum) objVal = reader.GetInt32(name);
                 else objVal = reader.GetValue(name);
+            }
+            return objVal;
+        }
+        */
+        internal static object ReadValue(SQLiteDataReader reader, Type type, int ColumnIndex)
+        {
+            object objVal;
+            if (reader.IsDBNull(ColumnIndex))
+            {
+                objVal = null;
+            }
+            else
+            {
+                if (type == typeof(string)) objVal = reader.GetValue(ColumnIndex);
+                else if (type == typeof(Uri)) objVal = new Uri((string)reader.GetValue(ColumnIndex));
+                else if (type == typeof(double)) objVal = reader.GetDouble(ColumnIndex);
+                else if (type == typeof(float)) objVal = reader.GetFloat(ColumnIndex);
+                else if (type == typeof(decimal)) objVal = reader.GetDecimal(ColumnIndex);
+                else if (type == typeof(int)) objVal = reader.GetInt32(ColumnIndex);
+                else if (type == typeof(uint)) objVal = Convert.ToUInt32(reader.GetValue(ColumnIndex));
+                else if (type == typeof(long)) objVal = reader.GetInt64(ColumnIndex);
+                else if (type == typeof(ulong)) objVal = Convert.ToUInt64(reader.GetValue(ColumnIndex));
+                else if (type == typeof(bool)) objVal = reader.GetBoolean(ColumnIndex);
+                else if (type == typeof(DateTime)) objVal = reader.GetDateTime(ColumnIndex);
+                else if (type == typeof(byte[])) objVal = (byte[])reader.GetValue(ColumnIndex);
+                else if (type == typeof(Guid))
+                {
+                    objVal = reader.GetValue(ColumnIndex);
+                    if (objVal is string) objVal = Guid.Parse((string)objVal);
+                    else objVal = new Guid((byte[])objVal);
+                }
+                else if (type.IsEnum) objVal = reader.GetInt32(ColumnIndex);
+                else objVal = reader.GetValue(ColumnIndex);
             }
             return objVal;
         }

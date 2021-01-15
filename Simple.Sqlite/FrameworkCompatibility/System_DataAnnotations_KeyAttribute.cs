@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD
+﻿#if NETSTANDARD || NET45
 namespace System.ComponentModel.DataAnnotations
 {
     /// <summary>
