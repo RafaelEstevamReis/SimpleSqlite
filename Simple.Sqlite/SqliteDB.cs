@@ -176,7 +176,7 @@ namespace Simple.Sqlite
                 // build new
                 if (typeT.CheckIfSimpleType())
                 {
-                    yield return (T)TypeMapper.ReadValue(reader, typeT, colNames.First());
+                    yield return (T)TypeMapper.ReadValue(reader, typeT, 0);
                 }
                 else
                 {
@@ -219,13 +219,13 @@ namespace Simple.Sqlite
             return ExecuteQuery<T>($"SELECT * FROM {typeof(T).Name} WHERE {FilterColumn} = @FilterValue ", new { FilterValue });
         }
 
-        private HashSet<string> getSchemaColumns(SQLiteDataReader reader)
+        private string[] getSchemaColumns(SQLiteDataReader reader)
         {
             return reader.GetSchemaTable()
                 .Rows
                 .Cast<DataRow>()
                 .Select(r => (string)r["ColumnName"])
-                .ToHashSet();
+                .ToArray();
         }
 
         /// <summary>
@@ -240,8 +240,8 @@ namespace Simple.Sqlite
             var tableName = TypeT.Name;
 
             var names = getNames(TypeT, isInsert: true);
-            var fields = string.Join(',', names);
-            var values = string.Join(',', names.Select(n => $"@{n}"));
+            var fields = string.Join(",", names);
+            var values = string.Join(",", names.Select(n => $"@{n}"));
 
             if (addReplace)
             {

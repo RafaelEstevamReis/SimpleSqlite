@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -118,10 +117,9 @@ namespace Simple.Sqlite
                 }
                 return dataType;
             }
-
             internal static bool IsKeyProp(PropertyInfo info)
             {
-                return info.GetCustomAttributes(typeof(KeyAttribute), true)
+                return info.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.KeyAttribute), true)
                            .FirstOrDefault() != null;
             }
             internal static bool IsPKProp(PropertyInfo info)
