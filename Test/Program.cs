@@ -7,7 +7,7 @@ Console.WriteLine("Choose one example");
 //Test.Sample.FullCycle.run();
 //Test.Sample.SimpleTypeQuery.run();
 //Test.Sample.DocumentStorage.run();
-Test.Sample.ConfigExample.run();
+//Test.Sample.ConfigExample.run();
 
 public class MyData
 {
