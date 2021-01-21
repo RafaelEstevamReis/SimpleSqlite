@@ -88,7 +88,7 @@ namespace Simple.Sqlite
         internal static object ReadParam(System.Reflection.PropertyInfo p, object parameters)
         {
             var objVal = p.GetValue(parameters);
-            if (p.PropertyType == typeof(Color)) 
+            if (p.PropertyType == typeof(Color)|| objVal is Color) 
             {
                 var color = (Color)objVal;
                 return new byte[] { color.A, color.R, color.G, color.B };
