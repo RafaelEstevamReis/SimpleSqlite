@@ -92,7 +92,7 @@ namespace Simple.Sqlite
             }
             else
             {
-                if (type == typeof(string)) objVal = reader.GetValue(ColumnIndex);
+                if (type == typeof(string)) objVal = reader.GetString(ColumnIndex);
                 else if (type == typeof(Uri)) objVal = new Uri((string)reader.GetValue(ColumnIndex));
                 else if (type == typeof(double)) objVal = reader.GetDouble(ColumnIndex);
                 else if (type == typeof(float)) objVal = reader.GetFloat(ColumnIndex);
