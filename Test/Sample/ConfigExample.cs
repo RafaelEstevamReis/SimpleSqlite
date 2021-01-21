@@ -16,7 +16,14 @@ namespace Test.Sample
             var name = "MyNameText";
             showExample<string>(db, "String", "MyName", "General.UI", name, string.Empty);
 
+            var myFloat = 3.14f;
+            showExample<float>(db, "Float", "MyName", "General.UI", myFloat, 0);
 
+            var myDate = DateTime.Now;
+            showExample<DateTime>(db, "DateTime", "myDate", "General.UI", myDate, DateTime.MinValue);
+
+            var myColor = System.Drawing.Color.FromArgb(101, 102, 103, 104);
+            showExample<System.Drawing.Color>(db, "Color", "myColor", "General.UI", myColor, System.Drawing.Color.FromArgb(0, 0, 0, 0));
 
             /*
              
@@ -38,7 +45,7 @@ namespace Test.Sample
         {
             // force delete due to multiple executions
             db.RemoveConfig(key, category);
-
+            Console.WriteLine($"---{typeName} example---");
             Console.WriteLine($"Current {typeName}: {db.ReadConfig(key, category, defaultValue)}");
             Console.WriteLine($"Saving a new {typeName}: {valueToInsert}");
             db.SetConfig(key, category, valueToInsert);
