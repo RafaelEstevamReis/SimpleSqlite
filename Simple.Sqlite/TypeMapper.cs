@@ -42,6 +42,13 @@ namespace Simple.Sqlite
             where T : new()
         {
             object objVal = ReadValue(reader, p.PropertyType, clnIdx);
+
+            if (p.PropertyType == typeof(Color) && objVal != null)
+            {
+                var argb = (byte[])objVal;
+                objVal = Color.FromArgb(argb[0], argb[1], argb[2], argb[3]);
+            }
+
             p.SetValue(obj, objVal);
         }
         /*
