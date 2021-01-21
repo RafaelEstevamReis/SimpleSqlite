@@ -288,7 +288,6 @@ namespace Simple.Sqlite
             if (Parameters == null) return;
             foreach (var p in Parameters.GetType().GetProperties())
             {
-
                 cmd.Parameters.AddWithValue(p.Name, TypeMapper.ReadParam(p, Parameters));
             }
         }

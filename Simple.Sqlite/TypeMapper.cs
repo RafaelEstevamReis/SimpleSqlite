@@ -9,12 +9,14 @@ namespace Simple.Sqlite
         internal static bool CheckIfSimpleType(this Type typeT)
         {
             if (typeT.IsPrimitive) return true;
+            if (typeT == typeof(byte[])) return true;
             if (typeT == typeof(string)) return true;
             if (typeT == typeof(decimal)) return true;
             if (typeT == typeof(DateTime)) return true;
-            if (typeT == typeof(DateTimeOffset)) return true;
+            //if (typeT == typeof(DateTimeOffset)) return true;
             if (typeT == typeof(TimeSpan)) return true;
             if (typeT == typeof(Guid)) return true;
+            // Drawing
             if (typeT == typeof(Color)) return true;
 
             if (IsNullableSimpleType(typeT)) return true;
@@ -66,6 +68,7 @@ namespace Simple.Sqlite
                 else if (type == typeof(ulong)) objVal = Convert.ToUInt64(reader.GetValue(ColumnIndex));
                 else if (type == typeof(bool)) objVal = reader.GetBoolean(ColumnIndex);
                 else if (type == typeof(DateTime)) objVal = reader.GetDateTime(ColumnIndex);
+                else if (type == typeof(TimeSpan)) objVal = TimeSpan.FromTicks(reader.GetInt64(ColumnIndex));
                 else if (type == typeof(byte[])) objVal = (byte[])reader.GetValue(ColumnIndex);
                 else if (type == typeof(Guid))
                 {
@@ -78,7 +81,6 @@ namespace Simple.Sqlite
                     var argb = (byte[])reader.GetValue(ColumnIndex);
                     objVal = Color.FromArgb(argb[0], argb[1], argb[2], argb[3]);
                 }
-
                 else if (type.IsEnum) objVal = reader.GetInt32(ColumnIndex);
                 else objVal = reader.GetValue(ColumnIndex);
             }
@@ -88,10 +90,14 @@ namespace Simple.Sqlite
         internal static object ReadParam(System.Reflection.PropertyInfo p, object parameters)
         {
             var objVal = p.GetValue(parameters);
-            if (p.PropertyType == typeof(Color)|| objVal is Color) 
+            if (objVal is Color)
             {
                 var color = (Color)objVal;
                 return new byte[] { color.A, color.R, color.G, color.B };
+            }
+            if (objVal is TimeSpan)
+            {
+                objVal = ((TimeSpan)objVal).Ticks;
             }
 
             return objVal;

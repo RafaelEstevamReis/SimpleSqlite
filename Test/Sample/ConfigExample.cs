@@ -25,20 +25,11 @@ namespace Test.Sample
             var myColor = System.Drawing.Color.FromArgb(101, 102, 103, 104);
             showExample<System.Drawing.Color>(db, "Color", "myColor", "General.UI", myColor, System.Drawing.Color.FromArgb(0, 0, 0, 0));
 
-            /*
-             
-                MyId = (int)DateTimeOffset.Now.ToUnixTimeSeconds(),
-                MyName = "My name is bob",
-                MyBirthDate = DateTime.Now,
-                MyUID = Guid.NewGuid(),
-                MyWebsite = new Uri("http://example.com"),
-                MyFavColor = System.Drawing.Color.FromArgb(101, 102, 103, 104),
-                MyDecimalValue = 123.4M,
-                MyDoubleValue = 456.7,
-                MyFloatValue = 789.3f,
-                MyEnum = MyData.eIntEnum.Zero,
-             */
+            var myTimespan = TimeSpan.FromSeconds(1234);
+            showExample<TimeSpan>(db, "TimeSpan", "myTimespan", "General.UI", myTimespan, TimeSpan.Zero);
 
+            var mByteArray = new byte[]{ 101, 102, 103, 104 };
+            showExample<byte[]>(db, "Byte[]", "mByteArray", "General.UI", mByteArray, new byte[0]);
         }
 
         private static void showExample<T>(ConfigurationDB db, string typeName, string key, string category, T valueToInsert, T defaultValue)
