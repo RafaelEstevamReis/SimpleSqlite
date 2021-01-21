@@ -15,6 +15,7 @@ namespace Simple.Sqlite
             if (typeT == typeof(DateTimeOffset)) return true;
             if (typeT == typeof(TimeSpan)) return true;
             if (typeT == typeof(Guid)) return true;
+            if (typeT == typeof(Color)) return true;
 
             if (IsNullableSimpleType(typeT)) return true;
 
@@ -42,12 +43,6 @@ namespace Simple.Sqlite
             where T : new()
         {
             object objVal = ReadValue(reader, p.PropertyType, clnIdx);
-
-            if (p.PropertyType == typeof(Color) && objVal != null)
-            {
-                var argb = (byte[])objVal;
-                objVal = Color.FromArgb(argb[0], argb[1], argb[2], argb[3]);
-            }
 
             p.SetValue(obj, objVal);
         }
@@ -78,6 +73,12 @@ namespace Simple.Sqlite
                     if (objVal is string) objVal = Guid.Parse((string)objVal);
                     else objVal = new Guid((byte[])objVal);
                 }
+                else if (type == typeof(Color))
+                {
+                    var argb = (byte[])reader.GetValue(ColumnIndex);
+                    objVal = Color.FromArgb(argb[0], argb[1], argb[2], argb[3]);
+                }
+
                 else if (type.IsEnum) objVal = reader.GetInt32(ColumnIndex);
                 else objVal = reader.GetValue(ColumnIndex);
             }
