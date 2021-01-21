@@ -51,45 +51,6 @@ namespace Simple.Sqlite
 
             p.SetValue(obj, objVal);
         }
-        /*
-        internal static object ReadValue(SQLiteDataReader reader, Type type, string name)
-        {
-            object objVal;
-            if (reader.IsDBNull(name))
-            {
-                objVal = null;
-            }
-            else
-            {
-                if (type == typeof(string)) objVal = reader.GetValue(name);
-                else if (type == typeof(Uri)) objVal = new Uri((string)reader.GetValue(name));
-                else if (type == typeof(double)) objVal = reader.GetDouble(name);
-                else if (type == typeof(float)) objVal = reader.GetFloat(name);
-                else if (type == typeof(decimal)) objVal = reader.GetDecimal(name);
-                else if (type == typeof(int)) objVal = reader.GetInt32(name);
-                else if (type == typeof(uint)) objVal = Convert.ToUInt32(reader.GetValue(name));
-                else if (type == typeof(long)) objVal = reader.GetInt64(name);
-                else if (type == typeof(ulong)) objVal = Convert.ToUInt64(reader.GetValue(name));
-                else if (type == typeof(bool)) objVal = reader.GetBoolean(name);
-                else if (type == typeof(DateTime)) objVal = reader.GetDateTime(name);
-                else if (type == typeof(byte[])) objVal = (byte[])reader.GetValue(name);
-                else if (type == typeof(Color))
-                {
-                    var bytes = (byte[])reader.GetValue(name);
-                    objVal = Color.FromArgb(bytes[0], bytes[1], bytes[2], bytes[3]);
-                }
-                else if (type == typeof(Guid))
-                {
-                    objVal = reader.GetValue(name);
-                    if (objVal is string) objVal = Guid.Parse((string)objVal);
-                    else objVal = new Guid((byte[])objVal);
-                }
-                else if (type.IsEnum) objVal = reader.GetInt32(name);
-                else objVal = reader.GetValue(name);
-            }
-            return objVal;
-        }
-        */
         internal static object ReadValue(SQLiteDataReader reader, Type type, int ColumnIndex)
         {
             object objVal;
