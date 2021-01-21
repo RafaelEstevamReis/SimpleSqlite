@@ -31,7 +31,6 @@ namespace Simple.Sqlite
         {
             internalDb.ExecuteNonQuery(
 @"CREATE TABLE IF NOT EXISTS nsDocuments (
-
     Id         TEXT NOT NULL,
     Object     BLOB,
     Compressed BOOL DEFAULT(0) NOT NULL,
