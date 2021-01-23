@@ -270,7 +270,9 @@ namespace Simple.Sqlite
                 {
                     using var cmd = new SQLiteCommand(sql, cnn, trn);
                     fillParameters(cmd, item);
-                    ids.Add((long)cmd.ExecuteScalar());
+
+                    var scalar = cmd.ExecuteScalar();
+                    if (scalar is long sL) ids.Add(sL);
                 }
 
                 trn.Commit();
