@@ -255,10 +255,10 @@ namespace Simple.Sqlite
         /// <summary>
         /// Inserts many T items into the database and return their IDs, this method locks the execution
         /// </summary>
-        public long[] BulkInsert<T>(IEnumerable<T> Items)
+        public long[] BulkInsert<T>(IEnumerable<T> Items, bool addReplace = false)
         {
             List<long> ids = new List<long>();
-            string sql = buildInsertSql<T>();
+            string sql = buildInsertSql<T>(addReplace);
 
             using var cnn = getConnection();
 
