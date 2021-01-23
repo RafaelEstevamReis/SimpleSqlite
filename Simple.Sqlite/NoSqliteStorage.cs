@@ -147,6 +147,7 @@ namespace Simple.Sqlite
         {
             return new NoSqliteStorage(db);
         }
+
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
