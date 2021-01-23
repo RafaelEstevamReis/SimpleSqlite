@@ -7,9 +7,13 @@ namespace Simple.Sqlite
     /// <summary>
     /// Easy access a local no-sql document storage
     /// </summary>
-    public class NoSqliteStorage
+    public class NoSqliteStorage : IEnumerable<string>
     {
-        private SqliteDB internalDb;
+        /// <summary>
+        /// Exposes the internal database engine
+        /// </summary>
+        internal protected SqliteDB internalDb;
+
         /// <summary>
         /// Specify if new values should be compressed before storage
         /// </summary>
@@ -18,12 +22,16 @@ namespace Simple.Sqlite
         /// Database file full path
         /// </summary>
         public string DatabaseFileName => internalDb.DatabaseFileName;
+
         /// <summary>
         /// Creates a new instance
         /// </summary>
         public NoSqliteStorage(string fileName)
+            : this(new SqliteDB(fileName))
+        { }
+        private NoSqliteStorage(SqliteDB internalDb)
         {
-            internalDb = new SqliteDB(fileName);
+            this.internalDb = internalDb;
             createDocumentTable();
         }
 
@@ -116,6 +124,39 @@ namespace Simple.Sqlite
         public IEnumerable<Guid> GetAllGuids()
         {
             return internalDb.ExecuteQuery<Guid>("SELECT Id FROM nsDocuments", null);
+        }
+
+        /// <summary>
+        /// Create a new instance based on an existing ConfigurationDB
+        /// </summary>
+        public static NoSqliteStorage FromDB(ConfigurationDB cfg)
+        {
+            return new NoSqliteStorage(cfg.internalDb);
+        }
+        /// <summary>
+        /// Create a new instance based on an existing NoSqliteStorage
+        /// </summary>
+        public static NoSqliteStorage FromDB(NoSqliteStorage nss)
+        {
+            return new NoSqliteStorage(nss.internalDb);
+        }
+        /// <summary>
+        /// Create a new instance based on an existing SqliteDB
+        /// </summary>
+        public static NoSqliteStorage FromDB(SqliteDB db)
+        {
+            return new NoSqliteStorage(db);
+        }
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        public IEnumerator<string> GetEnumerator()
+        {
+            return GetAllKeys().GetEnumerator();
+        }
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetAllKeys().GetEnumerator();
         }
     }
 }

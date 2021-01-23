@@ -14,6 +14,11 @@ namespace Simple.Sqlite
     /// </summary>
     public class SqliteDB
     {
+        /// <summary>
+        /// Allows any instance of SqliteDB to executa a backup of the current database
+        /// </summary>
+        public static bool EnabledDatabaseBackup = true;
+
         // Manual lock on Writes to avoid Exceptions
         private readonly object lockNonQuery;
         private readonly string cnnString;
@@ -22,6 +27,7 @@ namespace Simple.Sqlite
         /// Database file full path
         /// </summary>
         public string DatabaseFileName { get; }
+
         /// <summary>
         /// Creates a new instance
         /// </summary>
@@ -44,6 +50,8 @@ namespace Simple.Sqlite
 
         private void backupDatabase()
         {
+            if (!EnabledDatabaseBackup) return;
+
             var temp = Path.GetTempFileName();
             using var fsInput = File.Open(DatabaseFileName,  FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using (var fsTempOut = File.OpenWrite(temp))

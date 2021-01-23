@@ -7,17 +7,25 @@ namespace Simple.Sqlite
 {
     public class ConfigurationDB
     {
-        private SqliteDB internalDb;
+        /// <summary>
+        /// Exposes the internal database engine
+        /// </summary>
+        internal protected SqliteDB internalDb;
+
         /// <summary>
         /// Database file full path
         /// </summary>
         public string DatabaseFileName => internalDb.DatabaseFileName;
+
         /// <summary>
         /// Creates a new instance
         /// </summary>
         public ConfigurationDB(string fileName)
+            : this(new SqliteDB(fileName))
+        { }
+        private ConfigurationDB(SqliteDB internalDb)
         {
-            internalDb = new SqliteDB(fileName);
+            this.internalDb = internalDb;
             createConfigTable();
         }
 
@@ -70,5 +78,26 @@ namespace Simple.Sqlite
             return $"{ConfigCategory}::{ConfigKey}";
         }
 
+        /// <summary>
+        /// Create a new instance based on an existing ConfigurationDB
+        /// </summary>
+        public static ConfigurationDB FromDB(ConfigurationDB cfg)
+        {
+            return new ConfigurationDB(cfg.internalDb);
+        }
+        /// <summary>
+        /// Create a new instance based on an existing NoSqliteStorage
+        /// </summary>
+        public static ConfigurationDB FromDB(NoSqliteStorage nss)
+        {
+            return new ConfigurationDB(nss.internalDb);
+        }
+        /// <summary>
+        /// Create a new instance based on an existing SqliteDB
+        /// </summary>
+        public static ConfigurationDB FromDB(SqliteDB db)
+        {
+            return new ConfigurationDB(db);
+        }
     }
 }
