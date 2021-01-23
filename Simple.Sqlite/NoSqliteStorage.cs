@@ -57,6 +57,22 @@ namespace Simple.Sqlite
             internalDb.InsertOrReplace(doc);
         }
         /// <summary>
+        /// Stores many items
+        /// </summary>
+        public void Store<T>(IEnumerable<T> Objects, Func<T, Guid> keySelector)
+        {
+            Store(Objects, t => keySelector(t).ToString());
+        }
+        /// <summary>
+        /// Stores many items
+        /// </summary>
+        public void Store<T>(IEnumerable<T> Objects, Func<T, string> keySelector)
+        {
+            var docs = Objects.Select(d => nsDocuments.Build(keySelector(d), d, CompressEachEntry));
+            internalDb.BulkInsert(docs, true);
+        }
+
+        /// <summary>
         /// Retrieves a stored item
         /// </summary>
         /// <typeparam name="T">Type of stored item</typeparam>
@@ -75,6 +91,18 @@ namespace Simple.Sqlite
             if (doc == null) return default(T);
             return doc.Unpack<T>();
         }
+        /// <summary>
+        /// Remove a stored item
+        /// </summary>
+        public void Remove(Guid Key) => Remove(Key.ToString());
+        /// <summary>
+        /// Remove a stored item
+        /// </summary>
+        public void Remove(string Key)
+        {
+            internalDb.ExecuteNonQuery("DELETE FROM nsDocuments WHERE Id = @id", new { id = Key });
+        }
+
         /// <summary>
         /// Retrieves all stored Keys
         /// </summary>

@@ -116,6 +116,16 @@
             <param name="Key">A Key to locate the item later</param>
             <param name="Object">The item to be stored</param>
         </member>
+        <member name="M:Simple.Sqlite.NoSqliteStorage.Store``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Guid})">
+            <summary>
+            Stores many items
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteStorage.Store``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.String})">
+            <summary>
+            Stores many items
+            </summary>
+        </member>
         <member name="M:Simple.Sqlite.NoSqliteStorage.Retrieve``1(System.Guid)">
             <summary>
             Retrieves a stored item
@@ -131,6 +141,16 @@
             <typeparam name="T">Type of stored item</typeparam>
             <param name="Key">The Key to locate the stored item</param>
             <returns>Stored item or Defult(T)</returns>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteStorage.Remove(System.Guid)">
+            <summary>
+            Remove a stored item
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.NoSqliteStorage.Remove(System.String)">
+            <summary>
+            Remove a stored item
+            </summary>
         </member>
         <member name="M:Simple.Sqlite.NoSqliteStorage.GetAllKeys">
             <summary>
@@ -351,7 +371,7 @@
             </summary>
             <returns>Returns `sqlite3:last_insert_rowid()`</returns>
         </member>
-        <member name="M:Simple.Sqlite.SqliteDB.BulkInsert``1(System.Collections.Generic.IEnumerable{``0})">
+        <member name="M:Simple.Sqlite.SqliteDB.BulkInsert``1(System.Collections.Generic.IEnumerable{``0},System.Boolean)">
             <summary>
             Inserts many T items into the database and return their IDs, this method locks the execution
             </summary>
