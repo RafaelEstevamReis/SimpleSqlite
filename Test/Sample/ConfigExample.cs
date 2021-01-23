@@ -37,10 +37,10 @@ namespace Test.Sample
             // force delete due to multiple executions
             db.RemoveConfig(key, category);
             Console.WriteLine($"---{typeName} example---");
-            Console.WriteLine($"Current {typeName}: {db.ReadConfig(key, category, defaultValue)}");
+            Console.WriteLine($"Current {typeName}: {db.GetConfig(key, category, defaultValue)}");
             Console.WriteLine($"Saving a new {typeName}: {valueToInsert}");
             db.SetConfig(key, category, valueToInsert);
-            Console.WriteLine($"Current {typeName}: {db.ReadConfig(key, category, defaultValue)}");
+            Console.WriteLine($"Current {typeName}: {db.GetConfig(key, category, defaultValue)}");
         }
     }
 }

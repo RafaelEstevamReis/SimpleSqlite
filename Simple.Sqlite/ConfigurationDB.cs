@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Simple.Sqlite
 {
+    /// <summary>
+    /// Represents a easy to use configuration set
+    /// </summary>
     public class ConfigurationDB
     {
         /// <summary>
@@ -38,7 +41,13 @@ namespace Simple.Sqlite
     PRIMARY KEY(Id)
 );");
         }
-
+        /// <summary>
+        /// Sets a configuration value
+        /// </summary>
+        /// <typeparam name="T">Type of the configuration value</typeparam>
+        /// <param name="ConfigKey">Key to locate the configration in the category</param>
+        /// <param name="ConfigCategory">Category of the configuration</param>
+        /// <param name="Value">Value to be stored</param>
         public void SetConfig<T>(string ConfigKey, string ConfigCategory, T Value)
         {
             internalDb.InsertOrReplace(new nsConfig()
@@ -48,7 +57,20 @@ namespace Simple.Sqlite
             });
         }
 
-        public T ReadConfig<T>(string ConfigKey, string ConfigCategory, T Default)
+        /// <summary>
+        /// [DEPRECATED] Use 'GetConfig' instead
+        /// </summary>
+        [Obsolete("Use 'GetConfig' instead")]
+        public T ReadConfig<T>(string ConfigKey, string ConfigCategory, T Default) => GetConfig(ConfigKey, ConfigCategory, Default);
+        /// <summary>
+        /// Gets a configuration value
+        /// </summary>
+        /// <typeparam name="T">Type of the configuration value</typeparam>
+        /// <param name="ConfigKey">Key to locate the configration in the category</param>
+        /// <param name="ConfigCategory">Category of the configuration</param>
+        /// <param name="Default">Default value if none exists</param>
+        /// <returns>Saved value</returns>
+        public T GetConfig<T>(string ConfigKey, string ConfigCategory, T Default)
         {
             var values = internalDb.ExecuteQuery<T>("SELECT Value FROM nsConfig WHERE Id = @id",
                                                    new { id = buildKey(ConfigKey, ConfigCategory) })
@@ -56,7 +78,11 @@ namespace Simple.Sqlite
             if (values.Length == 0) return Default;
             return values[0];
         }
-
+        /// <summary>
+        /// Remove a stored item
+        /// </summary>
+        /// <param name="ConfigKey">Key to locate the configration in the category</param>
+        /// <param name="ConfigCategory">Category of the configuration</param>
         public void RemoveConfig(string ConfigKey, string ConfigCategory)
         {
             internalDb.ExecuteNonQuery("DELETE FROM nsConfig WHERE Id = @id",

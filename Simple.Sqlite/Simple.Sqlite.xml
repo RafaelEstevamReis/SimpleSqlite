@@ -40,6 +40,11 @@
             Specify that this column should only have unique values
             </summary>
         </member>
+        <member name="T:Simple.Sqlite.ConfigurationDB">
+            <summary>
+            Represents a easy to use configuration set
+            </summary>
+        </member>
         <member name="F:Simple.Sqlite.ConfigurationDB.internalDb">
             <summary>
             Exposes the internal database engine
@@ -54,6 +59,37 @@
             <summary>
             Creates a new instance
             </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.SetConfig``1(System.String,System.String,``0)">
+            <summary>
+            Sets a configuration value
+            </summary>
+            <typeparam name="T">Type of the configuration value</typeparam>
+            <param name="ConfigKey">Key to locate the configration in the category</param>
+            <param name="ConfigCategory">Category of the configuration</param>
+            <param name="Value">Value to be stored</param>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.ReadConfig``1(System.String,System.String,``0)">
+            <summary>
+            [DEPRECATED] Use 'GetConfig' instead
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.GetConfig``1(System.String,System.String,``0)">
+            <summary>
+            Gets a configuration value
+            </summary>
+            <typeparam name="T">Type of the configuration value</typeparam>
+            <param name="ConfigKey">Key to locate the configration in the category</param>
+            <param name="ConfigCategory">Category of the configuration</param>
+            <param name="Default">Default value if none exists</param>
+            <returns>Saved value</returns>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.RemoveConfig(System.String,System.String)">
+            <summary>
+            Remove a stored item
+            </summary>
+            <param name="ConfigKey">Key to locate the configration in the category</param>
+            <param name="ConfigCategory">Category of the configuration</param>
         </member>
         <member name="M:Simple.Sqlite.ConfigurationDB.FromDB(Simple.Sqlite.ConfigurationDB)">
             <summary>
