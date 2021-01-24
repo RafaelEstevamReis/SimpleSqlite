@@ -4,6 +4,17 @@
 # SqliteWrapper
 A very simple Sqlite wrapper to plug spiders with it
 
+Huge compatibility, supports:
+* NET 5.0
+* NetCore 3.1
+* Net Framework 4.5
+* Net Standard 2.0
+  * Net Core 2.0+
+  * Mono 5.4+
+  * Xamarin.iOS 10.14+
+  * UWP 10.0.16299+
+  * Unity 2018.1+
+
 - [SqliteWrapper](#sqlitewrapper)
   - [Modules and Options](#modules-and-options)
   - [How to get started:](#how-to-get-started)
@@ -129,6 +140,16 @@ db.CreateTables()
   .Commit();
 ~~~
 
+You can use Attributes on your properties to create columns marked with:
+* PrimaryKey
+* Allow Null
+* Not Null
+* Default Value
+* Unique
+
+Also,
+* Int properties with PK Attribute is also created as Auto-Increment
+* If neither Not-Null nor Allow-Null is applied, the library will assume by the attribute type
 
 # NoSqliteStorage - No-sql document storage
 
