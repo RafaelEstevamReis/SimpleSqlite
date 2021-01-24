@@ -5,10 +5,38 @@
 A very simple Sqlite wrapper to plug spiders with it
 
 - [SqliteWrapper](#sqlitewrapper)
+  - [Modules and Options](#modules-and-options)
+  - [How to get started:](#how-to-get-started)
+- [SqliteDB - Sqlite wrapper](#sqlitedb---sqlite-wrapper)
   - [How to use:](#how-to-use)
-- [What this library automates ?](#what-this-library-automates-)
-  - [Auto fill parameters](#auto-fill-parameters)
-  - [Migration](#migration)
+  - [What this module automates ?](#what-this-module-automates-)
+    - [Auto fill parameters](#auto-fill-parameters)
+    - [Migration](#migration)
+- [NoSqliteStorage - No-sql document storage](#nosqlitestorage---no-sql-document-storage)
+  - [How to use:](#how-to-use-1)
+  - [What this module automates ?](#what-this-module-automates--1)
+- [ConfigurationDB - Configuration storage](#configurationdb---configuration-storage)
+  - [How to use:](#how-to-use-2)
+  - [What this module automates ?](#what-this-module-automates--2)
+
+## Modules and Options
+
+There are three modules in this package
+* [SqliteDB](#sqlitedb---sqlite-wrapper) -> Sqlite wrapper 
+* No-sql document storage
+* Configuration storage
+
+## How to get started:
+
+Install the [NuGet package](https://www.nuget.org/packages/Simple.Sqlite): `Install-Package Simple.Sqlite`
+
+Look at the examples int the project [Test](https://github.com/RafaelEstevamReis/SqliteWrapper/tree/main/Test) and the [Samples folder](https://github.com/RafaelEstevamReis/SqliteWrapper/tree/main/Test/Sample)
+
+Or follow any of examples bellow
+
+# SqliteDB - Sqlite wrapper
+
+Sqlite database to store data in tables
 
 ## How to use:
 
@@ -34,9 +62,9 @@ var allData = db.GetAll<MyData>();
 var allBobs = db.ExecuteQuery<MyData>("SELECT * FROM MyData WHERE MyName = @name ", new { name = "bob" });
 ~~~
 
-# What this library automates ?
+## What this module automates ?
 
-## Auto fill parameters
+### Auto fill parameters
 
 This library provides a Query operation similar to **Dapper**, it can return a query as an Enumerable of your class
 
@@ -70,7 +98,7 @@ db.BulkInsert(lotsOfData);
 
 _Tip: For multi-million insertion, 5k blocks are a good start point_
 
-## Migration
+### Migration
 
 This library has a very simple Migration tah can:
 * Create new tables 
@@ -100,3 +128,81 @@ db.CreateTables()
   .Add<NextTable>()
   .Commit();
 ~~~
+
+
+# NoSqliteStorage - No-sql document storage
+
+Need a fast to setup, no-installation no-sql database ? This module get you covered
+
+Your data will be stored encoded (serialized) with BSON
+
+## How to use:
+
+~~~C#
+// create a new instance
+NoSqliteStorage db = new NoSqliteStorage("myStuff.db");
+// build your complex type
+MyData d = new MyData()
+{
+    MyId = (int)DateTimeOffset.Now.ToUnixTimeSeconds(),
+    MyName = "My name is bob",
+    MyBirthDate = DateTime.Now,
+    MyUID = Guid.NewGuid(),
+    MyWebsite = new Uri("http://example.com"),
+    MyDecimalValue = 123.4M,
+    MyDoubleValue = 456.7,
+    MyFloatValue = 789.3f,
+    MyEnum = MyData.eIntEnum.Zero,
+};
+// Store it serialized with BSON
+db.Store(d.MyUID, d);
+// simple call Retrieve<T> to get your data deserialized back
+var d2 = db.Retrieve<MyData>(id);
+~~~
+
+## What this module automates ?
+
+No-install, ready to use no-sql database
+* No tables
+* No migration
+* no-nothing 'relational'
+
+# ConfigurationDB - Configuration storage
+
+Need to store some options or user settings ? This module will cover that
+
+## How to use:
+
+~~~C#
+// Create a new instance
+ConfigurationDB db = new ConfigurationDB("myStuff.db");
+
+// store your data with Key-Category pair
+db.SetConfig<string>("Font", "User.UI.FrontPanel", "Arial");
+db.SetConfig<Color>("BackColor", "User.UI.FrontPanel", Color.Red);
+
+// retrieve your data with "default option"
+var myFont = db.GetConfig<string>("Font", "User.UI.FrontPanel", "Times");
+var myBkg  = db.GetConfig<Color>("BackColor", "User.UI.FrontPanel", Color.Green);
+
+// remove config
+db.RemoveConfig("Font", "User.UI.FrontPanel");
+~~~
+
+## What this module automates ?
+
+This automates various configuration save-set scenarios
+
+Natively supported types:
+* All C# "primitive" types
+* string
+* decimal
+* DateTime
+* TimeSpan
+* Guid
+* byte[]
+* System.Drawing.Color
+
+Primitive types is all types that type.IsPrimitive == true. Is all types you expect to be primitives: int, float, double, byte, etc...
+
+Check all on [this MSDN article](https://docs.microsoft.com/en-us/dotnet/api/system.type.isprimitive?view=net-5.0)
