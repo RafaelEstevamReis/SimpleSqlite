@@ -4,6 +4,8 @@
 # SqliteWrapper
 A very simple Sqlite wrapper to plug spiders with it
 
+## Compatibility
+
 Huge compatibility, supports:
 * NET 5.0
 * NetCore 3.1
@@ -15,7 +17,11 @@ Huge compatibility, supports:
   * UWP 10.0.16299+
   * Unity 2018.1+
 
+## Table of Contents
+
 - [SqliteWrapper](#sqlitewrapper)
+  - [Compatibility](#compatibility)
+  - [Table of Contents](#table-of-contents)
   - [Modules and Options](#modules-and-options)
   - [How to get started:](#how-to-get-started)
 - [SqliteDB - Sqlite wrapper](#sqlitedb---sqlite-wrapper)
