@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;netstandard2.0;NET45;net5.0</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
-    <Version>0.4.94</Version>
+    <Version>0.5.100</Version>
     <Authors>RafaelEstevam.net</Authors>
     <Company>Rafael Estevam</Company>
     <Description>A simple to use SqliteWrapper</Description>
@@ -12,7 +12,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Sqlite</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes>Paired with commit 6efea3c
+    <PackageReleaseNotes>Paired with commit f94d098
 https://github.com/RafaelEstevamReis/SqliteWrapper</PackageReleaseNotes>
   </PropertyGroup>
 
