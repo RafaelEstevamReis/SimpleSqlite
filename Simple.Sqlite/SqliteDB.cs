@@ -77,7 +77,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Builds the table creation sequence, should be finished with Commit()
         /// </summary>
-        public TableMapper CreateTables()
+        public ITableMapper CreateTables()
         {
             return new TableMapper(this);
         }

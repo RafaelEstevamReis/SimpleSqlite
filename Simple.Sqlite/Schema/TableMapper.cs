@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Simple.Sqlite
 {
-    public partial class TableMapper
+    public partial class TableMapper : IColumnMapper
     {
         private readonly SqliteDB db;
         private readonly List<Table> tables;
@@ -21,7 +21,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Adds a table
         /// </summary>
-        public TableMapper Add<T>() where T : new()
+        public IColumnMapper Add<T>() where T : new()
         {
             tables.Add(Table.FromType(typeof(T)));
             return this;
@@ -29,7 +29,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Allows last added table to be editted
         /// </summary>
-        public TableMapper ConfigureTable(Action<Table> Options)
+        public ITableMapper ConfigureTable(Action<Table> Options)
         {
 #if NETSTANDARD || NET45
             Options(tables.First());
@@ -117,6 +117,14 @@ namespace Simple.Sqlite
             public string[] ColumnsAdded { get; set; }
 
         }
-
+    }
+    public interface ITableMapper
+    {
+        IColumnMapper Add<T>() where T : new();
+        TableMapper.TableCommitResult[] Commit();
+    }
+    public interface IColumnMapper : ITableMapper
+    {
+        ITableMapper ConfigureTable(Action<TableMapper.Table> Options);
     }
 }

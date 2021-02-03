@@ -22,6 +22,15 @@ namespace Simple.Sqlite
             /// Table's columns
             /// </summary>
             public Column[] Columns { get; set; }
+            /// <summary>
+            /// Gets the N-th column
+            /// </summary>
+            public Column this[int index] => Columns[index];
+            /// <summary>
+            /// Gets the column by name
+            /// </summary>
+            public Column this[string name] => Columns.First(c => c.ColumnName == name);
+
 
             /// <summary>
             /// Creates a CREATE TABLE statment from current schema
