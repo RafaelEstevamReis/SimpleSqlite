@@ -35,6 +35,8 @@ Huge compatibility, supports:
 - [ConfigurationDB - Configuration storage](#configurationdb---configuration-storage)
   - [How to use:](#how-to-use-2)
   - [What this module automates ?](#what-this-module-automates--2)
+- [Backup](#backup)
+- [Reutilizing types](#reutilizing-types)
 
 ## Modules and Options
 
@@ -54,6 +56,8 @@ Or follow any of examples bellow
 # SqliteDB - Sqlite wrapper
 
 Sqlite database to store data in tables
+
+On new instance all database are backed up locally, see more [here](#backup)
 
 ## How to use:
 
@@ -141,7 +145,7 @@ You can make changes on the table definition before it commits with:
 ~~~C#
 db.CreateTables()
   .Add<MyData>()
-  .ConfigureTable(t => { /* change last added table here */ })
+    .ConfigureTable(t => { /* change last added table here */ })
   .Add<NextTable>()
   .Commit();
 ~~~
@@ -152,6 +156,13 @@ You can use Attributes on your properties to create columns marked with:
 * Not Null
 * Default Value
 * Unique
+~~~C#
+// column tweak example
+db.CreateTables()
+  .Add<MyData>()
+    .ConfigureTable(t => t["MyId"].IsUnique = true)
+  .Commit();
+~~~
 
 Also,
 * Int properties with PK Attribute is also created as Auto-Increment
@@ -233,3 +244,53 @@ Natively supported types:
 Primitive types is all types that type.IsPrimitive == true. Is all types you expect to be primitives: int, float, double, byte, etc...
 
 Check all on [this MSDN article](https://docs.microsoft.com/en-us/dotnet/api/system.type.isprimitive?view=net-5.0)
+
+# Backup
+
+When a new SqliteDB instance is created a new backup of the database file is made. 
+
+As NoSqliteStorage and ConfigurationDB internally uses SqliteDB, they also create a backup
+
+First, the database file is copied and compressed as `*.bak.gz`
+Later backups, the old `*.bak.gz` is renamed to `*.old.gz` and a new `*.bak.gz` is created
+
+See an example with a database named `data.db`:
+* On first execution, there is no file
+  * a new empty `data.db` will be created
+  * a new also empty `data.db.bak.gz` is created
+* On later execution, 
+  * the backup `data.db.bak.gz` will be renamed to `data.db.old.gz`
+  * a new `data.db.bak.gz` will be created from `data.db`
+
+Every execution, you have the previous version available as a backup
+
+* To disable backups, you can use the static property as follows:
+~~~C#
+//this will disable the creation of backups of any posterior instances
+SqliteDB.EnabledDatabaseBackup = false;
+//this is specially useful when the database reaches a significant size
+~~~
+
+If you decided to use multiple instances with the same database file, you can avoid multiple backups by [reutilizing types](#reutilizing-types)
+
+# Reutilizing types
+
+If you already have a database and want to stick more stuff to it, you can simply:
+
+* Already have a SqliteDB instance ?
+~~~C#
+var noSql = NoSqliteStorage.FromDB(mySqliteDB);
+var cfg = ConfigurationDB.FromDB(mySqliteDB);
+~~~
+
+* Already have a NoSqliteStorage instance ?
+~~~C#
+var db = SqliteDB.FromDB(noSql);
+var cfg = ConfigurationDB.FromDB(mySqliteDB);
+~~~
+
+* Already have a ConfigurationDB instance ?
+~~~C#
+var db = SqliteDB.FromDB(cfg);
+var noSql = NoSqliteStorage.FromDB(cfg);
+~~~
