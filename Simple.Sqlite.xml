@@ -365,6 +365,16 @@
             Table's columns
             </summary>
         </member>
+        <member name="P:Simple.Sqlite.TableMapper.Table.Item(System.Int32)">
+            <summary>
+            Gets the N-th column
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.TableMapper.Table.Item(System.String)">
+            <summary>
+            Gets the column by name
+            </summary>
+        </member>
         <member name="M:Simple.Sqlite.TableMapper.Table.ExportCreateTable">
             <summary>
             Creates a CREATE TABLE statment from current schema

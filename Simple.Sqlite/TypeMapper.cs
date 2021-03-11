@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using System.Data.SQLite;
 using System.Drawing;
 
@@ -6,29 +7,6 @@ namespace Simple.Sqlite
 {
     internal static class TypeMapper
     {
-        internal static bool CheckIfSimpleType(this Type typeT)
-        {
-            if (typeT.IsPrimitive) return true;
-            if (typeT == typeof(byte[])) return true;
-            if (typeT == typeof(string)) return true;
-            if (typeT == typeof(decimal)) return true;
-            if (typeT == typeof(DateTime)) return true;
-            //if (typeT == typeof(DateTimeOffset)) return true;
-            if (typeT == typeof(TimeSpan)) return true;
-            if (typeT == typeof(Guid)) return true;
-            // Drawing
-            if (typeT == typeof(Color)) return true;
-
-            if (IsNullableSimpleType(typeT)) return true;
-
-            return false;
-        }
-        private static bool IsNullableSimpleType(Type typeT)
-        {
-            var underlyingType = Nullable.GetUnderlyingType(typeT);
-            return underlyingType != null && CheckIfSimpleType(underlyingType);
-        }
-
         internal static T MapObject<T>(string[] colNames, SQLiteDataReader reader)
         {
             object t = Activator.CreateInstance<T>();
@@ -41,14 +19,14 @@ namespace Simple.Sqlite
             }
             return (T)t;
         }
-        private static void mapColumn<T>(T obj, System.Reflection.PropertyInfo p, SQLiteDataReader reader, int clnIdx)
+        private static void mapColumn<T>(T obj, System.Reflection.PropertyInfo p, DbDataReader reader, int clnIdx)
             where T : new()
         {
             object objVal = ReadValue(reader, p.PropertyType, clnIdx);
 
             p.SetValue(obj, objVal);
         }
-        internal static object ReadValue(SQLiteDataReader reader, Type type, int ColumnIndex)
+        internal static object ReadValue(DbDataReader reader, Type type, int ColumnIndex)
         {
             object objVal;
             if (reader.IsDBNull(ColumnIndex))
@@ -70,12 +48,7 @@ namespace Simple.Sqlite
                 else if (type == typeof(DateTime)) objVal = reader.GetDateTime(ColumnIndex);
                 else if (type == typeof(TimeSpan)) objVal = TimeSpan.FromTicks(reader.GetInt64(ColumnIndex));
                 else if (type == typeof(byte[])) objVal = (byte[])reader.GetValue(ColumnIndex);
-                else if (type == typeof(Guid))
-                {
-                    objVal = reader.GetValue(ColumnIndex);
-                    if (objVal is string) objVal = Guid.Parse((string)objVal);
-                    else objVal = new Guid((byte[])objVal);
-                }
+                else if (type == typeof(Guid)) objVal = reader.GetGuid(ColumnIndex);
                 else if (type == typeof(Color))
                 {
                     var argb = (byte[])reader.GetValue(ColumnIndex);
@@ -84,22 +57,6 @@ namespace Simple.Sqlite
                 else if (type.IsEnum) objVal = reader.GetInt32(ColumnIndex);
                 else objVal = reader.GetValue(ColumnIndex);
             }
-            return objVal;
-        }
-
-        internal static object ReadParam(System.Reflection.PropertyInfo p, object parameters)
-        {
-            var objVal = p.GetValue(parameters);
-            if (objVal is Color)
-            {
-                var color = (Color)objVal;
-                return new byte[] { color.A, color.R, color.G, color.B };
-            }
-            if (objVal is TimeSpan)
-            {
-                objVal = ((TimeSpan)objVal).Ticks;
-            }
-
             return objVal;
         }
     }
