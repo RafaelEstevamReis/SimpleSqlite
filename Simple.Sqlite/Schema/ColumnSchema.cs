@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Simple.DatabaseWrapper.Attributes;
+using Simple.DatabaseWrapper.Interfaces;
 
 namespace Simple.Sqlite
 {
@@ -12,7 +13,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Class to map a column schema
         /// </summary>
-        public class Column
+        public class Column : IColumn
         {
             /// <summary>
             /// Column name

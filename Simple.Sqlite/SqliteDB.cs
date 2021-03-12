@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Simple.DatabaseWrapper.Helpers;
+using Simple.DatabaseWrapper.Interfaces;
 
 namespace Simple.Sqlite
 {

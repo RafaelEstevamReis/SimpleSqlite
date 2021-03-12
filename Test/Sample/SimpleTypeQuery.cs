@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Simple.Sqlite;
 
 namespace Test.Sample
@@ -29,8 +26,6 @@ namespace Test.Sample
                 });
             }
             var allInts = db.ExecuteQuery<int>("SELECT MyId FROM MyData", null).ToArray();
-
-
         }
     }
 }

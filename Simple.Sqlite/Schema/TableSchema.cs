@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using Simple.DatabaseWrapper.Interfaces;
 
 namespace Simple.Sqlite
 {
@@ -12,7 +13,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Represents a table schema
         /// </summary>
-        public class Table
+        public class Table : ITable
         {
             /// <summary>
             /// Table's name
@@ -21,16 +22,15 @@ namespace Simple.Sqlite
             /// <summary>
             /// Table's columns
             /// </summary>
-            public Column[] Columns { get; set; }
+            public IColumn[] Columns { get; set; }
             /// <summary>
             /// Gets the N-th column
             /// </summary>
-            public Column this[int index] => Columns[index];
+            public IColumn this[int index] => Columns[index];
             /// <summary>
             /// Gets the column by name
             /// </summary>
-            public Column this[string name] => Columns.First(c => c.ColumnName == name);
-
+            public IColumn this[string name] => Columns.First(c => c.ColumnName == name);
 
             /// <summary>
             /// Creates a CREATE TABLE statment from current schema

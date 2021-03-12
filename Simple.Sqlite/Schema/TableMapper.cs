@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Simple.DatabaseWrapper.Interfaces;
 
 namespace Simple.Sqlite
 {
-    public partial class TableMapper : IColumnMapper
+    public partial class TableMapper :  IColumnMapper
     {
         private readonly SqliteDB db;
         private readonly List<Table> tables;
@@ -29,7 +30,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Allows last added table to be editted
         /// </summary>
-        public ITableMapper ConfigureTable(Action<Table> Options)
+        public ITableMapper ConfigureTable(Action<ITable> Options)
         {
 #if NETSTANDARD || NET45
             Options(tables.First());
@@ -41,7 +42,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Commit all new tables to the db (old schemas are not updated (yet)
         /// </summary>
-        public TableCommitResult[] Commit()
+        public ITableCommitResult[] Commit()
         {
             var results = new List<TableCommitResult>();
 
@@ -81,8 +82,9 @@ namespace Simple.Sqlite
 
                 foreach (var c in newColumns)
                 {
-                    string addColumn = c.ExportAddColumnAsStatement();
-                    db.ExecuteNonQuery($"ALTER TABLE {t.TableName} {addColumn}", null);
+                    throw new NotImplementedException();
+                    //string addColumn = c.ExportAddColumnAsStatement();
+                    //db.ExecuteNonQuery($"ALTER TABLE {t.TableName} {addColumn}", null);
                 }
 
                 if (newColumns.Length > 0)
@@ -101,7 +103,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Class for the table commit results
         /// </summary>
-        public class TableCommitResult
+        public class TableCommitResult : ITableCommitResult
         {
             /// <summary>
             /// Name of the table added/altered
@@ -117,14 +119,5 @@ namespace Simple.Sqlite
             public string[] ColumnsAdded { get; set; }
 
         }
-    }
-    public interface ITableMapper
-    {
-        IColumnMapper Add<T>() where T : new();
-        TableMapper.TableCommitResult[] Commit();
-    }
-    public interface IColumnMapper : ITableMapper
-    {
-        ITableMapper ConfigureTable(Action<TableMapper.Table> Options);
     }
 }
