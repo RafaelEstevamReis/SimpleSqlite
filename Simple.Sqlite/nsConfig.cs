@@ -1,4 +1,4 @@
-﻿using Simple.Sqlite.Attributes;
+﻿using Simple.DatabaseWrapper.Attributes;
 
 namespace Simple.Sqlite
 {

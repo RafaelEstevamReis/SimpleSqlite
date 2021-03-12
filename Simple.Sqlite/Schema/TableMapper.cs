@@ -82,9 +82,8 @@ namespace Simple.Sqlite
 
                 foreach (var c in newColumns)
                 {
-                    throw new NotImplementedException();
-                    //string addColumn = c.ExportAddColumnAsStatement();
-                    //db.ExecuteNonQuery($"ALTER TABLE {t.TableName} {addColumn}", null);
+                    string addColumn = c.ExportAddColumnAsStatement();
+                    db.ExecuteNonQuery($"ALTER TABLE {t.TableName} {addColumn}", null);
                 }
 
                 if (newColumns.Length > 0)

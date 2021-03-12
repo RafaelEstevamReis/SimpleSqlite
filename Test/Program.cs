@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Drawing;
-using Simple.Sqlite.Attributes;
+using Simple.DatabaseWrapper.Attributes;
 
 // Choose your example
 Console.WriteLine("Choose one example");

@@ -2,7 +2,7 @@
 using System.IO.Compression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
-using Simple.Sqlite.Attributes;
+using Simple.DatabaseWrapper.Attributes;
 
 namespace Simple.Sqlite
 {

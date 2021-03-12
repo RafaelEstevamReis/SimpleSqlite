@@ -14,11 +14,6 @@
             Specify default value for this column
             </summary>
         </member>
-        <member name="P:Simple.Sqlite.Attributes.DefaultValueAttribute.DefaultValue">
-            <summary>
-            Default value specified
-            </summary>
-        </member>
         <member name="M:Simple.Sqlite.Attributes.DefaultValueAttribute.#ctor(System.Object)">
             <summary>
             Creates a new instance
@@ -320,7 +315,7 @@
             Adds a table
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.TableMapper.ConfigureTable(System.Action{Simple.Sqlite.TableMapper.Table})">
+        <member name="M:Simple.Sqlite.TableMapper.ConfigureTable(System.Action{Simple.DatabaseWrapper.Interfaces.ITable})">
             <summary>
             Allows last added table to be editted
             </summary>
