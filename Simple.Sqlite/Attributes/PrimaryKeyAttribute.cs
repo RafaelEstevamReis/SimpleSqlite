@@ -5,6 +5,7 @@ namespace Simple.Sqlite.Attributes
     /// <summary>
     /// Specify that this column is PrimaryKey
     /// </summary>
-    public class PrimaryKeyAttribute : Attribute
+    [Obsolete("Use DatabaseWrapper.Attributes.PrimaryKeyAttribute instead")]
+    public class PrimaryKeyAttribute : DatabaseWrapper.Attributes.PrimaryKeyAttribute
     { }
 }

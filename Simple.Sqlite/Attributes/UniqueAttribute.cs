@@ -5,6 +5,7 @@ namespace Simple.Sqlite.Attributes
     /// <summary>
     /// Specify that this column should only have unique values
     /// </summary>
-    public class UniqueAttribute : Attribute
+    [Obsolete("Use DatabaseWrapper.Attributes.UniqueAttribute instead")]
+    public class UniqueAttribute : DatabaseWrapper.Attributes.UniqueAttribute
     { }
 }

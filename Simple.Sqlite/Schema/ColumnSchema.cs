@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Simple.Sqlite.Attributes;
+using Simple.DatabaseWrapper.Attributes;
 
 namespace Simple.Sqlite
 {
