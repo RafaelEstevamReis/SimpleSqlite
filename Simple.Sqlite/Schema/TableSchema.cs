@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using Simple.DatabaseWrapper.Interfaces;
+using Simple.DatabaseWrapper.TypeReader;
 
 namespace Simple.Sqlite
 {
@@ -71,12 +72,14 @@ namespace Simple.Sqlite
             /// </summary>
             public static Table FromType(Type t)
             {
-                var props = t.GetProperties();
+                var info = TypeInfo.FromType(t);
 
+                var props = info.Items.Where(o => o.ItemType == DatabaseWrapper.ItemType.Property);
+                
                 return new Table()
                 {
-                    TableName = t.Name,
-                    Columns = props.Select(pi => Column.FromType(t, pi))
+                    TableName = info.TypeName,
+                    Columns = props.Select(pi => Column.FromInfo(info, pi))
                                    .ToArray(),
                 };
             }

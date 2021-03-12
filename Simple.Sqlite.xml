@@ -288,7 +288,7 @@
             Default value on NULL
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.TableMapper.Column.FromType(System.Type,System.Reflection.PropertyInfo)">
+        <member name="M:Simple.Sqlite.TableMapper.Column.mapType(Simple.DatabaseWrapper.TypeReader.TypeItemInfo)">
             <summary>
             Creates a column schema from a Type
             </summary>
