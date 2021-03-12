@@ -70,10 +70,8 @@ namespace Simple.Sqlite
             /// <summary>
             /// Creates a table schema from a Type
             /// </summary>
-            public static Table FromType(Type t)
+            public static Table FromType(TypeInfo info)
             {
-                var info = TypeInfo.FromType(t);
-
                 var props = info.Items.Where(o => o.ItemType == DatabaseWrapper.ItemType.Property);
                 
                 return new Table()

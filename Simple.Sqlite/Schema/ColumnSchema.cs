@@ -124,13 +124,11 @@ namespace Simple.Sqlite
                 return dataType;
             }
 
-            internal static string GetKeyColumn(Type typeT)
+            internal static string GetKeyColumn(TypeInfo info)
             {
-                var tr = TypeInfo.FromType(typeT);
-
-                return tr.Items.Where(i => i.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey))
-                               .FirstOrDefault()
-                               ?.Name;
+                return info.Items.Where(i => i.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey))
+                           .FirstOrDefault()
+                           ?.Name;
             }
 
             /// <summary>

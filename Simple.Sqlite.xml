@@ -305,7 +305,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Simple.Sqlite.TableMapper.#ctor(Simple.Sqlite.SqliteDB)">
+        <member name="M:Simple.Sqlite.TableMapper.#ctor(Simple.Sqlite.SqliteDB,Simple.DatabaseWrapper.TypeReader.ReaderCachedCollection)">
             <summary>
             Creates a new instance
             </summary>
@@ -375,7 +375,7 @@
             Creates a CREATE TABLE statment from current schema
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.TableMapper.Table.FromType(System.Type)">
+        <member name="M:Simple.Sqlite.TableMapper.Table.FromType(Simple.DatabaseWrapper.TypeReader.TypeInfo)">
             <summary>
             Creates a table schema from a Type
             </summary>

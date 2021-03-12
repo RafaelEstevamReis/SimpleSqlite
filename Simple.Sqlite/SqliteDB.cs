@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using Simple.DatabaseWrapper.Helpers;
 using Simple.DatabaseWrapper.Interfaces;
+using Simple.DatabaseWrapper.TypeReader;
 
 namespace Simple.Sqlite
 {
@@ -24,6 +25,7 @@ namespace Simple.Sqlite
         // Manual lock on Writes to avoid Exceptions
         private readonly object lockNonQuery;
         private readonly string cnnString;
+        private readonly ReaderCachedCollection typeCollection;
 
         /// <summary>
         /// Database file full path
@@ -35,6 +37,7 @@ namespace Simple.Sqlite
         /// </summary>
         public SqliteDB(string fileName)
         {
+            typeCollection = new ReaderCachedCollection();
             lockNonQuery = new object();
             DatabaseFileName = new FileInfo(fileName).FullName;
             // if now exists, creates one (can be done in the ConnectionString)
@@ -81,7 +84,7 @@ namespace Simple.Sqlite
         /// </summary>
         public ITableMapper CreateTables()
         {
-            return new TableMapper(this);
+            return new TableMapper(this, typeCollection);
         }
         /// <summary>
         /// Get a list of all tables
@@ -205,13 +208,15 @@ namespace Simple.Sqlite
         /// </summary>
         public T Get<T>(string KeyColumn, object KeyValue)
         {
-            var TypeT = typeof(T);
+            var info = typeCollection.GetInfo<T>();
 
             string keyColumn = KeyColumn
-                            ?? TableMapper.Column.GetKeyColumn(TypeT)
+                            ?? info.Items.Where(o => o.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey))
+                                   .Select(o => o.Name)
+                                   .FirstOrDefault()
                             ?? "_rowid_";
 
-            return ExecuteQuery<T>($"SELECT * FROM {TypeT.Name} WHERE {keyColumn} = @KeyValue ", new { KeyValue })
+            return ExecuteQuery<T>($"SELECT * FROM {info.TypeName} WHERE {keyColumn} = @KeyValue ", new { KeyValue })
                     .FirstOrDefault();
         }
         /// <summary>
@@ -244,12 +249,12 @@ namespace Simple.Sqlite
         /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
         public long Insert<T>(T Item) => ExecuteScalar<long>(buildInsertSql<T>(), Item);
 
-        private static string buildInsertSql<T>(bool addReplace = false)
+        private string buildInsertSql<T>(bool addReplace = false)
         {
-            var TypeT = typeof(T);
-            var tableName = TypeT.Name;
+            var info = typeCollection.GetInfo<T>();
+            var tableName = info.TypeName;
 
-            var names = getNames(TypeT, isInsert: true);
+            var names = getNames(info, isInsert: true);
             var fields = string.Join(",", names);
             var values = string.Join(",", names.Select(n => $"@{n}"));
 
@@ -303,18 +308,22 @@ namespace Simple.Sqlite
                 cmd.Parameters.AddWithValue(p.Name, TypeHelper.ReadParamValue(p, Parameters));
             }
         }
-        private static IEnumerable<string> getNames(Type type, bool isInsert = true)
+        private static IEnumerable<string> getNames(TypeInfo type, bool isInsert = true)
         {
-            var keyName = TableMapper.Column.GetKeyColumn(type);
-            foreach (var info in type.GetProperties())
+            var keyName = type.Items
+                              .Where(o => o.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey))
+                              .Select(o => o.Name)
+                              .FirstOrDefault();
+
+            foreach (var info in type.Items.Where(o => o.ItemType == DatabaseWrapper.ItemType.Property))
             {
                 if (isInsert && info.Name == keyName)
                 {
-                    if (info.PropertyType.FullName == "System.Int32")
+                    if (info.Type.FullName == "System.Int32")
                     {
                         continue;
                     }
-                    if (info.PropertyType.FullName == "System.Int64")
+                    if (info.Type.FullName == "System.Int64")
                     {
                         continue;
                     }

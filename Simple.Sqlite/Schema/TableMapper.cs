@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Simple.DatabaseWrapper.Interfaces;
+using Simple.DatabaseWrapper.TypeReader;
 
 namespace Simple.Sqlite
 {
     public partial class TableMapper :  IColumnMapper
     {
         private readonly SqliteDB db;
+        private readonly ReaderCachedCollection typeCollection;
         private readonly List<Table> tables;
 
         /// <summary>
         /// Creates a new instance
         /// </summary>
-        public TableMapper(SqliteDB database)
+        public TableMapper(SqliteDB database, ReaderCachedCollection typeCollection)
         {
             db = database;
+            this.typeCollection = typeCollection;
             tables = new List<Table>();
         }
         /// <summary>
@@ -24,7 +27,8 @@ namespace Simple.Sqlite
         /// </summary>
         public IColumnMapper Add<T>() where T : new()
         {
-            tables.Add(Table.FromType(typeof(T)));
+            var info = typeCollection.GetInfo<T>();
+            tables.Add(Table.FromType(info));
             return this;
         }
         /// <summary>
