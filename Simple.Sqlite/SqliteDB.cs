@@ -120,6 +120,7 @@ namespace Simple.Sqlite
 
             cmd.CommandText = Text;
             fillParameters(cmd, Parameters);
+            
 
             lock (lockNonQuery)
             {
@@ -193,7 +194,7 @@ namespace Simple.Sqlite
                 }
                 else
                 {
-                    yield return TypeMapper.MapObject<T>(colNames, reader);
+                    yield return TypeMapper.MapObject<T>(colNames, reader, typeCollection);
                 }
             }
         }
@@ -254,7 +255,7 @@ namespace Simple.Sqlite
             var info = typeCollection.GetInfo<T>();
             var tableName = info.TypeName;
 
-            var names = getNames(info, isInsert: true);
+            var names = getNames(info);
             var fields = string.Join(",", names);
             var values = string.Join(",", names.Select(n => $"@{n}"));
 
@@ -300,37 +301,45 @@ namespace Simple.Sqlite
         /// </summary>
         public void InsertOrReplace<T>(T Item) => ExecuteNonQuery(buildInsertSql<T>(true), Item);
 
-        private static void fillParameters(SQLiteCommand cmd, object Parameters)
+        private void fillParameters(SQLiteCommand cmd, object Parameters, TypeInfo type = null)
         {
             if (Parameters == null) return;
-            foreach (var p in Parameters.GetType().GetProperties())
+
+            if (type == null) type = typeCollection.GetInfo(Parameters.GetType());
+
+            foreach (var p in type.Items)
             {
-                cmd.Parameters.AddWithValue(p.Name, TypeHelper.ReadParamValue(p, Parameters));
+                var value = TypeHelper.ReadParamValue(p, Parameters);
+                adjustInsertValue(ref value, p, Parameters);
+
+                cmd.Parameters.AddWithValue(p.Name, value);
             }
         }
-        private static IEnumerable<string> getNames(TypeInfo type, bool isInsert = true)
+        private void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
         {
-            var keyName = type.Items
-                              .Where(o => o.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey))
-                              .Select(o => o.Name)
-                              .FirstOrDefault();
+            if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
 
-            foreach (var info in type.Items.Where(o => o.ItemType == DatabaseWrapper.ItemType.Property))
+            if (p.Type == typeof(int) || p.Type == typeof(long))
             {
-                if (isInsert && info.Name == keyName)
-                {
-                    if (info.Type.FullName == "System.Int32")
-                    {
-                        continue;
-                    }
-                    if (info.Type.FullName == "System.Int64")
-                    {
-                        continue;
-                    }
-                }
-
-                yield return info.Name;
+                if (!value.Equals(0)) return;
+                // PK ints are AI
+                value = null;
             }
+            else if (p.Type == typeof(Guid))
+            {
+                if (!value.Equals(Guid.Empty)) return;
+
+                value = Guid.NewGuid();
+                // write new guid on object
+                p.SetValue(parameters, value);
+            }
+        }
+
+        private static IEnumerable<string> getNames(TypeInfo type)
+        {
+            return type.Items
+                       .Where(o => !o.Is(DatabaseWrapper.ColumnAttributes.Ignore))
+                       .Select(o => o.Name);
         }
     }
 }
