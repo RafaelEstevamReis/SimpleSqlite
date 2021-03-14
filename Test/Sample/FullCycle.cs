@@ -21,7 +21,7 @@ namespace Test.Sample
                 MyId = (int)DateTimeOffset.Now.ToUnixTimeSeconds(),
                 MyName = "My name is bob",
                 MyBirthDate = DateTime.Now,
-                MyUID = Guid.NewGuid(),
+                MyUID = Guid.Empty, // When empty, a new Guid will be generated
                 MyWebsite = new Uri("http://example.com"),
                 MyFavColor = System.Drawing.Color.FromArgb(101, 102, 103, 104),
                 MyDecimalValue = 123.4M,
