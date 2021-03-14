@@ -47,7 +47,9 @@ namespace Simple.Sqlite
             /// Default value on NULL
             /// </summary>
             public object DefaultValue { get; set; }
-
+            /// <summary>
+            /// Create a column schema from TypeInfoItem
+            /// </summary>
             public static IColumn FromInfo(TypeInfo info, TypeItemInfo pi)
             {
                 SqliteType dataType = mapType(pi);
@@ -122,13 +124,6 @@ namespace Simple.Sqlite
                     throw new Exception($"Type {info.Type.Name} is not supported on field {info.Name}");
                 }
                 return dataType;
-            }
-
-            internal static string GetKeyColumn(TypeInfo info)
-            {
-                return info.Items.Where(i => i.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey))
-                           .FirstOrDefault()
-                           ?.Name;
             }
 
             /// <summary>
