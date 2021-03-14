@@ -261,7 +261,7 @@ namespace Simple.Sqlite
 
             if (addReplace)
             {
-                return $"INSERT OR REPLACE INTO {tableName} ({fields}) VALUES ({values});";
+                return $"INSERT OR REPLACE INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
             }
             else
             {
@@ -296,10 +296,12 @@ namespace Simple.Sqlite
             return ids.ToArray();
         }
         /// <summary>
-        /// Inserts a new T or replace with current T and return it's ID, this method locks the execution
-        /// Must have a [Unique] or PK column
+        /// Inserts a new T or replace with current T and return it's ID, this method locks the execution.
+        /// When a Repalce occurs, the row is first deleted then re-inserted.
+        /// Must have a [Unique] or PK column. 
         /// </summary>
-        public void InsertOrReplace<T>(T Item) => ExecuteNonQuery(buildInsertSql<T>(true), Item);
+        /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
+        public long InsertOrReplace<T>(T Item) => ExecuteScalar<long>(buildInsertSql<T>(true), Item);
 
         private void fillParameters(SQLiteCommand cmd, object Parameters, TypeInfo type = null)
         {
