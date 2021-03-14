@@ -474,9 +474,11 @@
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.InsertOrReplace``1(``0)">
             <summary>
-            Inserts a new T or replace with current T and return it's ID, this method locks the execution
-            Must have a [Unique] or PK column
+            Inserts a new T or replace with current T and return it's ID, this method locks the execution.
+            When a Repalce occurs, the row is first deleted then re-inserted.
+            Must have a [Unique] or PK column. 
             </summary>
+            <returns>Returns `sqlite3:last_insert_rowid()`</returns>
         </member>
     </members>
 </doc>
