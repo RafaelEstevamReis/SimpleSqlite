@@ -235,13 +235,11 @@ namespace Simple.Sqlite
             return ExecuteQuery<T>($"SELECT * FROM {typeof(T).Name} WHERE {FilterColumn} = @FilterValue ", new { FilterValue });
         }
 
-        private string[] getSchemaColumns(SQLiteDataReader reader)
+        private string[] getSchemaColumns(IDataReader reader)
         {
-            return reader.GetSchemaTable()
-                .Rows
-                .Cast<DataRow>()
-                .Select(r => (string)r["ColumnName"])
-                .ToArray();
+            return Enumerable.Range(0, reader.FieldCount)
+                             .Select(idx => reader.GetName(idx))
+                             .ToArray();
         }
 
         /// <summary>
