@@ -111,7 +111,7 @@ namespace Simple.Sqlite
             return reader.GetSchemaTable();
         }
         /// <summary>
-        /// Executes a NonQUery command, this method locks the execution
+        /// Executes a NonQuery command, this method locks the execution
         /// </summary>
         public int ExecuteNonQuery(string Text, object Parameters = null)
         {
@@ -198,7 +198,14 @@ namespace Simple.Sqlite
                 }
             }
         }
-
+        /// <summary>
+        /// Executes a query and returns the value as a T collection
+        /// This is an alias to ExecuteReader
+        /// </summary>
+        public IEnumerable<T> Query<T>(string Text, object Parameters)
+        {
+            return ExecuteQuery<T>(Text, Parameters);
+        }
 
         /// <summary>
         /// Gets a single T with specified table KeyValue on KeyColumn
