@@ -16,6 +16,13 @@ namespace Test.Sample
               .Add<MyData>()
               .Commit();
 
+            db.InsertInto(new
+            {
+                MyUID = Guid.NewGuid(),
+                MyName = "Test"
+            }, 
+            OnConflict.Ignore, 
+            tableName: "MyData");
 
             for (int i = 0; i < 5; i++)
             {
