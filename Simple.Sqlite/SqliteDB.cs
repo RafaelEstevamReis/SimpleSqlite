@@ -58,7 +58,7 @@ namespace Simple.Sqlite
             if (!EnabledDatabaseBackup) return;
 
             var temp = Path.GetTempFileName();
-            using var fsInput = File.Open(DatabaseFileName,  FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var fsInput = File.Open(DatabaseFileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using (var fsTempOut = File.OpenWrite(temp))
             {
                 using var compressionStream = new GZipStream(fsTempOut, CompressionMode.Compress);
@@ -72,7 +72,7 @@ namespace Simple.Sqlite
             if (File.Exists(bkp)) File.Move(bkp, bkpOld);
             File.Move(temp, bkp);
         }
-        
+
         private SQLiteConnection getConnection()
         {
             var sqliteConnection = new SQLiteConnection(cnnString);
@@ -120,7 +120,7 @@ namespace Simple.Sqlite
 
             cmd.CommandText = Text;
             fillParameters(cmd, Parameters);
-            
+
 
             lock (lockNonQuery)
             {
@@ -199,13 +199,22 @@ namespace Simple.Sqlite
             }
         }
         /// <summary>
-        /// Executes a query and returns the value as a T collection
+        /// Executes a query and returns the result as a T collection
         /// This is an alias to ExecuteReader
         /// </summary>
         public IEnumerable<T> Query<T>(string Text, object Parameters)
         {
             return ExecuteQuery<T>(Text, Parameters);
         }
+        /// <summary>
+        /// Executes a query and returns the result the first T, 
+        /// or InvalidOperationException if empty
+        /// </summary>
+        public T QueryFirst<T>(string Text, object Parameters) => Query<T>(Text, Parameters).First();
+        /// <summary>
+        /// Executes a query and returns the result the first T or Defult(T)
+        /// </summary>
+        public T QueryOrDefault<T>(string Text, object Parameters) => Query<T>(Text, Parameters).FirstOrDefault();
 
         /// <summary>
         /// Gets a single T with specified table KeyValue on KeyColumn
@@ -248,38 +257,66 @@ namespace Simple.Sqlite
                              .Select(idx => reader.GetName(idx))
                              .ToArray();
         }
+       
+        /// <summary>
+        /// Inserts a new T and return it's ID, this method locks the execution
+        /// </summary>
+        /// <param name="Item">Item to be added</param>
+        /// <param name="resolution">Conflict resolution method</param>
+        /// <param name="tableName">Name of the table, uses T class name if null</param>
+        /// <returns></returns>
+        public long InsertInto<T>(T Item, OnConflict resolution = OnConflict.Abort, string tableName = null) => ExecuteScalar<long>(buildInsertSql<T>(resolution, tableName), Item);
 
         /// <summary>
         /// Inserts a new T and return it's ID, this method locks the execution
         /// </summary>
         /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
-        public long Insert<T>(T Item) => ExecuteScalar<long>(buildInsertSql<T>(), Item);
+        public long Insert<T>(T Item) => InsertInto<T>(Item);
+        /// <summary>
+        /// Inserts a new T or replace with current T and return it's ID, this method locks the execution.
+        /// When a Repalce occurs, the row is first deleted then re-inserted.
+        /// Must have a [Unique] or PK column. 
+        /// </summary>
+        /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
+        public long InsertOrReplace<T>(T Item) => InsertInto<T>(Item, OnConflict.Replace);
 
-        private string buildInsertSql<T>(bool addReplace = false)
+        private string buildInsertSql<T>(OnConflict resolution, string tableName = null)
         {
             var info = typeCollection.GetInfo<T>();
-            var tableName = info.TypeName;
+            if (tableName == null) tableName = info.TypeName;
 
             var names = getNames(info);
             var fields = string.Join(",", names);
             var values = string.Join(",", names.Select(n => $"@{n}"));
 
-            if (addReplace)
+            if (resolution == OnConflict.Abort)
             {
-                return $"INSERT OR REPLACE INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
+                return $"INSERT INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
             }
             else
             {
-                return $"INSERT INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
+                string txtConflict = resolution switch
+                {
+                    OnConflict.RollBack => "ROLLBACK",
+                    OnConflict.Fail => "FAIL",
+                    OnConflict.Ignore => "IGNORE",
+                    OnConflict.Replace => "REPLACE",
+                    _ => throw new ArgumentException($"Invalid resolution: {resolution}"),
+                };
+
+                return $"INSERT OR {txtConflict} INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
             }
         }
         /// <summary>
         /// Inserts many T items into the database and return their IDs, this method locks the execution
         /// </summary>
-        public long[] BulkInsert<T>(IEnumerable<T> Items, bool addReplace = false)
+        /// <param name="Items">Items to be inserted</param>
+        /// <param name="resolution">Conflict resolution method</param>
+        /// <param name="tableName">Name of the table, uses T class name if null</param>
+        public long[] BulkInsert<T>(IEnumerable<T> Items, OnConflict resolution = OnConflict.Abort, string tableName = null)
         {
             List<long> ids = new List<long>();
-            string sql = buildInsertSql<T>(addReplace);
+            string sql = buildInsertSql<T>(resolution, tableName);
 
             using var cnn = getConnection();
 
@@ -301,12 +338,9 @@ namespace Simple.Sqlite
             return ids.ToArray();
         }
         /// <summary>
-        /// Inserts a new T or replace with current T and return it's ID, this method locks the execution.
-        /// When a Repalce occurs, the row is first deleted then re-inserted.
-        /// Must have a [Unique] or PK column. 
+        /// Inserts many T items into the database and return their IDs, this method locks the execution
         /// </summary>
-        /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
-        public long InsertOrReplace<T>(T Item) => ExecuteScalar<long>(buildInsertSql<T>(true), Item);
+        public long[] BulkInsert<T>(IEnumerable<T> Items, bool addReplace = false) => BulkInsert<T>(Items, addReplace ? OnConflict.Replace : OnConflict.Fail, null);
 
         private void fillParameters(SQLiteCommand cmd, object Parameters, TypeInfo type = null)
         {

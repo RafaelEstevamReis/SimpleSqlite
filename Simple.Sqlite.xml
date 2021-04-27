@@ -131,6 +131,57 @@
             Numeric value. Includes Bool, Date and Datetime
             </summary>
         </member>
+        <member name="T:Simple.Sqlite.OnConflict">
+            <summary>
+            OnConflict clause options
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.OnConflict.RollBack">
+            <summary>
+            When an applicable constraint violation occurs, the ROLLBACK resolution algorithm aborts the current SQL statement 
+            with an SQLITE_CONSTRAINT error and rolls back the current transaction. 
+            If no transaction is active (other than the implied transaction that is created on every command) then the ROLLBACK 
+            resolution algorithm works the same as the ABORT algorithm
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.OnConflict.Abort">
+            <summary>
+            When an applicable constraint violation occurs, 
+            the ABORT resolution algorithm aborts the current SQL statement with an SQLITE_CONSTRAINT error and backs out any 
+            changes made by the current SQL statement; 
+            but changes caused by prior SQL statements within the same transaction are preserved and the transaction remains active. 
+            This is the default behavior and the behavior specified by the SQL standard
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.OnConflict.Fail">
+            <summary>
+            When an applicable constraint violation occurs, the FAIL resolution algorithm aborts the current SQL statement with an SQLITE_CONSTRAINT error. 
+            But the FAIL resolution does not back out prior changes of the SQL statement that failed nor does it end the transaction. 
+            For example, if an UPDATE statement encountered a constraint violation on the 100th row that it attempts to update, 
+            then the first 99 row changes are preserved but changes to rows 100 and beyond never occur.
+            The FAIL behavior only works for uniqueness, NOT NULL, and CHECK constraints. A foreign key constraint violation causes an ABORT
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.OnConflict.Ignore">
+            <summary>
+            When an applicable constraint violation occurs, 
+            the IGNORE resolution algorithm skips the one row that contains the constraint violation and continues processing 
+            subsequent rows of the SQL statement as if nothing went wrong. 
+            Other rows before and after the row that contained the constraint violation are inserted or updated normally. 
+            No error is returned for uniqueness, NOT NULL, and UNIQUE constraint errors when the IGNORE conflict resolution algorithm is used. 
+            However, the IGNORE conflict resolution algorithm works like ABORT for foreign key constraint errors
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.OnConflict.Replace">
+            <summary>
+            When a UNIQUE or PRIMARY KEY constraint violation occurs, 
+            the REPLACE algorithm deletes pre-existing rows that are causing the constraint violation prior to inserting or 
+            updating the current row and the command continues executing normally. 
+            If a NOT NULL constraint violation occurs, the REPLACE conflict resolution replaces the NULL value with the default value for that column, 
+            or if the column has no default value, then the ABORT algorithm is used. If a CHECK constraint or foreign key constraint violation occurs, 
+            the REPLACE conflict resolution algorithm works like ABORT
+            </summary>
+        </member>
         <member name="T:Simple.Sqlite.NoSqliteStorage">
             <summary>
             Easy access a local no-sql document storage
@@ -423,7 +474,7 @@
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.ExecuteNonQuery(System.String,System.Object)">
             <summary>
-            Executes a NonQUery command, this method locks the execution
+            Executes a NonQuery command, this method locks the execution
             </summary>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.ExecuteScalar``1(System.String,System.Object)">
@@ -439,6 +490,23 @@
         <member name="M:Simple.Sqlite.SqliteDB.ExecuteQuery``1(System.String,System.Object)">
             <summary>
             Executes a query and returns the value as a T collection
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.Query``1(System.String,System.Object)">
+            <summary>
+            Executes a query and returns the result as a T collection
+            This is an alias to ExecuteReader
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.QueryFirst``1(System.String,System.Object)">
+            <summary>
+            Executes a query and returns the result the first T, 
+            or InvalidOperationException if empty
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.QueryOrDefault``1(System.String,System.Object)">
+            <summary>
+            Executes a query and returns the result the first T or Defult(T)
             </summary>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.Get``1(System.Object)">
@@ -461,16 +529,20 @@
             Queries the database to all T rows in the table with specified table KeyValue on KeyColumn
             </summary>
         </member>
+        <member name="M:Simple.Sqlite.SqliteDB.InsertInto``1(``0,Simple.Sqlite.OnConflict,System.String)">
+            <summary>
+            Inserts a new T and return it's ID, this method locks the execution
+            </summary>
+            <param name="Item">Item to be added</param>
+            <param name="resolution">Conflict resolution method</param>
+            <param name="tableName">Name of the table, uses T class name if null</param>
+            <returns></returns>
+        </member>
         <member name="M:Simple.Sqlite.SqliteDB.Insert``1(``0)">
             <summary>
             Inserts a new T and return it's ID, this method locks the execution
             </summary>
             <returns>Returns `sqlite3:last_insert_rowid()`</returns>
-        </member>
-        <member name="M:Simple.Sqlite.SqliteDB.BulkInsert``1(System.Collections.Generic.IEnumerable{``0},System.Boolean)">
-            <summary>
-            Inserts many T items into the database and return their IDs, this method locks the execution
-            </summary>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.InsertOrReplace``1(``0)">
             <summary>
@@ -479,6 +551,19 @@
             Must have a [Unique] or PK column. 
             </summary>
             <returns>Returns `sqlite3:last_insert_rowid()`</returns>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.BulkInsert``1(System.Collections.Generic.IEnumerable{``0},Simple.Sqlite.OnConflict,System.String)">
+            <summary>
+            Inserts many T items into the database and return their IDs, this method locks the execution
+            </summary>
+            <param name="Items">Items to be inserted</param>
+            <param name="resolution">Conflict resolution method</param>
+            <param name="tableName">Name of the table, uses T class name if null</param>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.BulkInsert``1(System.Collections.Generic.IEnumerable{``0},System.Boolean)">
+            <summary>
+            Inserts many T items into the database and return their IDs, this method locks the execution
+            </summary>
         </member>
     </members>
 </doc>
