@@ -529,7 +529,7 @@
             Queries the database to all T rows in the table with specified table KeyValue on KeyColumn
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.SqliteDB.InsertInto``1(``0,Simple.Sqlite.OnConflict,System.String)">
+        <member name="M:Simple.Sqlite.SqliteDB.Insert``1(``0,Simple.Sqlite.OnConflict,System.String)">
             <summary>
             Inserts a new T and return it's ID, this method locks the execution
             </summary>
@@ -538,11 +538,11 @@
             <param name="tableName">Name of the table, uses T class name if null</param>
             <returns></returns>
         </member>
-        <member name="M:Simple.Sqlite.SqliteDB.Insert``1(``0)">
+        <member name="M:Simple.Sqlite.SqliteDB.InsertInto``1(``0,Simple.Sqlite.OnConflict,System.String)">
             <summary>
             Inserts a new T and return it's ID, this method locks the execution
             </summary>
-            <returns>Returns `sqlite3:last_insert_rowid()`</returns>
+            <returns></returns>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.InsertOrReplace``1(``0)">
             <summary>
