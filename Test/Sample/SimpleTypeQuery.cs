@@ -16,7 +16,7 @@ namespace Test.Sample
               .Add<MyData>()
               .Commit();
 
-            db.InsertInto(new
+            db.Insert(new
             {
                 MyUID = Guid.NewGuid(),
                 MyName = "Test"
