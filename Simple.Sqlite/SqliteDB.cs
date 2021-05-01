@@ -257,7 +257,7 @@ namespace Simple.Sqlite
                              .Select(idx => reader.GetName(idx))
                              .ToArray();
         }
-       
+
         /// <summary>
         /// Inserts a new T and return it's ID, this method locks the execution
         /// </summary>
@@ -265,20 +265,58 @@ namespace Simple.Sqlite
         /// <param name="resolution">Conflict resolution method</param>
         /// <param name="tableName">Name of the table, uses T class name if null</param>
         /// <returns></returns>
-        public long InsertInto<T>(T Item, OnConflict resolution = OnConflict.Abort, string tableName = null) => ExecuteScalar<long>(buildInsertSql<T>(resolution, tableName), Item);
+        public long Insert<T>(T Item, OnConflict resolution = OnConflict.Abort, string tableName = null) => ExecuteScalar<long>(buildInsertSql<T>(resolution, tableName), Item);
 
         /// <summary>
         /// Inserts a new T and return it's ID, this method locks the execution
         /// </summary>
-        /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
-        public long Insert<T>(T Item) => InsertInto<T>(Item);
+        /// <returns></returns>
+        [Obsolete("Use Insert<T> instead", true)]
+        public long InsertInto<T>(T Item, OnConflict resolution = OnConflict.Abort, string tableName = null) => Insert<T>(Item, resolution, tableName);
+
         /// <summary>
         /// Inserts a new T or replace with current T and return it's ID, this method locks the execution.
         /// When a Repalce occurs, the row is first deleted then re-inserted.
         /// Must have a [Unique] or PK column. 
         /// </summary>
         /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
-        public long InsertOrReplace<T>(T Item) => InsertInto<T>(Item, OnConflict.Replace);
+        public long InsertOrReplace<T>(T Item) => Insert<T>(Item, OnConflict.Replace);
+
+        /// <summary>
+        /// Inserts many T items into the database and return their IDs, this method locks the execution
+        /// </summary>
+        /// <param name="Items">Items to be inserted</param>
+        /// <param name="resolution">Conflict resolution method</param>
+        /// <param name="tableName">Name of the table, uses T class name if null</param>
+        public long[] BulkInsert<T>(IEnumerable<T> Items, OnConflict resolution = OnConflict.Abort, string tableName= null)
+        {
+            List<long> ids = new List<long>();
+            string sql = buildInsertSql<T>(resolution, tableName);
+
+            using var cnn = getConnection();
+
+            lock (lockNonQuery)
+            {
+                using var trn = cnn.BeginTransaction();
+
+                foreach (var item in Items)
+                {
+                    using var cmd = new SQLiteCommand(sql, cnn, trn);
+                    fillParameters(cmd, item);
+
+                    var scalar = cmd.ExecuteScalar();
+                    if (scalar is long sL) ids.Add(sL);
+                }
+
+                trn.Commit();
+            }
+            return ids.ToArray();
+        }
+
+        /// <summary>
+        /// Inserts many T items into the database and return their IDs, this method locks the execution
+        /// </summary>
+        public long[] BulkInsert<T>(IEnumerable<T> Items, bool addReplace) => BulkInsert<T>(Items, addReplace ? OnConflict.Replace : OnConflict.Abort, null);
 
         private string buildInsertSql<T>(OnConflict resolution, string tableName = null)
         {
@@ -307,40 +345,6 @@ namespace Simple.Sqlite
                 return $"INSERT OR {txtConflict} INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
             }
         }
-        /// <summary>
-        /// Inserts many T items into the database and return their IDs, this method locks the execution
-        /// </summary>
-        /// <param name="Items">Items to be inserted</param>
-        /// <param name="resolution">Conflict resolution method</param>
-        /// <param name="tableName">Name of the table, uses T class name if null</param>
-        public long[] BulkInsert<T>(IEnumerable<T> Items, OnConflict resolution = OnConflict.Abort, string tableName = null)
-        {
-            List<long> ids = new List<long>();
-            string sql = buildInsertSql<T>(resolution, tableName);
-
-            using var cnn = getConnection();
-
-            lock (lockNonQuery)
-            {
-                using var trn = cnn.BeginTransaction();
-
-                foreach (var item in Items)
-                {
-                    using var cmd = new SQLiteCommand(sql, cnn, trn);
-                    fillParameters(cmd, item);
-
-                    var scalar = cmd.ExecuteScalar();
-                    if (scalar is long sL) ids.Add(sL);
-                }
-
-                trn.Commit();
-            }
-            return ids.ToArray();
-        }
-        /// <summary>
-        /// Inserts many T items into the database and return their IDs, this method locks the execution
-        /// </summary>
-        public long[] BulkInsert<T>(IEnumerable<T> Items, bool addReplace = false) => BulkInsert<T>(Items, addReplace ? OnConflict.Replace : OnConflict.Fail, null);
 
         private void fillParameters(SQLiteCommand cmd, object Parameters, TypeInfo type = null)
         {
