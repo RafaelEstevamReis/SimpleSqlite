@@ -110,17 +110,23 @@ namespace Simple.Sqlite
 
             return reader.GetSchemaTable();
         }
+        
+        /// <summary>
+        /// Use 'Execute' instead
+        /// </summary>
+        [Obsolete("Use 'Execute' instead")]
+        public int ExecuteNonQuery(string Text, object Parameters = null) => Execute(Text, Parameters);
+
         /// <summary>
         /// Executes a NonQuery command, this method locks the execution
         /// </summary>
-        public int ExecuteNonQuery(string Text, object Parameters = null)
+        public int Execute(string Text, object Parameters = null)
         {
             using var cnn = getConnection();
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = Text;
             fillParameters(cmd, Parameters);
-
 
             lock (lockNonQuery)
             {
@@ -152,6 +158,7 @@ namespace Simple.Sqlite
 
             return (T)Convert.ChangeType(obj, typeof(T));
         }
+        
         /// <summary>
         /// Executes a query and returns as DataTable
         /// </summary>
@@ -168,10 +175,11 @@ namespace Simple.Sqlite
             da.Fill(dt);
             return dt;
         }
+        
         /// <summary>
         /// Executes a query and returns the value as a T collection
         /// </summary>
-        public IEnumerable<T> ExecuteQuery<T>(string Text, object Parameters)
+        public IEnumerable<T> Query<T>(string Text, object Parameters)
         {
             var typeT = typeof(T);
             using var cnn = getConnection();
@@ -199,12 +207,12 @@ namespace Simple.Sqlite
             }
         }
         /// <summary>
-        /// Executes a query and returns the result as a T collection
-        /// This is an alias to ExecuteReader
+        /// Use 'Query' instead
         /// </summary>
-        public IEnumerable<T> Query<T>(string Text, object Parameters)
+        [Obsolete("Use 'Query' instead")]
+        public IEnumerable<T> ExecuteQuery<T>(string Text, object Parameters)
         {
-            return ExecuteQuery<T>(Text, Parameters);
+            return Query<T>(Text, Parameters);
         }
         /// <summary>
         /// Executes a query and returns the result the first T, 
@@ -233,13 +241,13 @@ namespace Simple.Sqlite
                                    .FirstOrDefault()
                             ?? "_rowid_";
 
-            return ExecuteQuery<T>($"SELECT * FROM {info.TypeName} WHERE {keyColumn} = @KeyValue ", new { KeyValue })
+            return Query<T>($"SELECT * FROM {info.TypeName} WHERE {keyColumn} = @KeyValue ", new { KeyValue })
                     .FirstOrDefault();
         }
         /// <summary>
         /// Queries the database to all T rows in the table
         /// </summary>
-        public IEnumerable<T> GetAll<T>() => ExecuteQuery<T>($"SELECT * FROM {typeof(T).Name} ", null);
+        public IEnumerable<T> GetAll<T>() => Query<T>($"SELECT * FROM {typeof(T).Name} ", null);
 
         /// <summary>
         /// Queries the database to all T rows in the table with specified table KeyValue on KeyColumn
@@ -248,7 +256,7 @@ namespace Simple.Sqlite
         {
             if (FilterColumn is null) throw new ArgumentNullException(nameof(FilterColumn));
 
-            return ExecuteQuery<T>($"SELECT * FROM {typeof(T).Name} WHERE {FilterColumn} = @FilterValue ", new { FilterValue });
+            return Query<T>($"SELECT * FROM {typeof(T).Name} WHERE {FilterColumn} = @FilterValue ", new { FilterValue });
         }
 
         private string[] getSchemaColumns(IDataReader reader)
