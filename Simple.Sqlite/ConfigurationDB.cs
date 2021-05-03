@@ -34,7 +34,7 @@ namespace Simple.Sqlite
 
         private void createConfigTable()
         {
-            internalDb.ExecuteNonQuery(
+            internalDb.Execute(
 @"CREATE TABLE IF NOT EXISTS nsConfig (
     Id         TEXT NOT NULL,
     Value    BLOB,
@@ -72,7 +72,7 @@ namespace Simple.Sqlite
         /// <returns>Saved value</returns>
         public T GetConfig<T>(string ConfigKey, string ConfigCategory, T Default)
         {
-            var values = internalDb.ExecuteQuery<T>("SELECT Value FROM nsConfig WHERE Id = @id",
+            var values = internalDb.Query<T>("SELECT Value FROM nsConfig WHERE Id = @id",
                                                    new { id = buildKey(ConfigKey, ConfigCategory) })
                                    .ToArray();
             if (values.Length == 0) return Default;
@@ -85,7 +85,7 @@ namespace Simple.Sqlite
         /// <param name="ConfigCategory">Category of the configuration</param>
         public void RemoveConfig(string ConfigKey, string ConfigCategory)
         {
-            internalDb.ExecuteNonQuery("DELETE FROM nsConfig WHERE Id = @id",
+            internalDb.Execute("DELETE FROM nsConfig WHERE Id = @id",
                                        new { id = buildKey(ConfigKey, ConfigCategory) });
         }
 
