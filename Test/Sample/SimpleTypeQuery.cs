@@ -32,7 +32,7 @@ namespace Test.Sample
                     MyUID = Guid.NewGuid()
                 });
             }
-            var allInts = db.ExecuteQuery<int>("SELECT MyId FROM MyData", null).ToArray();
+            var allInts = db.Query<int>("SELECT MyId FROM MyData", null).ToArray();
         }
     }
 }
