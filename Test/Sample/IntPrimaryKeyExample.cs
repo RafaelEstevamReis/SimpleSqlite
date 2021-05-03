@@ -20,7 +20,7 @@ namespace Test.Sample
               .Add<IntSample>()
               .Commit();
             // reset before sample
-            db.ExecuteNonQuery("DELETE FROM IntSample");
+            db.Execute("DELETE FROM IntSample");
 
             var bobAccount = new IntSample()
             {
