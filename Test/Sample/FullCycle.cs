@@ -42,7 +42,7 @@ namespace Test.Sample
             }
 
             //get "bob" data
-            var bobs = db.ExecuteQuery<MyData>("SELECT * FROM MyData WHERE MyName LIKE @name ", new { name = "%bob%" });
+            var bobs = db.Query<MyData>("SELECT * FROM MyData WHERE MyName LIKE @name ", new { name = "%bob%" });
             Console.WriteLine("All bob data:");
             foreach (var rowData in bobs)
             {
