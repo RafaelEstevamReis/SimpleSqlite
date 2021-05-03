@@ -62,7 +62,7 @@ namespace Simple.Sqlite
 
         private TableCommitResult commitTable(Table t)
         {
-            int val = db.ExecuteNonQuery(t.ExportCreateTable(), null);
+            int val = db.Execute(t.ExportCreateTable(), null);
             if (val == 0) // table created
             {
                 return new TableCommitResult()
@@ -87,7 +87,7 @@ namespace Simple.Sqlite
                 foreach (var c in newColumns)
                 {
                     string addColumn = c.ExportAddColumnAsStatement();
-                    db.ExecuteNonQuery($"ALTER TABLE {t.TableName} {addColumn}", null);
+                    db.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
                 }
 
                 if (newColumns.Length > 0)
