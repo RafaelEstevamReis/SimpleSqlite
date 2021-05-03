@@ -37,7 +37,7 @@ namespace Simple.Sqlite
 
         private void createDocumentTable()
         {
-            internalDb.ExecuteNonQuery(
+            internalDb.Execute(
 @"CREATE TABLE IF NOT EXISTS nsDocuments (
     Id         TEXT NOT NULL,
     Object     BLOB,
@@ -108,7 +108,7 @@ namespace Simple.Sqlite
         /// </summary>
         public void Remove(string Key)
         {
-            internalDb.ExecuteNonQuery("DELETE FROM nsDocuments WHERE Id = @id", new { id = Key });
+            internalDb.Execute("DELETE FROM nsDocuments WHERE Id = @id", new { id = Key });
         }
 
         /// <summary>
@@ -116,14 +116,14 @@ namespace Simple.Sqlite
         /// </summary>
         public IEnumerable<string> GetAllKeys()
         {
-            return internalDb.ExecuteQuery<string>("SELECT Id FROM nsDocuments", null);
+            return internalDb.Query<string>("SELECT Id FROM nsDocuments", null);
         }
         /// <summary>
         /// Retrieves all stored Guids
         /// </summary>
         public IEnumerable<Guid> GetAllGuids()
         {
-            return internalDb.ExecuteQuery<Guid>("SELECT Id FROM nsDocuments", null);
+            return internalDb.Query<Guid>("SELECT Id FROM nsDocuments", null);
         }
 
         /// <summary>
