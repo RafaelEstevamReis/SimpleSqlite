@@ -4,7 +4,7 @@ using Simple.DatabaseWrapper.Attributes;
 
 // Choose your example
 Console.WriteLine("Choose one example");
-//Test.Sample.FullCycle.run();
+Test.Sample.FullCycle.run();
 //Test.Sample.IntPrimaryKeyExample.run();
 //Test.Sample.SimpleTypeQuery.run();
 //Test.Sample.DocumentStorage.run();
@@ -30,5 +30,12 @@ public class MyData
     public double MyDoubleValue { get; set; }
     public float MyFloatValue { get; set; }
     public eIntEnum MyEnum { get; set; }
+    public int GetOnly => -1;
+    public int SetOnly
+    {
+        set { _ = value; }
+    }
+    [IgnoreAtribute]
+    public int IgnoreMe { get; set; }
 }
 
