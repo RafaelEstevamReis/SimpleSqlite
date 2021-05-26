@@ -362,6 +362,7 @@ namespace Simple.Sqlite
 
             foreach (var p in type.Items)
             {
+                if (!p.CanRead) continue;
                 var value = TypeHelper.ReadParamValue(p, Parameters);
                 adjustInsertValue(ref value, p, Parameters);
 
@@ -392,6 +393,7 @@ namespace Simple.Sqlite
         {
             return type.Items
                        .Where(o => !o.Is(DatabaseWrapper.ColumnAttributes.Ignore))
+                       .Where(o => o.CanRead && o.CanWrite)
                        .Select(o => o.Name);
         }
     }

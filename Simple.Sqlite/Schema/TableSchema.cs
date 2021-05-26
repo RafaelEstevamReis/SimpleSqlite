@@ -72,8 +72,11 @@ namespace Simple.Sqlite
             /// </summary>
             public static Table FromType(TypeInfo info)
             {
-                var props = info.Items.Where(o => o.ItemType == DatabaseWrapper.ItemType.Property);
-                
+                var props = info.Items
+                    .Where(o => o.ItemType == DatabaseWrapper.ItemType.Property)
+                    .Where(o => !o.Is(DatabaseWrapper.ColumnAttributes.Ignore))
+                    .Where(o => o.CanRead && o.CanWrite);
+
                 return new Table()
                 {
                     TableName = info.TypeName,
