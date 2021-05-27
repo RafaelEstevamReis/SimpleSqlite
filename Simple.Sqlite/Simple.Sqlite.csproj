@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;netstandard2.0;NET45;net5.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;netstandard2.0;net5.0;NET472;NET46;NET45;NET40</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
     <Version>0.7.1</Version>
     <Authors>RafaelEstevam.net</Authors>
@@ -12,17 +12,22 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Sqlite</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes>Paired with commit 4c1871c
-https://github.com/RafaelEstevamReis/SqliteWrapper</PackageReleaseNotes>
+    <PackageReleaseNotes>
+      Paired with commit 4c1871c
+      https://github.com/RafaelEstevamReis/SqliteWrapper
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>../Simple.Sqlite.xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'NET40'">
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
-    <PackageReference Include="Simple.DatabaseWrapper" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Simple.DatabaseWrapper" Version="1.2.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" />
   </ItemGroup>
 </Project>

@@ -36,7 +36,7 @@ namespace Simple.Sqlite
         /// </summary>
         public ITableMapper ConfigureTable(Action<ITable> Options)
         {
-#if NETSTANDARD || NET45
+#if NETSTANDARD || NETFRAMEWORK
             Options(tables.Last());
 #else
             Options(tables[^1]);

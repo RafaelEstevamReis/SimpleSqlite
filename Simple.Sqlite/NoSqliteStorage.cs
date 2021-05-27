@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !NET40
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -161,3 +163,4 @@ namespace Simple.Sqlite
         }
     }
 }
+#endif

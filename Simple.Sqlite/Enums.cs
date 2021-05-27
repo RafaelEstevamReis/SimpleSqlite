@@ -1,5 +1,6 @@
 ﻿namespace Simple.Sqlite
 {
+
     /// <summary>
     /// Represents a Sqlite internal type
     /// </summary>

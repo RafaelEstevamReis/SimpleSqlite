@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿#if !NET40
+
+using System.IO;
 using System.IO.Compression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
@@ -72,5 +74,5 @@ namespace Simple.Sqlite
         }
 
     }
-
 }
+#endif

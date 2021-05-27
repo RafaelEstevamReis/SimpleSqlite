@@ -111,6 +111,7 @@ namespace Simple.Sqlite
         {
             return new ConfigurationDB(cfg.internalDb);
         }
+#if !NET40
         /// <summary>
         /// Create a new instance based on an existing NoSqliteStorage
         /// </summary>
@@ -118,6 +119,7 @@ namespace Simple.Sqlite
         {
             return new ConfigurationDB(nss.internalDb);
         }
+#endif
         /// <summary>
         /// Create a new instance based on an existing SqliteDB
         /// </summary>
