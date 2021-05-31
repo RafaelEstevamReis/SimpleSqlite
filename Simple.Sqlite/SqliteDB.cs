@@ -39,11 +39,16 @@ namespace Simple.Sqlite
         {
             typeCollection = new ReaderCachedCollection();
             lockNonQuery = new object();
-            DatabaseFileName = new FileInfo(fileName).FullName;
-            // if now exists, creates one (can be done in the ConnectionString)
-            if (!File.Exists(DatabaseFileName)) SQLiteConnection.CreateFile(DatabaseFileName);
-            else backupDatabase();
 
+            DatabaseFileName = fileName;
+
+            if (fileName != ":memory:")
+            {
+                DatabaseFileName = new FileInfo(fileName).FullName;
+                // if now exists, creates one (can be done in the ConnectionString)
+                if (!File.Exists(DatabaseFileName)) SQLiteConnection.CreateFile(DatabaseFileName);
+                else backupDatabase();
+            }
             // uses builder to avoid escape issues
             SQLiteConnectionStringBuilder sb = new SQLiteConnectionStringBuilder
             {
@@ -110,7 +115,7 @@ namespace Simple.Sqlite
 
             return reader.GetSchemaTable();
         }
-        
+
         /// <summary>
         /// Use 'Execute' instead
         /// </summary>
@@ -158,7 +163,7 @@ namespace Simple.Sqlite
 
             return (T)Convert.ChangeType(obj, typeof(T));
         }
-        
+
         /// <summary>
         /// Executes a query and returns as DataTable
         /// </summary>
@@ -175,7 +180,7 @@ namespace Simple.Sqlite
             da.Fill(dt);
             return dt;
         }
-        
+
         /// <summary>
         /// Executes a query and returns the value as a T collection
         /// </summary>
@@ -296,7 +301,7 @@ namespace Simple.Sqlite
         /// <param name="Items">Items to be inserted</param>
         /// <param name="resolution">Conflict resolution method</param>
         /// <param name="tableName">Name of the table, uses T class name if null</param>
-        public long[] BulkInsert<T>(IEnumerable<T> Items, OnConflict resolution = OnConflict.Abort, string tableName= null)
+        public long[] BulkInsert<T>(IEnumerable<T> Items, OnConflict resolution = OnConflict.Abort, string tableName = null)
         {
             List<long> ids = new List<long>();
             string sql = buildInsertSql<T>(resolution, tableName);
