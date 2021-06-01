@@ -29,7 +29,15 @@
   <ItemGroup Condition=" '$(TargetFramework)' != 'NET40'">
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
   </ItemGroup>
-  
+
+  <!-- Sqlite Stuff -->
+  <PropertyGroup>
+    <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
+    <CopySQLiteInteropFiles>false</CopySQLiteInteropFiles>
+    <CleanSQLiteInteropFiles>false</CleanSQLiteInteropFiles>
+    <CollectSQLiteInteropFiles>false</CollectSQLiteInteropFiles>
+  </PropertyGroup>
+
   <!-- Microsoft.Data.Sqlite -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
     <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" />
