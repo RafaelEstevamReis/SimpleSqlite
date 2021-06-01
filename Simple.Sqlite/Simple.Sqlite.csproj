@@ -30,39 +30,31 @@
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
   </ItemGroup>
 
-  <!-- Sqlite Stuff -->
-  <PropertyGroup>
-    <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
-    <CopySQLiteInteropFiles>false</CopySQLiteInteropFiles>
-    <CleanSQLiteInteropFiles>false</CleanSQLiteInteropFiles>
-    <CollectSQLiteInteropFiles>false</CollectSQLiteInteropFiles>
-  </PropertyGroup>
-
   <!-- Microsoft.Data.Sqlite -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" PrivateAssets="none" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" PrivateAssets="none" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" PrivateAssets="none" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'NET48'">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" PrivateAssets="none" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'NET472'">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" PrivateAssets="none" />
   </ItemGroup> 
   <!-- System.Data.SQLite.Core -->
   <ItemGroup Condition="'$(TargetFramework)' == 'NET40'">
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" PrivateAssets="none" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'NET45'">
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" PrivateAssets="none" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'NET46'">
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" PrivateAssets="none" />
   </ItemGroup>
   
 </Project>
