@@ -1,7 +1,4 @@
 ﻿using Simple.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace UnitTests.Helpers
 {

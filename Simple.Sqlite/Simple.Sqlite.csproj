@@ -12,9 +12,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Sqlite</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes>
-      Paired with commit 4c1871c
-      https://github.com/RafaelEstevamReis/SqliteWrapper
+    <PackageReleaseNotes>Paired with commit 4c1871c
+https://github.com/RafaelEstevamReis/SqliteWrapper
     </PackageReleaseNotes>
   </PropertyGroup>
 
@@ -24,11 +23,6 @@
 
   <ItemGroup>
     <PackageReference Include="Simple.DatabaseWrapper" Version="1.2.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" PrivateAssets="none" />
   </ItemGroup>
 
