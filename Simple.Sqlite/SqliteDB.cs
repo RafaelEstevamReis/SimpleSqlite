@@ -408,9 +408,8 @@ namespace Simple.Sqlite
         /// </summary>
         public static SqliteDB CreateInMemory()
         {
-            var guid = Guid.NewGuid();
-
-            string fileName = $"InMemory{inMemoryCounter++:000}_{DateTime.UtcNow.Ticks}";
+            var ticksPart = DateTime.UtcNow.Ticks % 1000000;
+            string fileName = $"InMemory{inMemoryCounter++:000}_{ticksPart}";
 
             // Data Source=InMemorySample;Mode=Memory;Cache=Shared
             var builder = new SQLiteConnectionStringBuilder($"Data Source={fileName};Mode=Memory;Cache=Shared");
