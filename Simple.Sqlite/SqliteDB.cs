@@ -21,11 +21,16 @@ namespace Simple.Sqlite
         /// Allows any instance of SqliteDB to executa a backup of the current database
         /// </summary>
         public static bool EnabledDatabaseBackup = true;
+        private static int inMemoryCounter = 1;
 
         // Manual lock on Writes to avoid Exceptions
         private readonly object lockNonQuery;
         private readonly string cnnString;
         private readonly ReaderCachedCollection typeCollection;
+        /// <summary>
+        /// Gets if this instance is an InMemoryDatabase
+        /// </summary>
+        public bool IsInMmemoryDatabase { get; private set; }
 
         /// <summary>
         /// Database file full path
@@ -37,8 +42,6 @@ namespace Simple.Sqlite
         /// </summary>
         public SqliteDB(string fileName)
         {
-            typeCollection = new ReaderCachedCollection();
-            lockNonQuery = new object();
             DatabaseFileName = new FileInfo(fileName).FullName;
             // if now exists, creates one (can be done in the ConnectionString)
             if (!File.Exists(DatabaseFileName)) SQLiteConnection.CreateFile(DatabaseFileName);
@@ -50,7 +53,17 @@ namespace Simple.Sqlite
                 DataSource = DatabaseFileName,
                 Version = 3
             };
+
             cnnString = sb.ToString();
+            typeCollection = new ReaderCachedCollection();
+            lockNonQuery = new object();
+        }
+        private SqliteDB(SQLiteConnectionStringBuilder sb, string databaseFileName)
+        {
+            DatabaseFileName = databaseFileName;
+            cnnString = sb.ToString();
+            typeCollection = new ReaderCachedCollection();
+            lockNonQuery = new object();
         }
 
         private void backupDatabase()
@@ -110,7 +123,7 @@ namespace Simple.Sqlite
 
             return reader.GetSchemaTable();
         }
-        
+
         /// <summary>
         /// Use 'Execute' instead
         /// </summary>
@@ -158,7 +171,7 @@ namespace Simple.Sqlite
 
             return (T)Convert.ChangeType(obj, typeof(T));
         }
-        
+
         /// <summary>
         /// Executes a query and returns as DataTable
         /// </summary>
@@ -175,7 +188,7 @@ namespace Simple.Sqlite
             da.Fill(dt);
             return dt;
         }
-        
+
         /// <summary>
         /// Executes a query and returns the value as a T collection
         /// </summary>
@@ -296,7 +309,7 @@ namespace Simple.Sqlite
         /// <param name="Items">Items to be inserted</param>
         /// <param name="resolution">Conflict resolution method</param>
         /// <param name="tableName">Name of the table, uses T class name if null</param>
-        public long[] BulkInsert<T>(IEnumerable<T> Items, OnConflict resolution = OnConflict.Abort, string tableName= null)
+        public long[] BulkInsert<T>(IEnumerable<T> Items, OnConflict resolution = OnConflict.Abort, string tableName = null)
         {
             List<long> ids = new List<long>();
             string sql = buildInsertSql<T>(resolution, tableName);
@@ -389,6 +402,23 @@ namespace Simple.Sqlite
             }
         }
 
+        /* Estáticos */
+        /// <summary>
+        /// Creates a InMemory database instance
+        /// </summary>
+        public static SqliteDB CreateInMemory()
+        {
+            string fileName = $"InMemory{inMemoryCounter++:000}";
+
+            // Data Source=InMemorySample;Mode=Memory;Cache=Shared
+            var builder = new SQLiteConnectionStringBuilder($"Data Source={fileName};Mode=Memory;Cache=Shared");
+
+            return new SqliteDB(builder, fileName)
+            {
+                IsInMmemoryDatabase = true,
+            };
+        }
+
         private static IEnumerable<string> getNames(TypeInfo type)
         {
             return type.Items
@@ -396,5 +426,6 @@ namespace Simple.Sqlite
                        .Where(o => o.CanRead && o.CanWrite)
                        .Select(o => o.Name);
         }
+
     }
 }
