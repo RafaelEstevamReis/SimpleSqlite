@@ -4,7 +4,7 @@ using Simple.DatabaseWrapper.Attributes;
 
 // Choose your example
 Console.WriteLine("Choose one example");
-Test.Sample.FullCycle.run();
+//Test.Sample.FullCycle.run();
 //Test.Sample.IntPrimaryKeyExample.run();
 //Test.Sample.SimpleTypeQuery.run();
 //Test.Sample.DocumentStorage.run();
