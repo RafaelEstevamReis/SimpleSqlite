@@ -30,7 +30,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Gets if this instance is an InMemoryDatabase
         /// </summary>
-        public bool IsInMmemoryDatabase { get; private set; }
+        public bool IsInMemoryDatabase { get; private set; }
 
         /// <summary>
         /// Database file full path
@@ -416,7 +416,7 @@ namespace Simple.Sqlite
 
             return new SqliteDB(builder, fileName)
             {
-                IsInMmemoryDatabase = true,
+                IsInMemoryDatabase = true,
             };
         }
 

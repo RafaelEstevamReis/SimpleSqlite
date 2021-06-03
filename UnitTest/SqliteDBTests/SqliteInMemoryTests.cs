@@ -14,6 +14,9 @@ namespace UnitTest.SqliteDBTests
             // the test, cannot know the current number
             // "InMemoryXXX"
             Assert.StartsWith("InMemory", db.DatabaseFileName);
+
+            Assert.True(db.IsInMemoryDatabase);
+
         }
     }
 }
