@@ -32,7 +32,6 @@ namespace Simple.Sqlite
         /// Gets if this instance is an InMemoryDatabase
         /// </summary>
         public bool IsInMemoryDatabase { get; private set; }
-        //bool shouldDisposeConnections => !IsInMemoryDatabase;
         SQLiteConnection permanentConnection;
         #endregion
 
@@ -96,17 +95,6 @@ namespace Simple.Sqlite
             sqliteConnection.Open();
             return sqliteConnection;
         }
-        //private SQLiteConnection getConnection()
-        //{
-        //    if (shouldDisposeConnections) 
-        //        return getNewConnection();
-        //
-        //    if (permanentConnection == null) 
-        //        permanentConnection = getNewConnection();
-        //
-        //    return permanentConnection;
-        //}
-
         private T doStuffWithConnection<T>(Func<SQLiteConnection, T> executeStuff)
         {
             SQLiteConnection cnn;
@@ -133,7 +121,6 @@ namespace Simple.Sqlite
             return result;
         }
 
-
         /// <summary>
         /// Builds the table creation sequence, should be finished with Commit()
         /// </summary>
@@ -154,14 +141,14 @@ namespace Simple.Sqlite
         /// <summary>
         /// Gets the schema for a table
         /// </summary>
-        public DataTable GetTableSchema(string TableName)
+        public DataTable GetTableSchema(string tableName)
         {
             //var cnn = getConnection();
             return doStuffWithConnection(cnn =>
             {
                 using var cmd = cnn.CreateCommand();
 
-                cmd.CommandText = $"SELECT * FROM {TableName} LIMIT 0";
+                cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
 
                 var reader = cmd.ExecuteReader();
 
@@ -173,19 +160,19 @@ namespace Simple.Sqlite
         /// Use 'Execute' instead
         /// </summary>
         [Obsolete("Use 'Execute' instead")]
-        public int ExecuteNonQuery(string Text, object Parameters = null) => Execute(Text, Parameters);
+        public int ExecuteNonQuery(string text, object parameters = null) => Execute(text, parameters);
 
         /// <summary>
         /// Executes a NonQuery command, this method locks the execution
         /// </summary>
-        public int Execute(string Text, object Parameters = null)
+        public int Execute(string text, object parameters = null)
         {
             return doStuffWithConnection(cnn =>
             {
                 using var cmd = cnn.CreateCommand();
 
-                cmd.CommandText = Text;
-                fillParameters(cmd, Parameters);
+                cmd.CommandText = text;
+                fillParameters(cmd, parameters);
 
                 lock (lockNonQuery)
                 {
@@ -196,14 +183,14 @@ namespace Simple.Sqlite
         /// <summary>
         /// Executes a Scalar commands and return the value as T
         /// </summary>
-        public T ExecuteScalar<T>(string Text, object Parameters)
+        public T ExecuteScalar<T>(string text, object parameters)
         {
             return doStuffWithConnection(cnn =>
             {
                 using var cmd = cnn.CreateCommand();
 
-                cmd.CommandText = Text;
-                fillParameters(cmd, Parameters);
+                cmd.CommandText = text;
+                fillParameters(cmd, parameters);
 
                 var obj = cmd.ExecuteScalar();
 
@@ -224,14 +211,14 @@ namespace Simple.Sqlite
         /// <summary>
         /// Executes a query and returns as DataTable
         /// </summary>
-        public DataTable ExecuteReader(string Text, object Parameters)
+        public DataTable ExecuteReader(string text, object parameters)
         {
             return doStuffWithConnection(cnn =>
             {
                 using var cmd = cnn.CreateCommand();
 
-                cmd.CommandText = Text;
-                fillParameters(cmd, Parameters);
+                cmd.CommandText = text;
+                fillParameters(cmd, parameters);
 
                 DataTable dt = new DataTable();
                 var da = new SQLiteDataAdapter(cmd.CommandText, cnn);
@@ -279,53 +266,56 @@ namespace Simple.Sqlite
         /// Use 'Query' instead
         /// </summary>
         [Obsolete("Use 'Query' instead")]
-        public IEnumerable<T> ExecuteQuery<T>(string Text, object Parameters)
+        public IEnumerable<T> ExecuteQuery<T>(string text, object parameters)
         {
-            return Query<T>(Text, Parameters);
+            return Query<T>(text, parameters);
         }
         /// <summary>
         /// Executes a query and returns the result the first T, 
         /// or InvalidOperationException if empty
         /// </summary>
-        public T QueryFirst<T>(string Text, object Parameters) => Query<T>(Text, Parameters).First();
+        public T QueryFirst<T>(string text, object parameters)
+            => Query<T>(text, parameters).First();
         /// <summary>
         /// Executes a query and returns the result the first T or Defult(T)
         /// </summary>
-        public T QueryOrDefault<T>(string Text, object Parameters) => Query<T>(Text, Parameters).FirstOrDefault();
+        public T QueryOrDefault<T>(string text, object parameters)
+            => Query<T>(text, parameters).FirstOrDefault();
 
         /// <summary>
         /// Gets a single T with specified table KeyValue on KeyColumn
         /// </summary>
-        public T Get<T>(object KeyValue) => Get<T>(null, KeyValue);
+        public T Get<T>(object keyValue) => Get<T>(null, keyValue);
         /// <summary>
         /// Gets a single T with specified table KeyValue on KeyColumn
         /// </summary>
-        public T Get<T>(string KeyColumn, object KeyValue)
+        public T Get<T>(string keyColumn, object keyValue)
         {
             var info = typeCollection.GetInfo<T>();
 
-            string keyColumn = KeyColumn
+            string column = keyColumn
                             ?? info.Items.Where(o => o.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey))
                                    .Select(o => o.Name)
                                    .FirstOrDefault()
                             ?? "_rowid_";
 
-            return Query<T>($"SELECT * FROM {info.TypeName} WHERE {keyColumn} = @KeyValue ", new { KeyValue })
+            return Query<T>($"SELECT * FROM {info.TypeName} WHERE {column} = @KeyValue ", new { keyValue })
                     .FirstOrDefault();
         }
         /// <summary>
         /// Queries the database to all T rows in the table
         /// </summary>
-        public IEnumerable<T> GetAll<T>() => Query<T>($"SELECT * FROM {typeof(T).Name} ", null);
+        public IEnumerable<T> GetAll<T>() 
+            => Query<T>($"SELECT * FROM {typeof(T).Name} ", null);
 
         /// <summary>
         /// Queries the database to all T rows in the table with specified table KeyValue on KeyColumn
         /// </summary>
-        public IEnumerable<T> GetAllWhere<T>(string FilterColumn, object FilterValue)
+        public IEnumerable<T> GetAllWhere<T>(string filterColumn, object filterValue)
         {
-            if (FilterColumn is null) throw new ArgumentNullException(nameof(FilterColumn));
+            if (filterColumn is null) throw new ArgumentNullException(nameof(filterColumn));
 
-            return Query<T>($"SELECT * FROM {typeof(T).Name} WHERE {FilterColumn} = @FilterValue ", new { FilterValue });
+            return Query<T>($"SELECT * FROM {typeof(T).Name} WHERE {filterColumn} = @FilterValue ", new { filterValue });
         }
 
         private string[] getSchemaColumns(IDataReader reader)
@@ -338,18 +328,20 @@ namespace Simple.Sqlite
         /// <summary>
         /// Inserts a new T and return it's ID, this method locks the execution
         /// </summary>
-        /// <param name="Item">Item to be added</param>
+        /// <param name="item">Item to be added</param>
         /// <param name="resolution">Conflict resolution method</param>
         /// <param name="tableName">Name of the table, uses T class name if null</param>
         /// <returns></returns>
-        public long Insert<T>(T Item, OnConflict resolution = OnConflict.Abort, string tableName = null) => ExecuteScalar<long>(buildInsertSql<T>(resolution, tableName), Item);
+        public long Insert<T>(T item, OnConflict resolution = OnConflict.Abort, string tableName = null) 
+            => ExecuteScalar<long>(buildInsertSql<T>(resolution, tableName), item);
 
         /// <summary>
         /// Inserts a new T and return it's ID, this method locks the execution
         /// </summary>
         /// <returns></returns>
         [Obsolete("Use Insert<T> instead", true)]
-        public long InsertInto<T>(T Item, OnConflict resolution = OnConflict.Abort, string tableName = null) => Insert<T>(Item, resolution, tableName);
+        public long InsertInto<T>(T item, OnConflict resolution = OnConflict.Abort, string tableName = null) 
+            => Insert<T>(item, resolution, tableName);
 
         /// <summary>
         /// Inserts a new T or replace with current T and return it's ID, this method locks the execution.
@@ -357,15 +349,16 @@ namespace Simple.Sqlite
         /// Must have a [Unique] or PK column. 
         /// </summary>
         /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
-        public long InsertOrReplace<T>(T Item) => Insert<T>(Item, OnConflict.Replace);
+        public long InsertOrReplace<T>(T item) 
+            => Insert<T>(item, OnConflict.Replace);
 
         /// <summary>
         /// Inserts many T items into the database and return their IDs, this method locks the execution
         /// </summary>
-        /// <param name="Items">Items to be inserted</param>
+        /// <param name="items">Items to be inserted</param>
         /// <param name="resolution">Conflict resolution method</param>
         /// <param name="tableName">Name of the table, uses T class name if null</param>
-        public long[] BulkInsert<T>(IEnumerable<T> Items, OnConflict resolution = OnConflict.Abort, string tableName = null)
+        public long[] BulkInsert<T>(IEnumerable<T> items, OnConflict resolution = OnConflict.Abort, string tableName = null)
         {
             return doStuffWithConnection(cnn =>
             {
@@ -376,7 +369,7 @@ namespace Simple.Sqlite
                 {
                     using var trn = cnn.BeginTransaction();
 
-                    foreach (var item in Items)
+                    foreach (var item in items)
                     {
                         using var cmd = new SQLiteCommand(sql, cnn, trn);
                         fillParameters(cmd, item);
@@ -395,7 +388,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Inserts many T items into the database and return their IDs, this method locks the execution
         /// </summary>
-        public long[] BulkInsert<T>(IEnumerable<T> Items, bool addReplace) => BulkInsert<T>(Items, addReplace ? OnConflict.Replace : OnConflict.Abort, null);
+        public long[] BulkInsert<T>(IEnumerable<T> items, bool addReplace) => BulkInsert<T>(items, addReplace ? OnConflict.Replace : OnConflict.Abort, null);
 
         /// <summary>
         /// Creates an online backup of the current database.
@@ -447,17 +440,17 @@ namespace Simple.Sqlite
             }
         }
 
-        private void fillParameters(SQLiteCommand cmd, object Parameters, TypeInfo type = null)
+        private void fillParameters(SQLiteCommand cmd, object parameters, TypeInfo type = null)
         {
-            if (Parameters == null) return;
+            if (parameters == null) return;
 
-            if (type == null) type = typeCollection.GetInfo(Parameters.GetType());
+            if (type == null) type = typeCollection.GetInfo(parameters.GetType());
 
             foreach (var p in type.Items)
             {
                 if (!p.CanRead) continue;
-                var value = TypeHelper.ReadParamValue(p, Parameters);
-                adjustInsertValue(ref value, p, Parameters);
+                var value = TypeHelper.ReadParamValue(p, parameters);
+                adjustInsertValue(ref value, p, parameters);
 
                 cmd.Parameters.AddWithValue(p.Name, value);
             }

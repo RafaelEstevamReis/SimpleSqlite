@@ -444,7 +444,12 @@
         </member>
         <member name="F:Simple.Sqlite.SqliteDB.EnabledDatabaseBackup">
             <summary>
-            Allows any instance of SqliteDB to executa a backup of the current database
+            Allows any instance of SqliteDB to execute a backup of the current database
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.SqliteDB.IsInMemoryDatabase">
+            <summary>
+            Gets if this instance is an InMemoryDatabase
             </summary>
         </member>
         <member name="P:Simple.Sqlite.SqliteDB.DatabaseFileName">
@@ -537,7 +542,7 @@
             <summary>
             Inserts a new T and return it's ID, this method locks the execution
             </summary>
-            <param name="Item">Item to be added</param>
+            <param name="item">Item to be added</param>
             <param name="resolution">Conflict resolution method</param>
             <param name="tableName">Name of the table, uses T class name if null</param>
             <returns></returns>
@@ -551,7 +556,7 @@
         <member name="M:Simple.Sqlite.SqliteDB.InsertOrReplace``1(``0)">
             <summary>
             Inserts a new T or replace with current T and return it's ID, this method locks the execution.
-            When a Repalce occurs, the row is first deleted then re-inserted.
+            When a Replace occurs, the row is first deleted then re-inserted.
             Must have a [Unique] or PK column. 
             </summary>
             <returns>Returns `sqlite3:last_insert_rowid()`</returns>
@@ -560,13 +565,24 @@
             <summary>
             Inserts many T items into the database and return their IDs, this method locks the execution
             </summary>
-            <param name="Items">Items to be inserted</param>
+            <param name="items">Items to be inserted</param>
             <param name="resolution">Conflict resolution method</param>
             <param name="tableName">Name of the table, uses T class name if null</param>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.BulkInsert``1(System.Collections.Generic.IEnumerable{``0},System.Boolean)">
             <summary>
             Inserts many T items into the database and return their IDs, this method locks the execution
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.CreateBackup(System.String)">
+            <summary>
+            Creates an online backup of the current database.
+            Can be used to save an InMemory database
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.CreateInMemory">
+            <summary>
+            Creates a InMemory database instance
             </summary>
         </member>
     </members>
