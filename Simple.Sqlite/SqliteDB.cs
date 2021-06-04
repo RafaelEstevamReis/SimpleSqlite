@@ -30,7 +30,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Gets if this instance is an InMemoryDatabase
         /// </summary>
-        public bool IsInMmemoryDatabase { get; private set; }
+        public bool IsInMemoryDatabase { get; private set; }
 
         /// <summary>
         /// Database file full path
@@ -408,14 +408,15 @@ namespace Simple.Sqlite
         /// </summary>
         public static SqliteDB CreateInMemory()
         {
-            string fileName = $"InMemory{inMemoryCounter++:000}";
+            var ticksPart = DateTime.UtcNow.Ticks % 1000000;
+            string fileName = $"InMemory{inMemoryCounter++:000}_{ticksPart}";
 
             // Data Source=InMemorySample;Mode=Memory;Cache=Shared
             var builder = new SQLiteConnectionStringBuilder($"Data Source={fileName};Mode=Memory;Cache=Shared");
 
             return new SqliteDB(builder, fileName)
             {
-                IsInMmemoryDatabase = true,
+                IsInMemoryDatabase = true,
             };
         }
 

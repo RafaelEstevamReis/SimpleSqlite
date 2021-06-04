@@ -28,6 +28,8 @@
 
   <ItemGroup>
     <PackageReference Include="Simple.DatabaseWrapper" Version="1.2.1" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.2">
+      
+    </PackageReference>
   </ItemGroup>
 </Project>
