@@ -18,19 +18,23 @@ namespace Simple.Sqlite
     public class SqliteDB
     {
         /// <summary>
-        /// Allows any instance of SqliteDB to executa a backup of the current database
+        /// Allows any instance of SqliteDB to execute a backup of the current database
         /// </summary>
         public static bool EnabledDatabaseBackup = true;
-        private static int inMemoryCounter = 1;
 
         // Manual lock on Writes to avoid Exceptions
         private readonly object lockNonQuery;
         private readonly string cnnString;
         private readonly ReaderCachedCollection typeCollection;
+
+        #region In Memory
         /// <summary>
         /// Gets if this instance is an InMemoryDatabase
         /// </summary>
         public bool IsInMemoryDatabase { get; private set; }
+        bool shouldDisposeConnections => !IsInMemoryDatabase;
+        SQLiteConnection permanentConnection;
+        #endregion
 
         /// <summary>
         /// Database file full path
@@ -88,9 +92,21 @@ namespace Simple.Sqlite
 
         private SQLiteConnection getConnection()
         {
-            var sqliteConnection = new SQLiteConnection(cnnString);
-            sqliteConnection.Open();
-            return sqliteConnection;
+            if (shouldDisposeConnections)
+            {
+                var sqliteConnection = new SQLiteConnection(cnnString);
+                sqliteConnection.Open();
+                return sqliteConnection;
+            }
+            else
+            {
+                if (permanentConnection == null)
+                {
+                    permanentConnection = new SQLiteConnection(cnnString);
+                    permanentConnection.Open();
+                }
+                return permanentConnection;
+            }
         }
         /// <summary>
         /// Builds the table creation sequence, should be finished with Commit()
@@ -114,12 +130,14 @@ namespace Simple.Sqlite
         /// </summary>
         public DataTable GetTableSchema(string TableName)
         {
-            using var cnn = getConnection();
+            var cnn = getConnection();
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = $"SELECT * FROM {TableName} LIMIT 0";
 
             var reader = cmd.ExecuteReader();
+
+            if (shouldDisposeConnections) cnn.Dispose();
 
             return reader.GetSchemaTable();
         }
@@ -135,7 +153,7 @@ namespace Simple.Sqlite
         /// </summary>
         public int Execute(string Text, object Parameters = null)
         {
-            using var cnn = getConnection();
+            var cnn = getConnection();
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = Text;
@@ -143,7 +161,10 @@ namespace Simple.Sqlite
 
             lock (lockNonQuery)
             {
-                return cmd.ExecuteNonQuery();
+                var result = cmd.ExecuteNonQuery();
+                if (shouldDisposeConnections) cnn.Dispose();
+
+                return result;
             }
         }
         /// <summary>
@@ -151,13 +172,14 @@ namespace Simple.Sqlite
         /// </summary>
         public T ExecuteScalar<T>(string Text, object Parameters)
         {
-            using var cnn = getConnection();
+            var cnn = getConnection();
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = Text;
             fillParameters(cmd, Parameters);
 
             var obj = cmd.ExecuteScalar();
+            if (shouldDisposeConnections) cnn.Dispose();
 
             // In SQLite DateTime is returned as STRING after aggregate operations
             if (typeof(T) == typeof(DateTime))
@@ -177,7 +199,7 @@ namespace Simple.Sqlite
         /// </summary>
         public DataTable ExecuteReader(string Text, object Parameters)
         {
-            using var cnn = getConnection();
+            var cnn = getConnection();
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = Text;
@@ -186,6 +208,8 @@ namespace Simple.Sqlite
             DataTable dt = new DataTable();
             var da = new SQLiteDataAdapter(cmd.CommandText, cnn);
             da.Fill(dt);
+
+            if (shouldDisposeConnections) cnn.Dispose();
             return dt;
         }
 
@@ -195,7 +219,7 @@ namespace Simple.Sqlite
         public IEnumerable<T> Query<T>(string Text, object Parameters)
         {
             var typeT = typeof(T);
-            using var cnn = getConnection();
+            var cnn = getConnection();
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = Text;
@@ -218,6 +242,8 @@ namespace Simple.Sqlite
                     yield return TypeMapper.MapObject<T>(colNames, reader, typeCollection);
                 }
             }
+            if (shouldDisposeConnections) cnn.Dispose();
+
         }
         /// <summary>
         /// Use 'Query' instead
@@ -297,7 +323,7 @@ namespace Simple.Sqlite
 
         /// <summary>
         /// Inserts a new T or replace with current T and return it's ID, this method locks the execution.
-        /// When a Repalce occurs, the row is first deleted then re-inserted.
+        /// When a Replace occurs, the row is first deleted then re-inserted.
         /// Must have a [Unique] or PK column. 
         /// </summary>
         /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
@@ -314,7 +340,7 @@ namespace Simple.Sqlite
             List<long> ids = new List<long>();
             string sql = buildInsertSql<T>(resolution, tableName);
 
-            using var cnn = getConnection();
+            var cnn = getConnection();
 
             lock (lockNonQuery)
             {
@@ -331,6 +357,9 @@ namespace Simple.Sqlite
 
                 trn.Commit();
             }
+            
+            if (shouldDisposeConnections) cnn.Dispose();
+
             return ids.ToArray();
         }
 
@@ -338,6 +367,28 @@ namespace Simple.Sqlite
         /// Inserts many T items into the database and return their IDs, this method locks the execution
         /// </summary>
         public long[] BulkInsert<T>(IEnumerable<T> Items, bool addReplace) => BulkInsert<T>(Items, addReplace ? OnConflict.Replace : OnConflict.Abort, null);
+
+        /// <summary>
+        /// Creates an online backup of the current database.
+        /// Can be used to save an InMemory database
+        /// </summary>
+        public void CreateBackup(string FileName)
+        {
+            var source = getConnection();
+
+            SQLiteConnectionStringBuilder sb = new SQLiteConnectionStringBuilder
+            {
+                DataSource = DatabaseFileName,
+                Version = 3
+            };
+            using var destination = new SQLiteConnection(sb.ToString());
+
+            source.Open();
+            destination.Open();
+            source.BackupDatabase(destination, "main", "main", -1, null, 0);
+
+            if (shouldDisposeConnections) source.Dispose();
+        }
 
         private string buildInsertSql<T>(OnConflict resolution, string tableName = null)
         {
@@ -402,19 +453,14 @@ namespace Simple.Sqlite
             }
         }
 
-        /* Estáticos */
+        /* Statics */
         /// <summary>
         /// Creates a InMemory database instance
         /// </summary>
         public static SqliteDB CreateInMemory()
         {
-            var ticksPart = DateTime.UtcNow.Ticks % 1000000;
-            string fileName = $"InMemory{inMemoryCounter++:000}_{ticksPart}";
-
-            // Data Source=InMemorySample;Mode=Memory;Cache=Shared
-            var builder = new SQLiteConnectionStringBuilder($"Data Source={fileName};Mode=Memory;Cache=Shared");
-
-            return new SqliteDB(builder, fileName)
+            var builder = new SQLiteConnectionStringBuilder($"Data Source=:memory:");
+            return new SqliteDB(builder, "")
             {
                 IsInMemoryDatabase = true,
             };
