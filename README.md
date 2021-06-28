@@ -81,7 +81,7 @@ db.Insert(d);
 // use GetAll to retrieve all data
 var allData = db.GetAll<MyData>();
 // Use queries to get back data
-var allBobs = db.ExecuteQuery<MyData>("SELECT * FROM MyData WHERE MyName = @name ", new { name = "bob" });
+var allBobs = db.Query<MyData>("SELECT * FROM MyData WHERE MyName = @name ", new { name = "bob" });
 ~~~
 
 ## What this module automates ?
@@ -97,7 +97,7 @@ var allData = db.GetAll<MyData>();
 And supports objects (even anonymous) as parameters 
 
 ~~~C#
-var allBobs = db.ExecuteQuery<MyData>("SELECT * FROM MyData WHERE MyName = @name ", new { name = "bob" });
+var allBobs = db.Query<MyData>("SELECT * FROM MyData WHERE MyName = @name ", new { name = "bob" });
 ~~~
 
 Also, it supports easy Insertion
