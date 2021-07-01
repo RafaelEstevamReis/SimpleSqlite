@@ -95,31 +95,45 @@ namespace Simple.Sqlite
             sqliteConnection.Open();
             return sqliteConnection;
         }
-        private T doStuffWithConnection<T>(Func<SQLiteConnection, T> executeStuff)
+        private SQLiteConnection getConnection()
         {
-            SQLiteConnection cnn;
-
             if (IsInMemoryDatabase)
             {
                 if (permanentConnection == null)
                     permanentConnection = getNewConnection();
 
-                cnn = permanentConnection;
+                return permanentConnection;
             }
             else
             {
-                cnn = getNewConnection();
+                return getNewConnection();
             }
-
-            var result = executeStuff(cnn);
-
-            if (!IsInMemoryDatabase)
-            {
-                cnn.Dispose();
-            }
-
-            return result;
         }
+        //private T doStuffWithConnection<T>(Func<SQLiteConnection, T> executeStuff)
+        //{
+        //    SQLiteConnection cnn;
+
+        //    if (IsInMemoryDatabase)
+        //    {
+        //        if (permanentConnection == null)
+        //            permanentConnection = getNewConnection();
+
+        //        cnn = permanentConnection;
+        //    }
+        //    else
+        //    {
+        //        cnn = getNewConnection();
+        //    }
+
+        //    var result = executeStuff(cnn);
+
+        //    if (!IsInMemoryDatabase)
+        //    {
+        //        cnn.Dispose();
+        //    }
+
+        //    return result;
+        //}
 
         /// <summary>
         /// Builds the table creation sequence, should be finished with Commit()
@@ -143,17 +157,17 @@ namespace Simple.Sqlite
         /// </summary>
         public DataTable GetTableSchema(string tableName)
         {
-            //var cnn = getConnection();
-            return doStuffWithConnection(cnn =>
-            {
-                using var cmd = cnn.CreateCommand();
+            var cnn = getConnection();
 
-                cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
+            using var cmd = cnn.CreateCommand();
 
-                var reader = cmd.ExecuteReader();
+            cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
 
-                return reader.GetSchemaTable();
-            });
+            var reader = cmd.ExecuteReader();
+
+            if (!IsInMemoryDatabase) cnn.Close();
+
+            return reader.GetSchemaTable();
         }
 
         /// <summary>
@@ -167,45 +181,44 @@ namespace Simple.Sqlite
         /// </summary>
         public int Execute(string text, object parameters = null)
         {
-            return doStuffWithConnection(cnn =>
+            var cnn = getConnection();
+            using var cmd = cnn.CreateCommand();
+
+            cmd.CommandText = text;
+            fillParameters(cmd, parameters);
+
+            lock (lockNonQuery)
             {
-                using var cmd = cnn.CreateCommand();
-
-                cmd.CommandText = text;
-                fillParameters(cmd, parameters);
-
-                lock (lockNonQuery)
-                {
-                    return cmd.ExecuteNonQuery();
-                }
-            });
+                int val = cmd.ExecuteNonQuery();
+                if (!IsInMemoryDatabase) cnn.Close();
+                return val;
+            }
         }
         /// <summary>
         /// Executes a Scalar commands and return the value as T
         /// </summary>
         public T ExecuteScalar<T>(string text, object parameters)
         {
-            return doStuffWithConnection(cnn =>
+            var cnn = getConnection();
+
+            using var cmd = cnn.CreateCommand();
+
+            cmd.CommandText = text;
+            fillParameters(cmd, parameters);
+
+            var obj = cmd.ExecuteScalar();
+            if (!IsInMemoryDatabase) cnn.Close();
+
+            // In SQLite DateTime is returned as STRING after aggregate operations
+            if (typeof(T) == typeof(DateTime))
             {
-                using var cmd = cnn.CreateCommand();
-
-                cmd.CommandText = text;
-                fillParameters(cmd, parameters);
-
-                var obj = cmd.ExecuteScalar();
-
-                // In SQLite DateTime is returned as STRING after aggregate operations
-                if (typeof(T) == typeof(DateTime))
+                if (DateTime.TryParse(obj.ToString(), out DateTime dt))
                 {
-                    if (DateTime.TryParse(obj.ToString(), out DateTime dt))
-                    {
-                        return (T)(object)dt;
-                    }
-                    return default;
+                    return (T)(object)dt;
                 }
-
-                return (T)Convert.ChangeType(obj, typeof(T));
-            });
+                return default;
+            }
+            return (T)Convert.ChangeType(obj, typeof(T));
         }
 
         /// <summary>
@@ -213,19 +226,18 @@ namespace Simple.Sqlite
         /// </summary>
         public DataTable ExecuteReader(string text, object parameters)
         {
-            return doStuffWithConnection(cnn =>
-            {
-                using var cmd = cnn.CreateCommand();
+            var cnn = getConnection();
+            using var cmd = cnn.CreateCommand();
 
-                cmd.CommandText = text;
-                fillParameters(cmd, parameters);
+            cmd.CommandText = text;
+            fillParameters(cmd, parameters);
 
-                DataTable dt = new DataTable();
-                var da = new SQLiteDataAdapter(cmd.CommandText, cnn);
-                da.Fill(dt);
+            DataTable dt = new DataTable();
+            var da = new SQLiteDataAdapter(cmd.CommandText, cnn);
+            da.Fill(dt);
+            if (!IsInMemoryDatabase) cnn.Close();
 
-                return dt;
-            });
+            return dt;
         }
 
         /// <summary>
@@ -233,10 +245,8 @@ namespace Simple.Sqlite
         /// </summary>
         public IEnumerable<T> Query<T>(string text, object parameters)
         {
-            return doStuffWithConnection(cnn => _query<T>(cnn, text, parameters));
-        }
-        private IEnumerable<T> _query<T>(SQLiteConnection cnn, string text, object parameters)
-        {
+            var cnn = getConnection();
+
             var typeT = typeof(T);
             using var cmd = cnn.CreateCommand();
 
@@ -260,6 +270,7 @@ namespace Simple.Sqlite
                     yield return TypeMapper.MapObject<T>(colNames, reader, typeCollection);
                 }
             }
+            if (!IsInMemoryDatabase) cnn.Close();
         }
 
         /// <summary>
@@ -267,9 +278,8 @@ namespace Simple.Sqlite
         /// </summary>
         [Obsolete("Use 'Query' instead")]
         public IEnumerable<T> ExecuteQuery<T>(string text, object parameters)
-        {
-            return Query<T>(text, parameters);
-        }
+            => Query<T>(text, parameters);
+
         /// <summary>
         /// Executes a query and returns the result the first T, 
         /// or InvalidOperationException if empty
@@ -305,7 +315,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Queries the database to all T rows in the table
         /// </summary>
-        public IEnumerable<T> GetAll<T>() 
+        public IEnumerable<T> GetAll<T>()
             => Query<T>($"SELECT * FROM {typeof(T).Name} ", null);
 
         /// <summary>
@@ -332,7 +342,7 @@ namespace Simple.Sqlite
         /// <param name="resolution">Conflict resolution method</param>
         /// <param name="tableName">Name of the table, uses T class name if null</param>
         /// <returns></returns>
-        public long Insert<T>(T item, OnConflict resolution = OnConflict.Abort, string tableName = null) 
+        public long Insert<T>(T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
             => ExecuteScalar<long>(buildInsertSql<T>(resolution, tableName), item);
 
         /// <summary>
@@ -340,7 +350,7 @@ namespace Simple.Sqlite
         /// </summary>
         /// <returns></returns>
         [Obsolete("Use Insert<T> instead", true)]
-        public long InsertInto<T>(T item, OnConflict resolution = OnConflict.Abort, string tableName = null) 
+        public long InsertInto<T>(T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
             => Insert<T>(item, resolution, tableName);
 
         /// <summary>
@@ -349,7 +359,7 @@ namespace Simple.Sqlite
         /// Must have a [Unique] or PK column. 
         /// </summary>
         /// <returns>Returns `sqlite3:last_insert_rowid()`</returns>
-        public long InsertOrReplace<T>(T item) 
+        public long InsertOrReplace<T>(T item)
             => Insert<T>(item, OnConflict.Replace);
 
         /// <summary>
@@ -360,29 +370,29 @@ namespace Simple.Sqlite
         /// <param name="tableName">Name of the table, uses T class name if null</param>
         public long[] BulkInsert<T>(IEnumerable<T> items, OnConflict resolution = OnConflict.Abort, string tableName = null)
         {
-            return doStuffWithConnection(cnn =>
+            var cnn = getConnection();
+
+            List<long> ids = new List<long>();
+            string sql = buildInsertSql<T>(resolution, tableName);
+
+            lock (lockNonQuery)
             {
-                List<long> ids = new List<long>();
-                string sql = buildInsertSql<T>(resolution, tableName);
+                using var trn = cnn.BeginTransaction();
 
-                lock (lockNonQuery)
+                foreach (var item in items)
                 {
-                    using var trn = cnn.BeginTransaction();
+                    using var cmd = new SQLiteCommand(sql, cnn, trn);
+                    fillParameters(cmd, item);
 
-                    foreach (var item in items)
-                    {
-                        using var cmd = new SQLiteCommand(sql, cnn, trn);
-                        fillParameters(cmd, item);
-
-                        var scalar = cmd.ExecuteScalar();
-                        if (scalar is long sL) ids.Add(sL);
-                    }
-
-                    trn.Commit();
+                    var scalar = cmd.ExecuteScalar();
+                    if (scalar is long sL) ids.Add(sL);
                 }
 
-                return ids.ToArray();
-            });
+                trn.Commit();
+            }
+
+            if (!IsInMemoryDatabase) cnn.Close();
+            return ids.ToArray();
         }
 
         /// <summary>
@@ -396,20 +406,17 @@ namespace Simple.Sqlite
         /// </summary>
         public void CreateBackup(string fileName)
         {
-            doStuffWithConnection<object>(source =>
+            var source = getConnection();
+            SQLiteConnectionStringBuilder sb = new SQLiteConnectionStringBuilder
             {
-                SQLiteConnectionStringBuilder sb = new SQLiteConnectionStringBuilder
-                {
-                    DataSource = fileName,
-                    Version = 3
-                };
-                using var destination = new SQLiteConnection(sb.ToString());
+                DataSource = fileName,
+                Version = 3
+            };
+            using var destination = new SQLiteConnection(sb.ToString());
+            destination.Open();
+            source.BackupDatabase(destination, "main", "main", -1, null, 0);
 
-                source.Open();
-                destination.Open();
-                source.BackupDatabase(destination, "main", "main", -1, null, 0);
-                return null;
-            });
+            if (!IsInMemoryDatabase) source.Close();
         }
 
         private string buildInsertSql<T>(OnConflict resolution, string tableName = null)
