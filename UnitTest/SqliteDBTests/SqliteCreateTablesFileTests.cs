@@ -1,15 +1,17 @@
 ﻿using Simple.Sqlite;
+using System;
+using System.IO;
 using UnitTest.TestModels;
 using Xunit;
 
 namespace UnitTest.SqliteDBTests
 {
-    public class SqliteCreateTablesTests
+    public class SqliteCreateTablesFileTests : SqliteFileTests
     {
         [Fact]
-        public void SqliteDB_InMemory_CreateTable_Result()
+        public void SqliteDB_File_CreateTable_Result()
         {
-            var db = SqliteDB.CreateInMemory();
+            var db = GetDb();
             // Assert that thar are no tables
             Assert.Empty(db.GetAllTables());
 
@@ -25,7 +27,5 @@ namespace UnitTest.SqliteDBTests
             Assert.True(result[0].WasTableCreated);
             Assert.Empty(result[0].ColumnsAdded);
         }
-
-
     }
 }
