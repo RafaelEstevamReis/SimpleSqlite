@@ -233,8 +233,9 @@ namespace Simple.Sqlite
             fillParameters(cmd, parameters);
 
             DataTable dt = new DataTable();
-            var da = new SQLiteDataAdapter(cmd.CommandText, cnn);
+            using var da = new SQLiteDataAdapter(cmd.CommandText, cnn);
             da.Fill(dt);
+
             if (!IsInMemoryDatabase) cnn.Close();
 
             return dt;
