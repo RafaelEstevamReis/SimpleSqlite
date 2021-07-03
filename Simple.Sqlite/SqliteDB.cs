@@ -164,10 +164,10 @@ namespace Simple.Sqlite
             cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
 
             var reader = cmd.ExecuteReader();
+            var dt = reader.GetSchemaTable();
 
             if (!IsInMemoryDatabase) cnn.Close();
-
-            return reader.GetSchemaTable();
+            return dt;
         }
 
         /// <summary>
@@ -423,8 +423,8 @@ namespace Simple.Sqlite
         {
             var info = typeCollection.GetInfo<T>();
             if (tableName == null) tableName = info.TypeName;
-
-            var names = getNames(info);
+            
+            var names = getNames(info, !info.IsAnonymousType);
             var fields = string.Join(",", names);
             var values = string.Join(",", names.Select(n => $"@{n}"));
 
@@ -495,11 +495,12 @@ namespace Simple.Sqlite
             };
         }
 
-        private static IEnumerable<string> getNames(TypeInfo type)
+        private static IEnumerable<string> getNames(TypeInfo type, bool needWrite)
         {
             return type.Items
                        .Where(o => !o.Is(DatabaseWrapper.ColumnAttributes.Ignore))
-                       .Where(o => o.CanRead && o.CanWrite)
+                       .Where(o => o.CanRead)
+                       .Where(o => !needWrite || o.CanWrite) // This is confusing
                        .Select(o => o.Name);
         }
 
