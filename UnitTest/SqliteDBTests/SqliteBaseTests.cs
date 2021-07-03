@@ -10,6 +10,7 @@ namespace UnitTest.SqliteDBTests
         {
             var db = SqliteDB.CreateInMemory();
             Assert.Equal(1, db.ExecuteScalar<int>("SELECT 1", null));
+            Assert.Equal(1, db.QueryFirst<int>("SELECT 1", null));
         }
 
     }

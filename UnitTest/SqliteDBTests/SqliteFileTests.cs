@@ -1,6 +1,5 @@
 ﻿using Simple.Sqlite;
 using System;
-using System.Data.SQLite;
 using System.IO;
 using Xunit;
 

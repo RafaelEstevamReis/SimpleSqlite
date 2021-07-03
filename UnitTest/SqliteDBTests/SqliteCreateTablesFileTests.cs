@@ -1,7 +1,4 @@
-﻿using Simple.Sqlite;
-using System;
-using System.IO;
-using UnitTest.TestModels;
+﻿using UnitTest.TestModels;
 using Xunit;
 
 namespace UnitTest.SqliteDBTests
