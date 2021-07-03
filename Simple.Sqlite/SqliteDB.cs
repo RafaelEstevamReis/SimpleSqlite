@@ -256,7 +256,11 @@ namespace Simple.Sqlite
 
             using var reader = cmd.ExecuteReader();
 
-            if (!reader.HasRows) yield break;
+            if (!reader.HasRows)
+            {
+                if (!IsInMemoryDatabase) cnn.Close();
+                yield break;
+            }
 
             var colNames = getSchemaColumns(reader);
             while (reader.Read())
@@ -286,12 +290,12 @@ namespace Simple.Sqlite
         /// or InvalidOperationException if empty
         /// </summary>
         public T QueryFirst<T>(string text, object parameters)
-            => Query<T>(text, parameters).First();
+            => getFirstOrException(Query<T>(text, parameters));
         /// <summary>
         /// Executes a query and returns the result the first T or Defult(T)
         /// </summary>
         public T QueryOrDefault<T>(string text, object parameters)
-            => Query<T>(text, parameters).FirstOrDefault();
+            => getFirstOrDefault(Query<T>(text, parameters));
 
         /// <summary>
         /// Gets a single T with specified table KeyValue on KeyColumn
@@ -309,10 +313,44 @@ namespace Simple.Sqlite
                                    .Select(o => o.Name)
                                    .FirstOrDefault()
                             ?? "_rowid_";
-
-            return Query<T>($"SELECT * FROM {info.TypeName} WHERE {column} = @KeyValue ", new { keyValue })
-                    .FirstOrDefault();
+            var data = Query<T>($"SELECT * FROM {info.TypeName} WHERE {column} = @KeyValue LIMIT 1 ", new { keyValue });
+            // The enumeration should finalize to connection be closed
+            return getFirstOrDefault(data);
         }
+        /// <summary>
+        /// Work around to fornce enumerables to finalize
+        /// The enumeration should finalize to connection be closed
+        /// </summary>
+        private static T getFirstOrDefault<T>(IEnumerable<T> data)
+        {
+            T val = default;
+            bool first = true;
+            foreach (var d in data)
+            {
+                if (!first) continue;
+                val = d;
+                first = false;
+            }
+            return val;
+        }
+        /// <summary>
+        /// Work around to fornce enumerables to finalize
+        /// The enumeration should finalize to connection be closed
+        /// </summary>
+        private static T getFirstOrException<T>(IEnumerable<T> data)
+        {
+            T val = default;
+            bool first = true;
+            foreach (var d in data)
+            {
+                if (!first) continue;
+                val = d;
+                first = false;
+            }
+            if (first) throw new InvalidOperationException("The source sequence is empty");
+            return val;
+        }
+
         /// <summary>
         /// Queries the database to all T rows in the table
         /// </summary>
@@ -424,7 +462,7 @@ namespace Simple.Sqlite
         {
             var info = typeCollection.GetInfo<T>();
             if (tableName == null) tableName = info.TypeName;
-            
+
             var names = getNames(info, !info.IsAnonymousType);
             var fields = string.Join(",", names);
             var values = string.Join(",", names.Select(n => $"@{n}"));
