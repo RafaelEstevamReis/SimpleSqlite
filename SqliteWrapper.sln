@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.Sqlite", "Simple.Sql
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{7B33158A-17AB-488A-8D75-D2220C3A0464}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{F0BA2D04-B05F-47E2-82BA-24640C141BB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTest.csproj", "{F0BA2D04-B05F-47E2-82BA-24640C141BB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest_Repo", "UnitTest_Repo\UnitTest_Repo.csproj", "{50053485-61F3-40F0-AC2D-F7974F877B7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{F0BA2D04-B05F-47E2-82BA-24640C141BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0BA2D04-B05F-47E2-82BA-24640C141BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0BA2D04-B05F-47E2-82BA-24640C141BB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50053485-61F3-40F0-AC2D-F7974F877B7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50053485-61F3-40F0-AC2D-F7974F877B7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50053485-61F3-40F0-AC2D-F7974F877B7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50053485-61F3-40F0-AC2D-F7974F877B7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
