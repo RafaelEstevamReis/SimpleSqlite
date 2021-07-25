@@ -528,6 +528,18 @@
             Gets a single T with specified table KeyValue on KeyColumn
             </summary>
         </member>
+        <member name="M:Simple.Sqlite.SqliteDB.getFirstOrDefault``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Work around to fornce enumerables to finalize
+            The enumeration should finalize to connection be closed
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.getFirstOrException``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Work around to fornce enumerables to finalize
+            The enumeration should finalize to connection be closed
+            </summary>
+        </member>
         <member name="M:Simple.Sqlite.SqliteDB.GetAll``1">
             <summary>
             Queries the database to all T rows in the table
