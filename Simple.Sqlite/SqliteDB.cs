@@ -109,31 +109,6 @@ namespace Simple.Sqlite
                 return getNewConnection();
             }
         }
-        //private T doStuffWithConnection<T>(Func<SQLiteConnection, T> executeStuff)
-        //{
-        //    SQLiteConnection cnn;
-
-        //    if (IsInMemoryDatabase)
-        //    {
-        //        if (permanentConnection == null)
-        //            permanentConnection = getNewConnection();
-
-        //        cnn = permanentConnection;
-        //    }
-        //    else
-        //    {
-        //        cnn = getNewConnection();
-        //    }
-
-        //    var result = executeStuff(cnn);
-
-        //    if (!IsInMemoryDatabase)
-        //    {
-        //        cnn.Dispose();
-        //    }
-
-        //    return result;
-        //}
 
         /// <summary>
         /// Builds the table creation sequence, should be finished with Commit()
