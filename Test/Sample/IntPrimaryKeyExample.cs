@@ -19,6 +19,7 @@ namespace Test.Sample
             db.CreateTables()
               .Add<IntSample>()
               .Commit();
+
             // reset before sample
             db.Execute("DELETE FROM IntSample");
 
