@@ -492,11 +492,6 @@
             Executes a Scalar commands and return the value as T
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.SqliteDB.ExecuteReader(System.String,System.Object)">
-            <summary>
-            Executes a query and returns as DataTable
-            </summary>
-        </member>
         <member name="M:Simple.Sqlite.SqliteDB.Query``1(System.String,System.Object)">
             <summary>
             Executes a query and returns the value as a T collection

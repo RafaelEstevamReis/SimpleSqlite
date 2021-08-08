@@ -16,7 +16,7 @@ namespace UnitTest.SqliteDBTests
 
             Assert.Equal(2, schema.Rows.Count);
             Assert.Equal("c1", schema.Rows[0][0].ToString());
-            Assert.Equal("System.Int32", schema.Rows[0]["DataType"].ToString());
+            Assert.StartsWith("System.Int", schema.Rows[0]["DataType"].ToString());
 
             Assert.Equal("c2", schema.Rows[1][0].ToString());
             Assert.Equal("System.String", schema.Rows[1]["DataType"].ToString());

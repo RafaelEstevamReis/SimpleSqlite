@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Microsoft.Data.Sqlite;
 using Simple.DatabaseWrapper.Helpers;
 using Simple.DatabaseWrapper.Interfaces;
 using Simple.DatabaseWrapper.TypeReader;
@@ -32,7 +32,7 @@ namespace Simple.Sqlite
         /// Gets if this instance is an InMemoryDatabase
         /// </summary>
         public bool IsInMemoryDatabase { get; private set; }
-        SQLiteConnection permanentConnection;
+        SqliteConnection permanentConnection;
         #endregion
 
         /// <summary>
@@ -47,21 +47,23 @@ namespace Simple.Sqlite
         {
             DatabaseFileName = new FileInfo(fileName).FullName;
             // if now exists, creates one (can be done in the ConnectionString)
-            if (!File.Exists(DatabaseFileName)) SQLiteConnection.CreateFile(DatabaseFileName);
-            else backupDatabase();
+
+            //if (!File.Exists(DatabaseFileName)) SqliteConnection.CreateFile(DatabaseFileName);
+            //else backupDatabase();
+            if (File.Exists(DatabaseFileName)) backupDatabase();
 
             // uses builder to avoid escape issues
-            SQLiteConnectionStringBuilder sb = new SQLiteConnectionStringBuilder
+            SqliteConnectionStringBuilder sb = new SqliteConnectionStringBuilder
             {
                 DataSource = DatabaseFileName,
-                Version = 3
+                //Version = 3
             };
 
             cnnString = sb.ToString();
             typeCollection = new ReaderCachedCollection();
             lockNonQuery = new object();
         }
-        private SqliteDB(SQLiteConnectionStringBuilder sb, string databaseFileName)
+        private SqliteDB(SqliteConnectionStringBuilder sb, string databaseFileName)
         {
             DatabaseFileName = databaseFileName;
             cnnString = sb.ToString();
@@ -89,13 +91,13 @@ namespace Simple.Sqlite
             File.Move(temp, bkp);
         }
 
-        private SQLiteConnection getNewConnection()
+        private SqliteConnection getNewConnection()
         {
-            var sqliteConnection = new SQLiteConnection(cnnString);
-            sqliteConnection.Open();
-            return sqliteConnection;
+            var SqliteConnection = new SqliteConnection(cnnString);
+            SqliteConnection.Open();
+            return SqliteConnection;
         }
-        private SQLiteConnection getConnection()
+        private SqliteConnection getConnection()
         {
             if (IsInMemoryDatabase)
             {
@@ -122,10 +124,7 @@ namespace Simple.Sqlite
         /// </summary>
         public string[] GetAllTables()
         {
-            var dt = ExecuteReader(@"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", null);
-            return dt.Rows.Cast<DataRow>()
-                          .Select(row => (string)row[0])
-                          .ToArray();
+            return Query<string>(@"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", null).ToArray();
         }
         /// <summary>
         /// Gets the schema for a table
@@ -196,6 +195,8 @@ namespace Simple.Sqlite
             return (T)Convert.ChangeType(obj, typeof(T));
         }
 
+        /*
+
         /// <summary>
         /// Executes a query and returns as DataTable
         /// </summary>
@@ -208,13 +209,14 @@ namespace Simple.Sqlite
             fillParameters(cmd, parameters);
 
             DataTable dt = new DataTable();
-            using var da = new SQLiteDataAdapter(cmd.CommandText, cnn);
+            using var da = new SqliteDataAdapter(cmd.CommandText, cnn);
             da.Fill(dt);
 
             if (!IsInMemoryDatabase) cnn.Close();
 
             return dt;
         }
+        */
 
         /// <summary>
         /// Executes a query and returns the value as a T collection
@@ -288,7 +290,7 @@ namespace Simple.Sqlite
                                    .Select(o => o.Name)
                                    .FirstOrDefault()
                             ?? "_rowid_";
-            var data = Query<T>($"SELECT * FROM {info.TypeName} WHERE {column} = @KeyValue LIMIT 1 ", new { keyValue });
+            var data = Query<T>($"SELECT * FROM {info.TypeName} WHERE {column} = @keyValue LIMIT 1 ", new { keyValue });
             // The enumeration should finalize to connection be closed
             return getFirstOrDefault(data);
         }
@@ -395,7 +397,7 @@ namespace Simple.Sqlite
 
                 foreach (var item in items)
                 {
-                    using var cmd = new SQLiteCommand(sql, cnn, trn);
+                    using var cmd = new SqliteCommand(sql, cnn, trn);
                     fillParameters(cmd, item);
 
                     var scalar = cmd.ExecuteScalar();
@@ -421,14 +423,14 @@ namespace Simple.Sqlite
         public void CreateBackup(string fileName)
         {
             var source = getConnection();
-            SQLiteConnectionStringBuilder sb = new SQLiteConnectionStringBuilder
+            SqliteConnectionStringBuilder sb = new SqliteConnectionStringBuilder
             {
                 DataSource = fileName,
-                Version = 3
+                //Version = 3
             };
-            using var destination = new SQLiteConnection(sb.ToString());
+            using var destination = new SqliteConnection(sb.ToString());
             destination.Open();
-            source.BackupDatabase(destination, "main", "main", -1, null, 0);
+            source.BackupDatabase(destination); //, "main", "main", -1, null, 0);
 
             if (!IsInMemoryDatabase) source.Close();
         }
@@ -461,7 +463,7 @@ namespace Simple.Sqlite
             }
         }
 
-        private void fillParameters(SQLiteCommand cmd, object parameters, TypeInfo type = null)
+        private void fillParameters(SqliteCommand cmd, object parameters, TypeInfo type = null)
         {
             if (parameters == null) return;
 
@@ -484,7 +486,8 @@ namespace Simple.Sqlite
             {
                 if (!value.Equals(0)) return;
                 // PK ints are AI
-                value = null;
+                //value = null;
+                value = DBNull.Value;
             }
             else if (p.Type == typeof(Guid))
             {
@@ -502,7 +505,7 @@ namespace Simple.Sqlite
         /// </summary>
         public static SqliteDB CreateInMemory()
         {
-            var builder = new SQLiteConnectionStringBuilder($"Data Source=:memory:");
+            var builder = new SqliteConnectionStringBuilder($"Data Source=:memory:");
             return new SqliteDB(builder, "")
             {
                 IsInMemoryDatabase = true,

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;netstandard2.0;net5.0;NET48;NET472;NET46;NET45;NET40</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;netstandard2.0;net5.0;NET48;NET472</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
     <Version>0.7.3</Version>
     <Authors>RafaelEstevam.net</Authors>
@@ -27,8 +27,6 @@ https://github.com/RafaelEstevamReis/SqliteWrapper
 
   <ItemGroup>
     <PackageReference Include="Simple.DatabaseWrapper" Version="1.2.3" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3">
-      
-    </PackageReference>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.8" />      
   </ItemGroup>
 </Project>
