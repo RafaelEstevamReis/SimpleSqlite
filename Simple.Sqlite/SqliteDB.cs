@@ -475,6 +475,8 @@ namespace Simple.Sqlite
                 var value = TypeHelper.ReadParamValue(p, parameters);
                 adjustInsertValue(ref value, p, parameters);
 
+                if (value is null) value = DBNull.Value;
+
                 cmd.Parameters.AddWithValue(p.Name, value);
             }
         }
@@ -486,8 +488,7 @@ namespace Simple.Sqlite
             {
                 if (!value.Equals(0)) return;
                 // PK ints are AI
-                //value = null;
-                value = DBNull.Value;
+                value = null;
             }
             else if (p.Type == typeof(Guid))
             {
@@ -517,7 +518,7 @@ namespace Simple.Sqlite
             return type.Items
                        .Where(o => !o.Is(DatabaseWrapper.ColumnAttributes.Ignore))
                        .Where(o => o.CanRead)
-                       .Where(o => !needWrite || o.CanWrite) // This is confusing
+                       .Where(o => !needWrite || o.CanWrite) // Be careful with NOTs and ORs
                        .Select(o => o.Name);
         }
 
