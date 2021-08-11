@@ -27,6 +27,6 @@ https://github.com/RafaelEstevamReis/SqliteWrapper
 
   <ItemGroup>
     <PackageReference Include="Simple.DatabaseWrapper" Version="1.2.3" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.8" />      
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.9" />      
   </ItemGroup>
 </Project>
