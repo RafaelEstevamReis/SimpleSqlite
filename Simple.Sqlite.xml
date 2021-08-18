@@ -554,12 +554,6 @@
             <param name="tableName">Name of the table, uses T class name if null</param>
             <returns></returns>
         </member>
-        <member name="M:Simple.Sqlite.SqliteDB.InsertInto``1(``0,Simple.Sqlite.OnConflict,System.String)">
-            <summary>
-            Inserts a new T and return it's ID, this method locks the execution
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:Simple.Sqlite.SqliteDB.InsertOrReplace``1(``0)">
             <summary>
             Inserts a new T or replace with current T and return it's ID, this method locks the execution.

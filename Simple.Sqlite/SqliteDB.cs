@@ -124,7 +124,7 @@ namespace Simple.Sqlite
         /// </summary>
         public string[] GetAllTables()
         {
-            return Query<string>(@"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", null).ToArray();
+            return Query<string>("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", null).ToArray();
         }
         /// <summary>
         /// Gets the schema for a table
@@ -341,7 +341,7 @@ namespace Simple.Sqlite
         {
             if (filterColumn is null) throw new ArgumentNullException(nameof(filterColumn));
 
-            return Query<T>($"SELECT * FROM {typeof(T).Name} WHERE {filterColumn} = @FilterValue ", new { filterValue });
+            return Query<T>($"SELECT * FROM {typeof(T).Name} WHERE {filterColumn} = @filterValue ", new { filterValue });
         }
 
         private string[] getSchemaColumns(IDataReader reader)
@@ -360,14 +360,6 @@ namespace Simple.Sqlite
         /// <returns></returns>
         public long Insert<T>(T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
             => ExecuteScalar<long>(buildInsertSql<T>(resolution, tableName), item);
-
-        /// <summary>
-        /// Inserts a new T and return it's ID, this method locks the execution
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("Use Insert<T> instead", true)]
-        public long InsertInto<T>(T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
-            => Insert<T>(item, resolution, tableName);
 
         /// <summary>
         /// Inserts a new T or replace with current T and return it's ID, this method locks the execution.
