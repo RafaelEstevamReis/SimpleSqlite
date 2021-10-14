@@ -12,9 +12,13 @@ namespace Test.Sample
             Console.WriteLine($"Database is at {db.DatabaseFileName}");
 
             // Create a DB Schema
-            db.CreateTables()
+            var result = db.CreateTables()
               .Add<MyData>()
               .Commit();
+            if (result.Length > 0 && result[0].WasTableCreated)
+            {
+                Console.WriteLine("A new table was created!");
+            }
 
             var d = new MyData()
             {
