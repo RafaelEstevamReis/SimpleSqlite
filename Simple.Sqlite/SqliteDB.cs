@@ -45,7 +45,10 @@ namespace Simple.Sqlite
         /// </summary>
         public SqliteDB(string fileName)
         {
-            DatabaseFileName = new FileInfo(fileName).FullName;
+            var fi = new FileInfo(fileName);
+            if (!fi.Directory.Exists) fi.Directory.Create();
+
+            DatabaseFileName = fi.FullName;
             // if now exists, creates one (can be done in the ConnectionString)
 
             //if (!File.Exists(DatabaseFileName)) SqliteConnection.CreateFile(DatabaseFileName);
