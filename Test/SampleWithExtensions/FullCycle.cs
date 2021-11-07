@@ -38,7 +38,6 @@ namespace Test.SampleWithExtensions
             Console.WriteLine($"New data to insert: Id={d.MyId} MyUID={d.MyUID}");
             cnn.Insert(d);
 
-            /*
             // get all data
             var allData = cnn.GetAll<MyData>();
 
@@ -47,7 +46,7 @@ namespace Test.SampleWithExtensions
             {
                 Console.WriteLine($" > {rowData.MyId} {rowData.MyName} {rowData.MyUID}");
             }
-
+            
             //get "bob" data
             var bobs = cnn.Query<MyData>("SELECT * FROM MyData WHERE MyName LIKE @name ", new { name = "%bob%" });
             Console.WriteLine("All bob data:");
@@ -59,14 +58,14 @@ namespace Test.SampleWithExtensions
             // change frst bob
             var firstBob = bobs.First();
             firstBob.MyName = "Changed bob";
-            cnn.InsertOrReplace(firstBob);
+
+            cnn.Insert(firstBob, OnConflict.Replace);
             // show all data again
             Console.WriteLine("All data:");
             foreach (var rowData in allData)
             {
                 Console.WriteLine($" > {rowData.MyId} {rowData.MyName} {rowData.MyUID}");
             }
-            */
 
             cnn.Dispose();
         }
