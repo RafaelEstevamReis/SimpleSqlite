@@ -477,6 +477,11 @@ namespace Simple.Sqlite
         }
         private void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
         {
+            if (value is Uri uri)
+            {
+                value = uri.ToString();
+            }
+
             if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
 
             if (p.Type == typeof(int) || p.Type == typeof(long))
@@ -487,11 +492,12 @@ namespace Simple.Sqlite
             }
             else if (p.Type == typeof(Guid))
             {
-                if (!value.Equals(Guid.Empty)) return;
-
-                value = Guid.NewGuid();
-                // write new guid on object
-                p.SetValue(parameters, value);
+                if (value.Equals(Guid.Empty))
+                {
+                    value = Guid.NewGuid();
+                    // write new guid on object
+                    p.SetValue(parameters, value);
+                }
             }
         }
 
