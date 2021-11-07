@@ -377,7 +377,7 @@ namespace Simple.Sqlite
             var cnn = getConnection();
 
             List<long> ids = new List<long>();
-            string sql = buildInsertSql<T>(resolution, tableName);
+            string sql = HelperFunctions.buildInsertSql<T>(typeCollection, resolution, tableName);
 
             lock (lockNonQuery)
             {
