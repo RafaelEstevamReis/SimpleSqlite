@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Simple.Sqlite.QueryProcessor;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Simple.Sqlite.Extension

@@ -1,6 +1,10 @@
 ﻿using Microsoft.Data.Sqlite;
 using Simple.DatabaseWrapper.TypeReader;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace Simple.Sqlite.Extension
 {
@@ -22,12 +26,15 @@ namespace Simple.Sqlite.Extension
     }
     internal class Transaction : ISqliteTransaction
     {
-        ISqliteConnection ISqliteTransaction.connection => throw new System.NotImplementedException();
-        SqliteTransaction ISqliteTransaction.transaction => throw new System.NotImplementedException();
+        ISqliteConnection ISqliteTransaction.connection => throw new NotImplementedException();
+        SqliteTransaction ISqliteTransaction.transaction => throw new NotImplementedException();
 
         public void Dispose()
         {
             //ISqliteTransaction.transaction.Dispose();
         }
     }
+
+
+
 }

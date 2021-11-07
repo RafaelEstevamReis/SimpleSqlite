@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using Simple.Sqlite.Extension;
 using System.IO;
 
 namespace Simple.Sqlite
@@ -18,7 +19,7 @@ namespace Simple.Sqlite
             var SqliteConnection = new SqliteConnection(sb.ToString());
             SqliteConnection.Open();
 
-            return new Extension.Connection()
+            return new Connection()
             {
                 typeCollection = new DatabaseWrapper.TypeReader.ReaderCachedCollection(),
                 connection = SqliteConnection,

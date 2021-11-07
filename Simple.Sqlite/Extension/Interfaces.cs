@@ -2,7 +2,7 @@
 using Simple.DatabaseWrapper.TypeReader;
 using System;
 
-namespace Simple.Sqlite
+namespace Simple.Sqlite.Extension
 {
     public interface ISqliteConnection : IDisposable
     {
