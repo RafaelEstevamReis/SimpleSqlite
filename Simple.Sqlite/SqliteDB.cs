@@ -162,7 +162,7 @@ namespace Simple.Sqlite
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = text;
-            fillParameters(cmd, parameters);
+            HelperFunctions.fillParameters(cmd, parameters, typeCollection);
 
             lock (lockNonQuery)
             {
@@ -181,7 +181,7 @@ namespace Simple.Sqlite
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = text;
-            fillParameters(cmd, parameters);
+            HelperFunctions.fillParameters(cmd, parameters, typeCollection);
 
             var obj = cmd.ExecuteScalar();
             if (!IsInMemoryDatabase) cnn.Close();
@@ -232,7 +232,7 @@ namespace Simple.Sqlite
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = text;
-            fillParameters(cmd, parameters);
+            HelperFunctions.fillParameters(cmd, parameters, typeCollection);
 
             using var reader = cmd.ExecuteReader();
 
@@ -242,7 +242,7 @@ namespace Simple.Sqlite
                 yield break;
             }
 
-            var colNames = getSchemaColumns(reader);
+            var colNames = HelperFunctions.getSchemaColumns(reader);
             while (reader.Read())
             {
                 // build new
@@ -347,13 +347,6 @@ namespace Simple.Sqlite
             return Query<T>($"SELECT * FROM {typeof(T).Name} WHERE {filterColumn} = @filterValue ", new { filterValue });
         }
 
-        private string[] getSchemaColumns(IDataReader reader)
-        {
-            return Enumerable.Range(0, reader.FieldCount)
-                             .Select(idx => reader.GetName(idx))
-                             .ToArray();
-        }
-
         /// <summary>
         /// Inserts a new T and return it's ID, this method locks the execution
         /// </summary>
@@ -393,7 +386,7 @@ namespace Simple.Sqlite
                 foreach (var item in items)
                 {
                     using var cmd = new SqliteCommand(sql, cnn, trn);
-                    fillParameters(cmd, item);
+                    HelperFunctions.fillParameters(cmd, item, typeCollection);
 
                     var scalar = cmd.ExecuteScalar();
                     if (scalar is long sL) ids.Add(sL);
@@ -455,43 +448,6 @@ namespace Simple.Sqlite
                 };
 
                 return $"INSERT OR {txtConflict} INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
-            }
-        }
-
-        private void fillParameters(SqliteCommand cmd, object parameters, TypeInfo type = null)
-        {
-            if (parameters == null) return;
-
-            if (type == null) type = typeCollection.GetInfo(parameters.GetType());
-
-            foreach (var p in type.Items)
-            {
-                if (!p.CanRead) continue;
-                var value = TypeHelper.ReadParamValue(p, parameters);
-                adjustInsertValue(ref value, p, parameters);
-
-                if (value is null) value = DBNull.Value;
-
-                cmd.Parameters.AddWithValue(p.Name, value);
-            }
-        }
-        private void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
-        {
-            if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
-
-            if (p.Type == typeof(int) || p.Type == typeof(long))
-            {
-                if (!value.Equals(0)) return;
-                // PK ints are AI
-                value = null;
-            }
-            else if (p.Type == typeof(Guid))
-            {
-                if (!value.Equals(Guid.Empty)) return;
-
-                value = Guid.NewGuid();
-                // write new guid on object
-                p.SetValue(parameters, value);
             }
         }
 
