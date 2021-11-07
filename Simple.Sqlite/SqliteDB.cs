@@ -278,7 +278,7 @@ namespace Simple.Sqlite
         /// Work around to fornce enumerables to finalize
         /// The enumeration should finalize to connection be closed
         /// </summary>
-        private static T getFirstOrDefault<T>(IEnumerable<T> data)
+        internal static T getFirstOrDefault<T>(IEnumerable<T> data)
         {
             T val = default;
             bool first = true;

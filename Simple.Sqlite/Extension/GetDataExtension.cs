@@ -18,7 +18,7 @@ namespace Simple.Sqlite.Extension
                             ?? "_rowid_";
             var data = connection.Query<T>($"SELECT * FROM {info.TypeName} WHERE {column} = @keyValue LIMIT 1 ", new { keyValue });
             // The enumeration should finalize to connection be closed
-            return data.ToArray().FirstOrDefault();
+            return SqliteDB.getFirstOrDefault(data);
         }
 
         public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection)
