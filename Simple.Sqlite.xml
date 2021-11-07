@@ -380,11 +380,6 @@
             Executes a Scalar commands and return the value as T
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.SqliteDB.ExecuteReader(System.String,System.Object)">
-            <summary>
-            Executes a query and returns as DataTable
-            </summary>
-        </member>
         <member name="M:Simple.Sqlite.SqliteDB.Query``1(System.String,System.Object)">
             <summary>
             Executes a query and returns the value as a T collection
@@ -445,12 +440,6 @@
             <param name="item">Item to be added</param>
             <param name="resolution">Conflict resolution method</param>
             <param name="tableName">Name of the table, uses T class name if null</param>
-            <returns></returns>
-        </member>
-        <member name="M:Simple.Sqlite.SqliteDB.InsertInto``1(``0,Simple.Sqlite.OnConflict,System.String)">
-            <summary>
-            Inserts a new T and return it's ID, this method locks the execution
-            </summary>
             <returns></returns>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.InsertOrReplace``1(``0)">

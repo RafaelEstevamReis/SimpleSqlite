@@ -4,6 +4,8 @@
 # SqliteWrapper
 A very simple Sqlite wrapper to plug spiders with it
 
+Underlying library changed to: Microsoft.Data.Sqlite
+
 ## Compatibility
 
 Huge compatibility, supports:
