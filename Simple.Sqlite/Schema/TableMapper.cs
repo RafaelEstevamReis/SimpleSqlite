@@ -7,7 +7,7 @@ using Simple.DatabaseWrapper.TypeReader;
 
 namespace Simple.Sqlite
 {
-    public partial class TableMapper :  IColumnMapper
+    public partial class TableMapper : IColumnMapper
     {
         private readonly SqliteDB db;
         private readonly ReaderCachedCollection typeCollection;
@@ -50,9 +50,13 @@ namespace Simple.Sqlite
         {
             var results = new List<TableCommitResult>();
 
+            var tableNames = db.Query<string>(@"SELECT name
+ FROM sqlite_master
+ WHERE type = 'table' ", null).ToArray();
+
             foreach (var t in tables)
             {
-                var tResult = commitTable(t);
+                var tResult = commitTable(t, existingTable: tableNames.Contains(t.TableName));
                 if (tResult != null) results.Add(tResult);
             }
 
@@ -60,11 +64,11 @@ namespace Simple.Sqlite
             return results.ToArray();
         }
 
-        private TableCommitResult commitTable(Table t)
+        private TableCommitResult commitTable(Table t, bool existingTable)
         {
-            int val = db.Execute(t.ExportCreateTable(), null);
-            if (val == 0) // table created
+            if (!existingTable)
             {
+                db.Execute(t.ExportCreateTable(), null);
                 return new TableCommitResult()
                 {
                     TableName = t.TableName,
@@ -73,34 +77,32 @@ namespace Simple.Sqlite
                 };
             }
 
-            if (val == -1) // Table not created
+            // migrate ?
+            var dbColumns = db.GetTableSchema(t.TableName)
+                              .Rows.Cast<DataRow>()
+                              .Select(r => (string)r["ColumnName"]);
+
+            var newColumns = t.Columns
+                              .Where(c => !dbColumns.Contains(c.ColumnName))
+                              .ToArray();
+
+            foreach (var c in newColumns)
             {
-                // migrate ?
-                var dbColumns = db.GetTableSchema(t.TableName)
-                                  .Rows.Cast<DataRow>()
-                                  .Select(r => (string)r["ColumnName"]);
-
-                var newColumns = t.Columns
-                                  .Where(c => !dbColumns.Contains(c.ColumnName))
-                                  .ToArray();
-
-                foreach (var c in newColumns)
-                {
-                    string addColumn = c.ExportAddColumnAsStatement();
-                    db.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
-                }
-
-                if (newColumns.Length > 0)
-                {
-                    return new TableCommitResult()
-                    {
-                        TableName = t.TableName,
-                        WasTableCreated = false,
-                        ColumnsAdded = newColumns.Select(o => o.ColumnName)
-                                                   .ToArray(),
-                    };
-                }
+                string addColumn = c.ExportAddColumnAsStatement();
+                db.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
             }
+
+            if (newColumns.Length > 0)
+            {
+                return new TableCommitResult()
+                {
+                    TableName = t.TableName,
+                    WasTableCreated = false,
+                    ColumnsAdded = newColumns.Select(o => o.ColumnName)
+                                               .ToArray(),
+                };
+            }
+
             return null;
         }
         /// <summary>

@@ -91,11 +91,6 @@
             Create a new instance based on an existing ConfigurationDB
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.ConfigurationDB.FromDB(Simple.Sqlite.NoSqliteStorage)">
-            <summary>
-            Create a new instance based on an existing NoSqliteStorage
-            </summary>
-        </member>
         <member name="M:Simple.Sqlite.ConfigurationDB.FromDB(Simple.Sqlite.SqliteDB)">
             <summary>
             Create a new instance based on an existing SqliteDB
@@ -180,113 +175,6 @@
             If a NOT NULL constraint violation occurs, the REPLACE conflict resolution replaces the NULL value with the default value for that column, 
             or if the column has no default value, then the ABORT algorithm is used. If a CHECK constraint or foreign key constraint violation occurs, 
             the REPLACE conflict resolution algorithm works like ABORT
-            </summary>
-        </member>
-        <member name="T:Simple.Sqlite.NoSqliteStorage">
-            <summary>
-            Easy access a local no-sql document storage
-            </summary>
-        </member>
-        <member name="F:Simple.Sqlite.NoSqliteStorage.internalDb">
-            <summary>
-            Exposes the internal database engine
-            </summary>
-        </member>
-        <member name="P:Simple.Sqlite.NoSqliteStorage.CompressEachEntry">
-            <summary>
-            Specify if new values should be compressed before storage
-            </summary>
-        </member>
-        <member name="P:Simple.Sqlite.NoSqliteStorage.DatabaseFileName">
-            <summary>
-            Database file full path
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.#ctor(System.String)">
-            <summary>
-            Creates a new instance
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.Store``1(System.Guid,``0)">
-            <summary>
-            Stores a new item
-            </summary>
-            <typeparam name="T">Type of stored item</typeparam>
-            <param name="Key">A Key to locate the item later</param>
-            <param name="Object">The item to be stored</param>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.Store``1(System.String,``0)">
-            <summary>
-            Stores a new item
-            </summary>
-            <typeparam name="T">Type of stored item</typeparam>
-            <param name="Key">A Key to locate the item later</param>
-            <param name="Object">The item to be stored</param>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.Store``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Guid})">
-            <summary>
-            Stores many items
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.Store``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.String})">
-            <summary>
-            Stores many items
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.Retrieve``1(System.Guid)">
-            <summary>
-            Retrieves a stored item
-            </summary>
-            <typeparam name="T">Type of stored item</typeparam>
-            <param name="Key">The Key to locate the stored item</param>
-            <returns>Stored item or Defult(T)</returns>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.Retrieve``1(System.String)">
-            <summary>
-            Retrieves a stored item
-            </summary>
-            <typeparam name="T">Type of stored item</typeparam>
-            <param name="Key">The Key to locate the stored item</param>
-            <returns>Stored item or Defult(T)</returns>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.Remove(System.Guid)">
-            <summary>
-            Remove a stored item
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.Remove(System.String)">
-            <summary>
-            Remove a stored item
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.GetAllKeys">
-            <summary>
-            Retrieves all stored Keys
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.GetAllGuids">
-            <summary>
-            Retrieves all stored Guids
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.FromDB(Simple.Sqlite.ConfigurationDB)">
-            <summary>
-            Create a new instance based on an existing ConfigurationDB
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.FromDB(Simple.Sqlite.NoSqliteStorage)">
-            <summary>
-            Create a new instance based on an existing NoSqliteStorage
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.FromDB(Simple.Sqlite.SqliteDB)">
-            <summary>
-            Create a new instance based on an existing SqliteDB
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.NoSqliteStorage.GetEnumerator">
-            <summary>
-            Returns an enumerator that iterates through the collection.
             </summary>
         </member>
         <member name="T:Simple.Sqlite.TableMapper">

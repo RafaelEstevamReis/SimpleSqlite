@@ -30,7 +30,11 @@ public class MyData
     public double MyDoubleValue { get; set; }
     public float MyFloatValue { get; set; }
     public eIntEnum MyEnum { get; set; }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Testing")]
     public int GetOnly => -1;
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Testing")]
     public int SetOnly
     {
         set { _ = value; }
