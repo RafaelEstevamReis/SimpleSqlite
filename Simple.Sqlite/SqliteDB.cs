@@ -198,29 +198,6 @@ namespace Simple.Sqlite
             return (T)Convert.ChangeType(obj, typeof(T));
         }
 
-        /*
-
-        /// <summary>
-        /// Executes a query and returns as DataTable
-        /// </summary>
-        public DataTable ExecuteReader(string text, object parameters)
-        {
-            var cnn = getConnection();
-            using var cmd = cnn.CreateCommand();
-
-            cmd.CommandText = text;
-            fillParameters(cmd, parameters);
-
-            DataTable dt = new DataTable();
-            using var da = new SqliteDataAdapter(cmd.CommandText, cnn);
-            da.Fill(dt);
-
-            if (!IsInMemoryDatabase) cnn.Close();
-
-            return dt;
-        }
-        */
-
         /// <summary>
         /// Executes a query and returns the value as a T collection
         /// </summary>
