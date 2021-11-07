@@ -66,6 +66,8 @@ namespace Test.SampleWithExtensions
                 Console.WriteLine($" > {rowData.MyId} {rowData.MyName} {rowData.MyUID}");
             }
             */
+
+            cnn.Dispose();
         }
     }
 }
