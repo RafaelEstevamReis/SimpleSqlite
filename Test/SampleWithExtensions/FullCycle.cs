@@ -34,10 +34,11 @@ namespace Test.SampleWithExtensions
                 MyFloatValue = 789.3f,
                 MyEnum = MyData.eIntEnum.Zero,
             };
-            /*
+
             Console.WriteLine($"New data to insert: Id={d.MyId} MyUID={d.MyUID}");
             cnn.Insert(d);
 
+            /*
             // get all data
             var allData = cnn.GetAll<MyData>();
 
