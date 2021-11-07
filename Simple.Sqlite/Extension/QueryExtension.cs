@@ -1,7 +1,5 @@
 ﻿using Simple.DatabaseWrapper.Helpers;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Simple.Sqlite.Extension
 {
