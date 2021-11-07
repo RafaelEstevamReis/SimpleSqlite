@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Linq;
 
 namespace Simple.Sqlite.Extension
 {
@@ -15,6 +16,9 @@ namespace Simple.Sqlite.Extension
 
             return dt;
         }
-
+        public static string[] GetAllTables(this ISqliteConnection Connection)
+        {
+            return Connection.Query<string>("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", null).ToArray();
+        }
     }
 }
