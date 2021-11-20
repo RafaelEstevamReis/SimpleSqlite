@@ -21,10 +21,11 @@ namespace Simple.Sqlite.Extension
             }
 
             var colNames = HelperFunctions.getSchemaColumns(reader);
+            bool isSimple = typeT.CheckIfSimpleType();
             while (reader.Read())
             {
                 // build new
-                if (typeT.CheckIfSimpleType())
+                if (isSimple)
                 {
                     yield return (T)TypeMapper.ReadValue(reader, typeT, 0);
                 }
