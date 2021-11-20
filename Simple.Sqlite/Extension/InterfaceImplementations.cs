@@ -11,6 +11,8 @@ namespace Simple.Sqlite.Extension
 
         SqliteConnection ISqliteConnection.connection => connection;
         ReaderCachedCollection ISqliteConnection.typeCollection => typeCollection;
+
+        public string DatabasFilePath => connection.DataSource;
         public SqliteConnection GetUnderlyingConnection() => connection;
 
         public void Dispose()

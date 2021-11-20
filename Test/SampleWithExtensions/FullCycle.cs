@@ -10,7 +10,7 @@ namespace Test.SampleWithExtensions
         public static void run()
         {
             var cnn = ConnectionFactory.CreateConnection("myExtendedStuff.db");
-            //Console.WriteLine($"Database is at {cnn.DatabaseFileName}");
+            Console.WriteLine($"Database is at {cnn.DatabasFilePath}");
 
             // Create a DB Schema
             var result = cnn.CreateTables()

@@ -9,6 +9,7 @@ namespace Simple.Sqlite.Extension
         internal SqliteConnection connection { get; }
         internal ReaderCachedCollection typeCollection { get; }
 
+        public string DatabasFilePath { get; }
         public SqliteConnection GetUnderlyingConnection();
     }
     public interface ISqliteTransaction : IDisposable
