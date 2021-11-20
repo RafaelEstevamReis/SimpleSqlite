@@ -3,11 +3,32 @@ using System.Collections.Generic;
 
 namespace Simple.Sqlite.Extension
 {
+    /// <summary>
+    /// Extension for "InsertExtension" stuff
+    /// </summary>
     public static class InsertExtension
     {
+        /// <summary>
+        /// Inserts a value into a table
+        /// </summary>
+        /// <typeparam name="T">Value type</typeparam>
+        /// <param name="connection">The connection to be used</param>
+        /// <param name="item">Item to be inserted</param>
+        /// <param name="resolution">Conflict resolution policy</param>
+        /// <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
+        /// <returns>Returns the integer Primary Key or __ROWID__ of the inserted row</returns>
         public static long Insert<T>(this ISqliteConnection connection, T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
               => connection.ExecuteScalar<long>(HelperFunctions.buildInsertSql<T>(connection.typeCollection, resolution, tableName), item);
 
+        /// <summary>
+        /// Inserts multiple values into a table efficiently using a transaction
+        /// </summary>
+        /// <typeparam name="T">Value type</typeparam>
+        /// <param name="connection">The connection to be used</param>
+        /// <param name="items">Items to be inserted</param>
+        /// <param name="resolution">Conflict resolution policy</param>
+        /// <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
+        /// <returns>Returns the integer Primary Key or __ROWID__ of the inserted rows</returns>
         public static long[] BulkInsert<T>(this ISqliteConnection connection, IEnumerable<T> items, OnConflict resolution = OnConflict.Abort, string tableName = null)
         {
             List<long> ids = new List<long>();
@@ -26,9 +47,7 @@ namespace Simple.Sqlite.Extension
             }
 
             trn.Commit();
-
             return ids.ToArray();
         }
-
     }
 }

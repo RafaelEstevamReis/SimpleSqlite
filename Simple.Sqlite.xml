@@ -101,6 +101,32 @@
             Create a new instance based on an existing SqliteDB
             </summary>
         </member>
+        <member name="T:Simple.Sqlite.ConnectionFactory">
+            <summary>
+            Creates ISqliteConnection connections
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConnectionFactory.CreateConnection(System.String)">
+            <summary>
+            Creates a ISqliteConnection instance
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConnectionFactory.CreateConnection(Microsoft.Data.Sqlite.SqliteConnection)">
+            <summary>
+            Creates a ISqliteConnection instance from a Microsoft.Data.Sqlite.SqliteConnection
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConnectionFactory.CreateInMemory">
+            <summary>
+            Opens a non-Shared in memory connection
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConnectionFactory.CreateInMemoryShared(System.String)">
+            <summary>
+            Opens a non-Shared in memory connection
+            </summary>
+            <param name="sharedName">Data source shared name</param>
+        </member>
         <member name="T:Simple.Sqlite.SqliteType">
             <summary>
             Represents a Sqlite internal type
@@ -180,6 +206,144 @@
             If a NOT NULL constraint violation occurs, the REPLACE conflict resolution replaces the NULL value with the default value for that column, 
             or if the column has no default value, then the ABORT algorithm is used. If a CHECK constraint or foreign key constraint violation occurs, 
             the REPLACE conflict resolution algorithm works like ABORT
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.Extension.ExecuteExtension">
+            <summary>
+            Extension for "Execute" stuff
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.ExecuteExtension.Execute(Simple.Sqlite.Extension.ISqliteConnection,System.String,System.Object)">
+            <summary>
+            Executes a query
+            </summary>
+            <param name="connection">The connection to be used</param>
+            <param name="query">SQL to be eecuted</param>
+            <param name="parameters">object with parameters</param>
+            <returns>Returns affected rows. -1 for selects</returns>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.ExecuteExtension.ExecuteScalar``1(Simple.Sqlite.Extension.ISqliteConnection,System.String,System.Object)">
+            <summary>
+            Executes a ScalarQuery
+            </summary>
+            <typeparam name="T">Value type</typeparam>
+            <param name="connection">The connection to be used</param>
+            <param name="query">Query yo be executed</param>
+            <param name="parameters">object with parameters</param>
+            <returns>Scalar value</returns>
+        </member>
+        <member name="T:Simple.Sqlite.Extension.GetDataExtension">
+            <summary>
+            Extension for "GetDataExtension" stuff
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.GetDataExtension.Get``1(Simple.Sqlite.Extension.ISqliteConnection,System.Object)">
+            <summary>
+            Select a value from a table `T` using it's primary key or `__rowid__`
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.GetDataExtension.Get``1(Simple.Sqlite.Extension.ISqliteConnection,System.String,System.Object)">
+            <summary>
+            Select a value from a table `T` using specified column and value
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.GetDataExtension.Get``1(Simple.Sqlite.Extension.ISqliteConnection,System.String,System.String,System.Object)">
+            <summary>
+            Select a value from a table using specified column and value
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.GetDataExtension.GetAll``1(Simple.Sqlite.Extension.ISqliteConnection)">
+            <summary>
+            Select all values from a table `T`
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.GetDataExtension.GetAll``1(Simple.Sqlite.Extension.ISqliteConnection,System.String)">
+            <summary>
+            Select all values from a table
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.Extension.InsertExtension">
+            <summary>
+            Extension for "InsertExtension" stuff
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.InsertExtension.Insert``1(Simple.Sqlite.Extension.ISqliteConnection,``0,Simple.Sqlite.OnConflict,System.String)">
+            <summary>
+            Inserts a value into a table
+            </summary>
+            <typeparam name="T">Value type</typeparam>
+            <param name="connection">The connection to be used</param>
+            <param name="item">Item to be inserted</param>
+            <param name="resolution">Conflict resolution policy</param>
+            <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
+            <returns>Returns the integer Primary Key or __ROWID__ of the inserted row</returns>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.InsertExtension.BulkInsert``1(Simple.Sqlite.Extension.ISqliteConnection,System.Collections.Generic.IEnumerable{``0},Simple.Sqlite.OnConflict,System.String)">
+            <summary>
+            Inserts multiple values into a table efficiently using a transaction
+            </summary>
+            <typeparam name="T">Value type</typeparam>
+            <param name="connection">The connection to be used</param>
+            <param name="items">Items to be inserted</param>
+            <param name="resolution">Conflict resolution policy</param>
+            <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
+            <returns>Returns the integer Primary Key or __ROWID__ of the inserted rows</returns>
+        </member>
+        <member name="T:Simple.Sqlite.Extension.ISqliteConnection">
+            <summary>
+            SqliteConnection interface wrapper
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.Extension.ISqliteConnection.DatabasFilePath">
+            <summary>
+            Database's file path
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.ISqliteConnection.GetUnderlyingConnection">
+            <summary>
+            Gets the underlying SqliteConnection
+            </summary>
+        </member>
+        <member name="T:Simple.Sqlite.Extension.MigrationExtension">
+            <summary>
+            Extension for "MigrationExtension" stuff
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.MigrationExtension.CreateTables(Simple.Sqlite.Extension.ISqliteConnection)">
+            <summary>
+            Initialize a migration
+            </summary>
+            <param name="connection">The connection to be used</param>
+            <returns>A database migration object</returns>
+        </member>
+        <member name="T:Simple.Sqlite.Extension.QueryExtension">
+            <summary>
+            Extension for "QueryExtension" stuff
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.QueryExtension.Query``1(Simple.Sqlite.Extension.ISqliteConnection,System.String,System.Object)">
+            <summary>
+            Executes a query and map the result into a model
+            </summary>
+            <typeparam name="T">Returning model type</typeparam>
+            <param name="connection">The connection to be used</param>
+            <param name="query">Query yo be executed</param>
+            <param name="parameters">Query parameters</param>
+            <returns>A collection of values mapped from the result rows</returns>
+        </member>
+        <member name="T:Simple.Sqlite.Extension.TableSchemaExtension">
+            <summary>
+            Extension for "TableSchemaExtension" stuff
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.TableSchemaExtension.GetTableSchema(Simple.Sqlite.Extension.ISqliteConnection,System.String)">
+            <summary>
+            Returns a DataTable containing the table schema
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.TableSchemaExtension.GetAllTables(Simple.Sqlite.Extension.ISqliteConnection)">
+            <summary>
+            Get all tables
             </summary>
         </member>
         <member name="T:Simple.Sqlite.NoSqliteStorage">
@@ -355,6 +519,11 @@
             This MAY change de [DefaultValue] when [NotNull] to Comply with Sqlite
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:Simple.Sqlite.TableMapper">
+            <summary>
+            Table mapping class
+            </summary>
         </member>
         <member name="M:Simple.Sqlite.TableMapper.#ctor(Simple.Sqlite.SqliteDB,Simple.DatabaseWrapper.TypeReader.ReaderCachedCollection)">
             <summary>

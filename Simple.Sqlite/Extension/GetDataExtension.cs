@@ -4,10 +4,19 @@ using System.Linq;
 
 namespace Simple.Sqlite.Extension
 {
+    /// <summary>
+    /// Extension for "GetDataExtension" stuff
+    /// </summary>
     public static class GetDataExtension
     {
+        /// <summary>
+        /// Select a value from a table `T` using it's primary key or `__rowid__`
+        /// </summary>
         public static T Get<T>(this ISqliteConnection connection, object keyValue)
             => connection.Get<T>(null, keyValue);
+        /// <summary>
+        /// Select a value from a table `T` using specified column and value
+        /// </summary>
         public static T Get<T>(this ISqliteConnection connection, string keyColumn, object keyValue)
         {
             var info = connection.typeCollection.GetInfo<T>();
@@ -19,6 +28,9 @@ namespace Simple.Sqlite.Extension
 
             return Get<T>(connection, info.TypeName, column, keyValue);
         }
+        /// <summary>
+        /// Select a value from a table using specified column and value
+        /// </summary>
         public static T Get<T>(this ISqliteConnection connection, string tableName, string keyColumn, object keyValue)
         {
             if (tableName is null) throw new ArgumentNullException(nameof(tableName));
@@ -28,9 +40,14 @@ namespace Simple.Sqlite.Extension
 
             return SqliteDB.getFirstOrDefault(data);
         }
-
+        /// <summary>
+        /// Select all values from a table `T`
+        /// </summary>
         public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection)
             => GetAll<T>(connection, typeof(T).Name);
+        /// <summary>
+        /// Select all values from a table
+        /// </summary>
         public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection, string tableName)
             => connection.Query<T>($"SELECT * FROM {tableName} ", null);
     }
