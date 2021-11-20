@@ -162,7 +162,7 @@ namespace Simple.Sqlite
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = text;
-            fillParameters(cmd, parameters);
+            HelperFunctions.fillParameters(cmd, parameters, typeCollection);
 
             lock (lockNonQuery)
             {
@@ -181,7 +181,7 @@ namespace Simple.Sqlite
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = text;
-            fillParameters(cmd, parameters);
+            HelperFunctions.fillParameters(cmd, parameters, typeCollection);
 
             var obj = cmd.ExecuteScalar();
             if (!IsInMemoryDatabase) cnn.Close();
@@ -198,29 +198,6 @@ namespace Simple.Sqlite
             return (T)Convert.ChangeType(obj, typeof(T));
         }
 
-        /*
-
-        /// <summary>
-        /// Executes a query and returns as DataTable
-        /// </summary>
-        public DataTable ExecuteReader(string text, object parameters)
-        {
-            var cnn = getConnection();
-            using var cmd = cnn.CreateCommand();
-
-            cmd.CommandText = text;
-            fillParameters(cmd, parameters);
-
-            DataTable dt = new DataTable();
-            using var da = new SqliteDataAdapter(cmd.CommandText, cnn);
-            da.Fill(dt);
-
-            if (!IsInMemoryDatabase) cnn.Close();
-
-            return dt;
-        }
-        */
-
         /// <summary>
         /// Executes a query and returns the value as a T collection
         /// </summary>
@@ -232,7 +209,7 @@ namespace Simple.Sqlite
             using var cmd = cnn.CreateCommand();
 
             cmd.CommandText = text;
-            fillParameters(cmd, parameters);
+            HelperFunctions.fillParameters(cmd, parameters, typeCollection);
 
             using var reader = cmd.ExecuteReader();
 
@@ -242,7 +219,7 @@ namespace Simple.Sqlite
                 yield break;
             }
 
-            var colNames = getSchemaColumns(reader);
+            var colNames = HelperFunctions.getSchemaColumns(reader);
             while (reader.Read())
             {
                 // build new
@@ -301,7 +278,7 @@ namespace Simple.Sqlite
         /// Work around to fornce enumerables to finalize
         /// The enumeration should finalize to connection be closed
         /// </summary>
-        private static T getFirstOrDefault<T>(IEnumerable<T> data)
+        internal static T getFirstOrDefault<T>(IEnumerable<T> data)
         {
             T val = default;
             bool first = true;
@@ -347,13 +324,6 @@ namespace Simple.Sqlite
             return Query<T>($"SELECT * FROM {typeof(T).Name} WHERE {filterColumn} = @filterValue ", new { filterValue });
         }
 
-        private string[] getSchemaColumns(IDataReader reader)
-        {
-            return Enumerable.Range(0, reader.FieldCount)
-                             .Select(idx => reader.GetName(idx))
-                             .ToArray();
-        }
-
         /// <summary>
         /// Inserts a new T and return it's ID, this method locks the execution
         /// </summary>
@@ -362,7 +332,7 @@ namespace Simple.Sqlite
         /// <param name="tableName">Name of the table, uses T class name if null</param>
         /// <returns></returns>
         public long Insert<T>(T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
-            => ExecuteScalar<long>(buildInsertSql<T>(resolution, tableName), item);
+            => ExecuteScalar<long>(HelperFunctions.buildInsertSql<T>(typeCollection, resolution, tableName), item);
 
         /// <summary>
         /// Inserts a new T or replace with current T and return it's ID, this method locks the execution.
@@ -384,7 +354,7 @@ namespace Simple.Sqlite
             var cnn = getConnection();
 
             List<long> ids = new List<long>();
-            string sql = buildInsertSql<T>(resolution, tableName);
+            string sql = HelperFunctions.buildInsertSql<T>(typeCollection, resolution, tableName);
 
             lock (lockNonQuery)
             {
@@ -393,7 +363,7 @@ namespace Simple.Sqlite
                 foreach (var item in items)
                 {
                     using var cmd = new SqliteCommand(sql, cnn, trn);
-                    fillParameters(cmd, item);
+                    HelperFunctions.fillParameters(cmd, item, typeCollection);
 
                     var scalar = cmd.ExecuteScalar();
                     if (scalar is long sL) ids.Add(sL);
@@ -430,77 +400,6 @@ namespace Simple.Sqlite
             if (!IsInMemoryDatabase) source.Close();
         }
 
-        private string buildInsertSql<T>(OnConflict resolution, string tableName = null)
-        {
-            var info = typeCollection.GetInfo<T>();
-            if (tableName == null) tableName = info.TypeName;
-
-            var names = getNames(info, !info.IsAnonymousType);
-            var fields = string.Join(",", names);
-            var values = string.Join(",", names.Select(n => $"@{n}"));
-
-            if (resolution == OnConflict.Abort)
-            {
-                return $"INSERT INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
-            }
-            else
-            {
-                string txtConflict = resolution switch
-                {
-                    OnConflict.RollBack => "ROLLBACK",
-                    OnConflict.Fail => "FAIL",
-                    OnConflict.Ignore => "IGNORE",
-                    OnConflict.Replace => "REPLACE",
-                    _ => throw new ArgumentException($"Invalid resolution: {resolution}"),
-                };
-
-                return $"INSERT OR {txtConflict} INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
-            }
-        }
-
-        private void fillParameters(SqliteCommand cmd, object parameters, TypeInfo type = null)
-        {
-            if (parameters == null) return;
-
-            if (type == null) type = typeCollection.GetInfo(parameters.GetType());
-
-            foreach (var p in type.Items)
-            {
-                if (!p.CanRead) continue;
-                var value = TypeHelper.ReadParamValue(p, parameters);
-                adjustInsertValue(ref value, p, parameters);
-
-                if (value is null) value = DBNull.Value;
-
-                cmd.Parameters.AddWithValue(p.Name, value);
-            }
-        }
-        private void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
-        {
-            if (value is Uri uri)
-            {
-                value = uri.ToString();
-            }
-
-            if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
-
-            if (p.Type == typeof(int) || p.Type == typeof(long))
-            {
-                if (!value.Equals(0)) return;
-                // PK ints are AI
-                value = null;
-            }
-            else if (p.Type == typeof(Guid))
-            {
-                if (value.Equals(Guid.Empty))
-                {
-                    value = Guid.NewGuid();
-                    // write new guid on object
-                    p.SetValue(parameters, value);
-                }
-            }
-        }
-
         /* Statics */
         /// <summary>
         /// Creates a InMemory database instance
@@ -514,14 +413,6 @@ namespace Simple.Sqlite
             };
         }
 
-        private static IEnumerable<string> getNames(TypeInfo type, bool needWrite)
-        {
-            return type.Items
-                       .Where(o => !o.Is(DatabaseWrapper.ColumnAttributes.Ignore))
-                       .Where(o => o.CanRead)
-                       .Where(o => !needWrite || o.CanWrite) // Be careful with NOTs and ORs
-                       .Select(o => o.Name);
-        }
 
     }
 }
