@@ -7,7 +7,10 @@ using Simple.DatabaseWrapper.TypeReader;
 
 namespace Simple.Sqlite
 {
-    public partial class TableMapper : IColumnMapper
+    /// <summary>
+    /// Table mapping class
+    /// </summary>
+    public class TableMapper : IColumnMapper
     {
         private readonly SqliteDB db;
         private readonly ReaderCachedCollection typeCollection;
