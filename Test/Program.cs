@@ -1,15 +1,32 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using Simple.DatabaseWrapper.Attributes;
 
 // Choose your example
 Console.WriteLine("Choose one example");
 //Test.Sample.FullCycle.run();
-//Test.SampleWithExtensions.FullCycle.run();
+Test.SampleWithExtensions.FullCycle.run();
 //Test.Sample.IntPrimaryKeyExample.run();
 //Test.Sample.SimpleTypeQuery.run();
 //Test.Sample.DocumentStorage.run();
 //Test.Sample.ConfigExample.run();
+
+
+string[] a = new string[] { };
+
+var q = a.AsQueryable().Where(o => o == null);
+
+doWhere(q);
+
+void doWhere(IQueryable<string> q)
+{
+    Console.WriteLine(q.Expression);
+}
+
+var ex = q.Expression;
+ex = ex;
+
 
 public class MyData
 {

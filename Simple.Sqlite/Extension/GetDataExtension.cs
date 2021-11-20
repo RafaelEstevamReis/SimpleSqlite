@@ -1,5 +1,4 @@
-﻿using Simple.Sqlite.QueryProcessor;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Simple.Sqlite.Extension
@@ -21,11 +20,6 @@ namespace Simple.Sqlite.Extension
             // The enumeration should finalize to connection be closed
             return SqliteDB.getFirstOrDefault(data);
         }
-
-        //public static IQueryable<T> Filter<T>(this ISqliteConnection connection)
-        //{
-        //    return new Queryable<T>(new QueryProvider<T>(connection));
-        //}
 
         public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection)
             => connection.Query<T>($"SELECT * FROM {typeof(T).Name} ", null);

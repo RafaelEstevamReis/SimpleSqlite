@@ -1,10 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Simple.DatabaseWrapper.TypeReader;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 
 namespace Simple.Sqlite.Extension
 {
@@ -12,7 +8,6 @@ namespace Simple.Sqlite.Extension
     {
         internal SqliteConnection connection { get; set; }
         internal ReaderCachedCollection typeCollection { get; set; }
-
 
         SqliteConnection ISqliteConnection.connection => connection;
         ReaderCachedCollection ISqliteConnection.typeCollection => typeCollection;
