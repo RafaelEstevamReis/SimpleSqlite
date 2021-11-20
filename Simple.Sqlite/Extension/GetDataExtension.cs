@@ -19,18 +19,19 @@ namespace Simple.Sqlite.Extension
 
             return Get<T>(connection, info.TypeName, column, keyValue);
         }
-
         public static T Get<T>(this ISqliteConnection connection, string tableName, string keyColumn, object keyValue)
         {
             if (tableName is null) throw new ArgumentNullException(nameof(tableName));
             if (keyColumn is null) throw new ArgumentNullException(nameof(keyColumn));
 
             var data = connection.Query<T>($"SELECT * FROM {tableName} WHERE {keyColumn} = @keyValue LIMIT 1 ", new { keyValue });
-            
+
             return SqliteDB.getFirstOrDefault(data);
         }
 
         public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection)
-            => connection.Query<T>($"SELECT * FROM {typeof(T).Name} ", null);
+            => GetAll<T>(connection, typeof(T).Name);
+        public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection, string tableName)
+            => connection.Query<T>($"SELECT * FROM {tableName} ", null);
     }
 }
