@@ -15,9 +15,10 @@ namespace Simple.Sqlite.Extension
 
             using var trn = connection.connection.BeginTransaction();
 
+            using var cmd = new SqliteCommand(sql, connection.connection, trn);
             foreach (var item in items)
             {
-                using var cmd = new SqliteCommand(sql, connection.connection, trn);
+                cmd.Parameters.Clear();
                 HelperFunctions.fillParameters(cmd, item, connection.typeCollection);
 
                 var scalar = cmd.ExecuteScalar();
