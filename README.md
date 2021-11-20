@@ -11,8 +11,7 @@ Underlying library: Microsoft.Data.Sqlite
 Huge compatibility, supports:
 * NET 5.0
 * NetCore 3.1
-* Net Framework 4.0
-* Net Framework 4.5
+* Net Framework 4.6.1
 * Net Standard 2.0
   * Net Core 2.0+
   * Mono 5.4+
