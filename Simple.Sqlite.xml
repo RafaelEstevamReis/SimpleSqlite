@@ -396,7 +396,7 @@
             Gets the new added columns, if any
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.TableMapperNew.#ctor(Simple.Sqlite.ISqliteConnection)">
+        <member name="M:Simple.Sqlite.TableMapperNew.#ctor(Simple.Sqlite.Extension.ISqliteConnection)">
             <summary>
             Creates a new instance
             </summary>
