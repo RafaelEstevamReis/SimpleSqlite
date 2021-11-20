@@ -46,6 +46,7 @@ Huge compatibility, supports:
 ## Modules and Options
 
 There are three modules in this package
+* Extension-based database manipulation
 * [SqliteDB](#sqlitedb---sqlite-wrapper) -> Sqlite wrapper 
 * No-sql document storage
 * Configuration storage
