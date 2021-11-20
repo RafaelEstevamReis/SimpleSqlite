@@ -21,16 +21,16 @@ namespace Simple.Sqlite.Extension
             connection.Dispose();
         }
     }
-    internal class Transaction : ISqliteTransaction
-    {
-        ISqliteConnection ISqliteTransaction.connection => throw new NotImplementedException();
-        SqliteTransaction ISqliteTransaction.transaction => throw new NotImplementedException();
+    //internal class Transaction : ISqliteTransaction
+    //{
+    //    ISqliteConnection ISqliteTransaction.connection => throw new NotImplementedException();
+    //    SqliteTransaction ISqliteTransaction.transaction => throw new NotImplementedException();
 
-        public void Dispose()
-        {
-            //ISqliteTransaction.transaction.Dispose();
-        }
-    }
+    //    public void Dispose()
+    //    {
+    //        //ISqliteTransaction.transaction.Dispose();
+    //    }
+    //}
 
 
 
