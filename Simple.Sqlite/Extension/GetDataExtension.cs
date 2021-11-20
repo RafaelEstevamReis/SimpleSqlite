@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 using System.Linq;
 
 namespace Simple.Sqlite.Extension
@@ -10,14 +11,22 @@ namespace Simple.Sqlite.Extension
         public static T Get<T>(this ISqliteConnection connection, string keyColumn, object keyValue)
         {
             var info = connection.typeCollection.GetInfo<T>();
-
             string column = keyColumn
-                            ?? info.Items.Where(o => o.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey))
-                                   .Select(o => o.Name)
-                                   .FirstOrDefault()
-                            ?? "_rowid_";
-            var data = connection.Query<T>($"SELECT * FROM {info.TypeName} WHERE {column} = @keyValue LIMIT 1 ", new { keyValue });
-            // The enumeration should finalize to connection be closed
+                        ?? info.Items.Where(o => o.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey))
+                               .Select(o => o.Name)
+                               .FirstOrDefault()
+                        ?? "_rowid_";
+
+            return Get<T>(connection, info.TypeName, column, keyValue);
+        }
+
+        public static T Get<T>(this ISqliteConnection connection, string tableName, string keyColumn, object keyValue)
+        {
+            if (tableName is null) throw new ArgumentNullException(nameof(tableName));
+            if (keyColumn is null) throw new ArgumentNullException(nameof(keyColumn));
+
+            var data = connection.Query<T>($"SELECT * FROM {tableName} WHERE {keyColumn} = @keyValue LIMIT 1 ", new { keyValue });
+            
             return SqliteDB.getFirstOrDefault(data);
         }
 
