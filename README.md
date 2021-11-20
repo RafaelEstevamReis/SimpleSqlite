@@ -27,16 +27,18 @@ Huge compatibility, supports:
   - [Table of Contents](#table-of-contents)
   - [Modules and Options](#modules-and-options)
   - [How to get started:](#how-to-get-started)
-- [SqliteDB - Sqlite wrapper](#sqlitedb---sqlite-wrapper)
+- [ConnectionFactory - Allow to use as Extensions](#connectionfactory---allow-to-use-as-extensions)
   - [How to use:](#how-to-use)
   - [What this module automates ?](#what-this-module-automates-)
     - [Auto fill parameters](#auto-fill-parameters)
     - [Migration](#migration)
-- [NoSqliteStorage - No-sql document storage](#nosqlitestorage---no-sql-document-storage)
+- [SqliteDB - Sqlite wrapper](#sqlitedb---sqlite-wrapper)
   - [How to use:](#how-to-use-1)
+- [NoSqliteStorage - No-sql document storage](#nosqlitestorage---no-sql-document-storage)
+  - [How to use:](#how-to-use-2)
   - [What this module automates ?](#what-this-module-automates--1)
 - [ConfigurationDB - Configuration storage](#configurationdb---configuration-storage)
-  - [How to use:](#how-to-use-2)
+  - [How to use:](#how-to-use-3)
   - [What this module automates ?](#what-this-module-automates--2)
 - [Backup](#backup)
 - [Reutilizing types](#reutilizing-types)
@@ -55,6 +57,127 @@ Install the [NuGet package](https://www.nuget.org/packages/Simple.Sqlite): `Inst
 Look at the examples int the project [Test](https://github.com/RafaelEstevamReis/SqliteWrapper/tree/main/Test) and the [Samples folder](https://github.com/RafaelEstevamReis/SqliteWrapper/tree/main/Test/Sample)
 
 Or follow any of examples bellow
+
+
+# ConnectionFactory - Allow to use as Extensions
+
+A Sqlite connection factory for `ISqliteConnection` to use with extension methods
+
+## How to use:
+
+
+~~~C#
+using Simple.Sqlite.Extension;
+
+// Create a new instance
+using var cnn = Simple.Sqlite.ConnectionFactory.CreateConnection("myExtendedStuff.db");
+
+// Create a DB Schema
+cnn.CreateTables()
+   .Add<MyData>()
+   .Commit();
+
+var d = new MyData()
+{
+    //fill your object
+};
+// call INSERT
+cnn.Insert(d);
+
+// use GetAll to retrieve all data
+var allData = cnn.GetAll<MyData>();
+// Use queries to get back data
+var allBobs = cnn.Query<MyData>("SELECT * FROM MyData WHERE MyName = @name ", new { name = "bob" });
+~~~
+
+
+## What this module automates ?
+
+### Auto fill parameters
+
+This library provides a Query operation similar to **Dapper**, it can return a query as an Enumerable of your class
+
+~~~C#
+var allData = cnn.GetAll<MyData>();
+~~~
+
+And supports objects (even anonymous) as parameters 
+
+~~~C#
+var allBobs = cnn.Query<MyData>("SELECT * FROM MyData WHERE MyName = @name ", new { name = "bob" });
+~~~
+
+Also, it supports easy Insertion
+~~~C#
+var d = new MyData()
+{
+    //fill your object
+};
+// call INSERT
+cnn.Insert(d);
+~~~
+
+And a VERY efficient, transaction based BulkInsertion
+~~~C#
+MyData[] lotsOfData = getLotsOfData();
+
+// call INSERT
+cnn.BulkInsert(lotsOfData);
+~~~
+
+_Tip: For multi-million insertion, 5k blocks are a good start point_
+
+### Migration
+
+This library has a very simple Migration tah can:
+* Create new tables 
+* Add columns to existing tables
+
+To update your db schema just call CreateTables() and add your classes with `Add<T>` and then Commit()
+
+~~~C#
+// Create a connection...
+using var cnn = ConnectionFactory.CreateConnection("myStuff.db");
+// ... or new SqliteDB instance (see more below)
+SqliteDB cnn = new SqliteDB("myStuff.db");
+
+
+// Create a DB Schema
+ var migrationResult = cnn.CreateTables()
+                          .Add<MyData>()
+                          .Commit();
+~~~
+
+A `TableCommitResult` will be returned with all changes made
+
+This command will **not** migrate DATA only the schema
+
+You can make changes on the table definition before it commits with:
+~~~C#
+cnn.CreateTables()
+   .Add<MyData>()
+      .ConfigureTable(t => { /* change last added table here */ })
+   .Add<NextTable>()
+   .Commit();
+~~~
+
+You can use Attributes on your properties to create columns marked with:
+* PrimaryKey
+* Allow Null
+* Not Null
+* Default Value
+* Unique
+~~~C#
+// column tweak example
+cnn.CreateTables()
+  .Add<MyData>()
+     .ConfigureTable(t => t["MyId"].IsUnique = true)
+   .Commit();
+~~~
+
+Also,
+* Int properties with PK Attribute is also created as Auto-Increment
+* If neither Not-Null nor Allow-Null is applied, the library will assume by the attribute type
 
 # SqliteDB - Sqlite wrapper
 
@@ -86,90 +209,6 @@ var allData = db.GetAll<MyData>();
 var allBobs = db.Query<MyData>("SELECT * FROM MyData WHERE MyName = @name ", new { name = "bob" });
 ~~~
 
-## What this module automates ?
-
-### Auto fill parameters
-
-This library provides a Query operation similar to **Dapper**, it can return a query as an Enumerable of your class
-
-~~~C#
-var allData = db.GetAll<MyData>();
-~~~
-
-And supports objects (even anonymous) as parameters 
-
-~~~C#
-var allBobs = db.Query<MyData>("SELECT * FROM MyData WHERE MyName = @name ", new { name = "bob" });
-~~~
-
-Also, it supports easy Insertion
-~~~C#
-var d = new MyData()
-{
-    //fill your object
-};
-// call INSERT
-db.Insert(d);
-~~~
-
-And a VERY efficient, transaction based BulkInsertion
-~~~C#
-MyData[] lotsOfData = getLotsOfData();
-
-// call INSERT
-db.BulkInsert(lotsOfData);
-~~~
-
-_Tip: For multi-million insertion, 5k blocks are a good start point_
-
-### Migration
-
-This library has a very simple Migration tah can:
-* Create new tables 
-* Add columns to existing tables
-
-To update your db schema just call CreateTables() and add your classes with `Add<T>` and then Commit()
-
-~~~C#
-// Create a new instance
-SqliteDB db = new SqliteDB("myStuff.db");
-
-// Create a DB Schema
- var migrationResult = db.CreateTables()
-                         .Add<MyData>()
-                         .Commit();
-~~~
-
-A `TableCommitResult` will be returned with all changes made
-
-This command will **not** migrate DATA only the schema
-
-You can make changes on the table definition before it commits with:
-~~~C#
-db.CreateTables()
-  .Add<MyData>()
-    .ConfigureTable(t => { /* change last added table here */ })
-  .Add<NextTable>()
-  .Commit();
-~~~
-
-You can use Attributes on your properties to create columns marked with:
-* PrimaryKey
-* Allow Null
-* Not Null
-* Default Value
-* Unique
-~~~C#
-// column tweak example
-db.CreateTables()
-  .Add<MyData>()
-    .ConfigureTable(t => t["MyId"].IsUnique = true)
-  .Commit();
-~~~
-
-Also,
-* Int properties with PK Attribute is also created as Auto-Increment
-* If neither Not-Null nor Allow-Null is applied, the library will assume by the attribute type
 
 # NoSqliteStorage - No-sql document storage
 
