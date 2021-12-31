@@ -36,15 +36,28 @@ namespace Simple.Sqlite
 
             if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
 
-            if (p.Type == typeof(int) || p.Type == typeof(long))
+
+            //if (p.Type == typeof(int) || p.Type == typeof(long))
+            //{
+            //    if (!value.Equals(0)) return;
+            //    // PK ints are AI
+            //    value = null;
+            //}
+
+            //  Check for INT or LONGs equals to zero
+            if (p.Type == typeof(int))
             {
-                if (!value.Equals(0)) return;
-                // PK ints are AI
+                if ((int)value != 0) return;
+                value = null;
+            }
+            else if (p.Type == typeof(long))
+            {
+                if ((long)value != 0) return;
                 value = null;
             }
             else if (p.Type == typeof(Guid))
             {
-                if (!value.Equals(Guid.Empty)) return;
+                if ((Guid)value != Guid.Empty) return;
 
                 value = Guid.NewGuid();
                 // write new guid on object
