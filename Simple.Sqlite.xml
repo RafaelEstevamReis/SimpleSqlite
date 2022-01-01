@@ -106,6 +106,27 @@
             Creates ISqliteConnection connections
             </summary>
         </member>
+        <member name="P:Simple.Sqlite.ConnectionFactory.ConnectionString">
+            <summary>
+            Current connection string
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConnectionFactory.#ctor(System.String)">
+            <summary>
+            Factory constructor
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConnectionFactory.GetConnection">
+            <summary>
+            Opens a connection to the database
+            </summary>
+            <returns>An open connection of the database</returns>
+        </member>
+        <member name="M:Simple.Sqlite.ConnectionFactory.FromFile(System.String)">
+            <summary>
+            Creates a Factory to a sqlite file
+            </summary>
+        </member>
         <member name="M:Simple.Sqlite.ConnectionFactory.CreateConnection(System.String)">
             <summary>
             Creates a ISqliteConnection instance
@@ -113,7 +134,7 @@
         </member>
         <member name="M:Simple.Sqlite.ConnectionFactory.CreateConnection(Microsoft.Data.Sqlite.SqliteConnection)">
             <summary>
-            Creates a ISqliteConnection instance from a Microsoft.Data.Sqlite.SqliteConnection
+            Wraps a Microsoft.Data.Sqlite.SqliteConnection into a ISqliteConnection instance
             </summary>
         </member>
         <member name="M:Simple.Sqlite.ConnectionFactory.CreateInMemory">
@@ -741,13 +762,13 @@
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.getFirstOrDefault``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
-            Work around to fornce enumerables to finalize
+            Work around to force enumerables to finalize
             The enumeration should finalize to connection be closed
             </summary>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.getFirstOrException``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
-            Work around to fornce enumerables to finalize
+            Work around to force enumerables to finalize
             The enumeration should finalize to connection be closed
             </summary>
         </member>
