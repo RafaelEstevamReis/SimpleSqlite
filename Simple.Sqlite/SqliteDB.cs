@@ -275,7 +275,7 @@ namespace Simple.Sqlite
             return getFirstOrDefault(data);
         }
         /// <summary>
-        /// Work around to fornce enumerables to finalize
+        /// Work around to force enumerables to finalize
         /// The enumeration should finalize to connection be closed
         /// </summary>
         internal static T getFirstOrDefault<T>(IEnumerable<T> data)
@@ -291,7 +291,7 @@ namespace Simple.Sqlite
             return val;
         }
         /// <summary>
-        /// Work around to fornce enumerables to finalize
+        /// Work around to force enumerables to finalize
         /// The enumeration should finalize to connection be closed
         /// </summary>
         private static T getFirstOrException<T>(IEnumerable<T> data)

@@ -9,6 +9,11 @@ namespace Test.SampleWithExtensions
     {
         public static void run()
         {
+            // The factory can be used in two ways:
+            // 1. Simple get the connection from a file (static)
+            // 2. Using DI with a Factory instance
+            // this example uses [1]
+
             using var cnn = ConnectionFactory.CreateConnection("myExtendedStuff.db");
             Console.WriteLine($"Database is at {cnn.DatabasFilePath}");
 
