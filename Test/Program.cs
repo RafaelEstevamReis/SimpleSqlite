@@ -40,7 +40,7 @@ public class MyData
     {
         set { _ = value; }
     }
-    [IgnoreAtribute]
+    [Ignore]
     public int IgnoreMe { get; set; }
 }
 
