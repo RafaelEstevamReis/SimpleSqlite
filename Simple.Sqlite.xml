@@ -208,6 +208,18 @@
             the REPLACE conflict resolution algorithm works like ABORT
             </summary>
         </member>
+        <member name="T:Simple.Sqlite.Extension.BackupExtension">
+            <summary>
+            Extension for "Backup" related stuff
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.BackupExtension.CreateBackup(Simple.Sqlite.Extension.ISqliteConnection,System.String)">
+            <summary>
+             Backup of the connected database
+            </summary>
+            <param name="source">Source database</param>
+            <param name="fileName">Destination database filename</param>
+        </member>
         <member name="T:Simple.Sqlite.Extension.ExecuteExtension">
             <summary>
             Extension for "Execute" stuff
