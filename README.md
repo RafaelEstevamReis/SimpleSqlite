@@ -4,7 +4,7 @@
 # SqliteWrapper
 A very simple Sqlite wrapper to plug spiders with it
 
-Underlying library: Microsoft.Data.Sqlite
+Underlying library: [Microsoft.Data.Sqlite](https://www.nuget.org/packages/Microsoft.Data.Sqlite/)
 
 ## Compatibility
 
