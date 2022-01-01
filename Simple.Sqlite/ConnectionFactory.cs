@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Simple.Sqlite.Extension;
+using System;
 using System.IO;
 
 namespace Simple.Sqlite
@@ -7,12 +8,44 @@ namespace Simple.Sqlite
     /// <summary>
     /// Creates ISqliteConnection connections
     /// </summary>
-    public static class ConnectionFactory
+    public class ConnectionFactory
     {
         /// <summary>
-        /// Creates a ISqliteConnection instance
+        /// Current connection string
         /// </summary>
-        public static ISqliteConnection CreateConnection(string databaseFile)
+        public string ConnectionString { get; }
+
+        /// <summary>
+        /// Factory constructor
+        /// </summary>
+        public ConnectionFactory(string cnnString)
+        {
+            if (string.IsNullOrWhiteSpace(cnnString))
+            {
+                throw new ArgumentException($"'{nameof(cnnString)}' cannot be null or whitespace.", nameof(cnnString));
+            }
+            ConnectionString = cnnString;
+        }
+
+        /// <summary>
+        /// Opens a connection to the database
+        /// </summary>
+        /// <returns>An open connection of the database</returns>
+        public ISqliteConnection GetConnection()
+        {
+            return CreateConnection(ConnectionString);
+        }
+
+        /// <summary>
+        /// Creates a Factory to a sqlite file
+        /// </summary>
+        public static ConnectionFactory FromFile(string databaseFile)
+        {
+            var cnnString = sqliteFileToCnnString(databaseFile);
+            return new ConnectionFactory(cnnString);
+        }
+
+        private static string sqliteFileToCnnString(string databaseFile)
         {
             var fi = new FileInfo(databaseFile);
             if (!fi.Directory.Exists) fi.Directory.Create();
@@ -21,8 +54,16 @@ namespace Simple.Sqlite
             {
                 DataSource = databaseFile,
             };
+            return sb.ToString();
+        }
 
-            var SqliteConnection = new SqliteConnection(sb.ToString());
+        /// <summary>
+        /// Creates a ISqliteConnection instance
+        /// </summary>
+        public static ISqliteConnection CreateConnection(string databaseFile)
+        {
+            var cnnString = sqliteFileToCnnString(databaseFile);
+            var SqliteConnection = new SqliteConnection(cnnString);
             SqliteConnection.Open();
 
             return new Connection()
@@ -32,7 +73,7 @@ namespace Simple.Sqlite
             };
         }
         /// <summary>
-        /// Creates a ISqliteConnection instance from a Microsoft.Data.Sqlite.SqliteConnection
+        /// Wraps a Microsoft.Data.Sqlite.SqliteConnection into a ISqliteConnection instance
         /// </summary>
         public static ISqliteConnection CreateConnection(SqliteConnection connection)
         {
@@ -72,5 +113,6 @@ namespace Simple.Sqlite
                 connection = SqliteConnection,
             };
         }
+
     }
 }
