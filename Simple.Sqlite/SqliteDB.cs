@@ -150,7 +150,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Use 'Execute' instead
         /// </summary>
-        [Obsolete("Use 'Execute' instead")]
+        [Obsolete("Use 'Execute' instead", true)]
         public int ExecuteNonQuery(string text, object parameters = null) => Execute(text, parameters);
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace Simple.Sqlite
         /// <summary>
         /// Use 'Query' instead
         /// </summary>
-        [Obsolete("Use 'Query' instead")]
+        [Obsolete("Use 'Query' instead", true)]
         public IEnumerable<T> ExecuteQuery<T>(string text, object parameters)
             => Query<T>(text, parameters);
 
@@ -379,7 +379,8 @@ namespace Simple.Sqlite
         /// <summary>
         /// Inserts many T items into the database and return their IDs, this method locks the execution
         /// </summary>
-        public long[] BulkInsert<T>(IEnumerable<T> items, bool addReplace) => BulkInsert<T>(items, addReplace ? OnConflict.Replace : OnConflict.Abort, null);
+        public long[] BulkInsert<T>(IEnumerable<T> items, bool addReplace) 
+            => BulkInsert<T>(items, addReplace ? OnConflict.Replace : OnConflict.Abort, null);
 
         /// <summary>
         /// Creates an online backup of the current database.
