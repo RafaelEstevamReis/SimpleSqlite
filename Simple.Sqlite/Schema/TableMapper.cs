@@ -81,10 +81,7 @@ namespace Simple.Sqlite
             }
 
             // migrate ?
-            var dbColumns = db.GetTableSchema(t.TableName)
-                              .Rows.Cast<DataRow>()
-                              .Select(r => (string)r["ColumnName"]);
-
+            var dbColumns = db.GetTableColumnNames(t.TableName);
             var newColumns = t.Columns
                               .Where(c => !dbColumns.Contains(c.ColumnName))
                               .ToArray();

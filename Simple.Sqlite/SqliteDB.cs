@@ -140,11 +140,35 @@ namespace Simple.Sqlite
 
             cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
 
-            var reader = cmd.ExecuteReader();
-            var dt = reader.GetSchemaTable();
+            DataTable dt;
+            using (var reader = cmd.ExecuteReader())
+            {
+                dt = reader.GetSchemaTable();
+            }
 
             if (!IsInMemoryDatabase) cnn.Close();
             return dt;
+        }
+        /// <summary>
+        /// Gets columns names for a table
+        /// </summary>
+        public string[] GetTableColumnNames(string tableName)
+        {
+            var cnn = getConnection();
+
+            using var cmd = cnn.CreateCommand();
+            cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
+
+            string[] columns;
+            using (var reader = cmd.ExecuteReader())
+            {
+                columns = Enumerable.Range(0, reader.FieldCount)
+                                    .Select(idx => reader.GetName(idx))
+                                    .ToArray();
+            }
+
+            if (!IsInMemoryDatabase) cnn.Close();
+            return columns;
         }
 
         /// <summary>
