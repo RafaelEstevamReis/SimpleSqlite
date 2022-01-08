@@ -129,7 +129,7 @@
         </member>
         <member name="M:Simple.Sqlite.ConnectionFactory.CreateConnection(System.String)">
             <summary>
-            Creates a ISqliteConnection instance
+            Creates a ISqliteConnection instance from a file
             </summary>
         </member>
         <member name="M:Simple.Sqlite.ConnectionFactory.CreateConnection(Microsoft.Data.Sqlite.SqliteConnection)">
@@ -372,6 +372,11 @@
         <member name="M:Simple.Sqlite.Extension.TableSchemaExtension.GetTableSchema(Simple.Sqlite.Extension.ISqliteConnection,System.String)">
             <summary>
             Returns a DataTable containing the table schema
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.TableSchemaExtension.GetTableColumnNames(Simple.Sqlite.Extension.ISqliteConnection,System.String)">
+            <summary>
+            Gets columns names for a table
             </summary>
         </member>
         <member name="M:Simple.Sqlite.Extension.TableSchemaExtension.GetAllTables(Simple.Sqlite.Extension.ISqliteConnection)">
@@ -712,6 +717,11 @@
         <member name="M:Simple.Sqlite.SqliteDB.GetTableSchema(System.String)">
             <summary>
             Gets the schema for a table
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.SqliteDB.GetTableColumnNames(System.String)">
+            <summary>
+            Gets columns names for a table
             </summary>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.ExecuteNonQuery(System.String,System.Object)">
