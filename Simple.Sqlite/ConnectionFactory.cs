@@ -33,7 +33,14 @@ namespace Simple.Sqlite
         /// <returns>An open connection of the database</returns>
         public ISqliteConnection GetConnection()
         {
-            return CreateConnection(ConnectionString);
+            var SqliteConnection = new SqliteConnection(ConnectionString);
+            SqliteConnection.Open();
+
+            return new Connection()
+            {
+                typeCollection = new DatabaseWrapper.TypeReader.ReaderCachedCollection(),
+                connection = SqliteConnection,
+            };
         }
 
         /// <summary>
@@ -58,7 +65,7 @@ namespace Simple.Sqlite
         }
 
         /// <summary>
-        /// Creates a ISqliteConnection instance
+        /// Creates a ISqliteConnection instance from a file
         /// </summary>
         public static ISqliteConnection CreateConnection(string databaseFile)
         {
