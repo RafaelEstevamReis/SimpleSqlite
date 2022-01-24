@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0;NET48;NET472;NET461</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
-    <Version>0.8.5.1</Version>
+    <Version>0.8.5.2</Version>
     <Authors>RafaelEstevam.net</Authors>
     <Company>Rafael Estevam</Company>
     <Description>A simple to use SqliteWrapper</Description>

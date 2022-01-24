@@ -295,6 +295,11 @@
             Select all values from a table
             </summary>
         </member>
+        <member name="M:Simple.Sqlite.Extension.GetDataExtension.GetWhere``1(Simple.Sqlite.Extension.ISqliteConnection,System.String,System.Object)">
+            <summary>
+            Select filtered values from the table T WHERE filterColumn = filterValue
+            </summary>
+        </member>
         <member name="T:Simple.Sqlite.Extension.InsertExtension">
             <summary>
             Extension for "InsertExtension" stuff
