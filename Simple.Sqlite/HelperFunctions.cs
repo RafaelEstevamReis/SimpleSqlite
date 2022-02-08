@@ -36,14 +36,6 @@ namespace Simple.Sqlite
 
             if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
 
-
-            //if (p.Type == typeof(int) || p.Type == typeof(long))
-            //{
-            //    if (!value.Equals(0)) return;
-            //    // PK ints are AI
-            //    value = null;
-            //}
-
             //  Check for INT or LONGs equals to zero
             if (p.Type == typeof(int))
             {
@@ -57,9 +49,19 @@ namespace Simple.Sqlite
             }
             else if (p.Type == typeof(Guid))
             {
-                if ((Guid)value != Guid.Empty) return;
+                // Adjust TypeHelper.ReadParamValue(p, parameters);
+                // Fixes #25ff772 from simple.databasewrapper
+                if (value is byte[])
+                {
+                    value  = new Guid((byte[])value);
+                }
 
-                value = Guid.NewGuid();
+                if (value is Guid)
+                {
+                    if ((Guid)value != Guid.Empty) return;
+                    value = Guid.NewGuid();
+                }
+
                 // write new guid on object
                 p.SetValue(parameters, value);
             }
