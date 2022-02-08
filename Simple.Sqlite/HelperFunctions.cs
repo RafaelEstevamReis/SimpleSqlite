@@ -53,14 +53,11 @@ namespace Simple.Sqlite
                 // Fixes #25ff772 from simple.databasewrapper
                 if (value is byte[])
                 {
-                    value  = new Guid((byte[])value);
+                    value = new Guid((byte[])value);
                 }
 
-                if (value is Guid)
-                {
-                    if ((Guid)value != Guid.Empty) return;
-                    value = Guid.NewGuid();
-                }
+                if ((Guid)value != Guid.Empty) return;
+                value = Guid.NewGuid();
 
                 // write new guid on object
                 p.SetValue(parameters, value);
