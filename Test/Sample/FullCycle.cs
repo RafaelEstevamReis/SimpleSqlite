@@ -40,10 +40,15 @@ namespace Test.Sample
             var allData = db.GetAll<MyData>();
 
             Console.WriteLine("All data:");
+            Guid lastBob = Guid.Empty;
             foreach (var rowData in allData)
             {
+                lastBob = rowData.MyUID;
                 Console.WriteLine($" > {rowData.MyId} {rowData.MyName} {rowData.MyUID}");
             }
+            // get bob id by UID
+            var bobById = db.Get<MyData>(lastBob);
+            Console.WriteLine(bobById.MyName);
 
             //get "bob" data
             var bobs = db.Query<MyData>("SELECT * FROM MyData WHERE MyName LIKE @name ", new { name = "%bob%" });
