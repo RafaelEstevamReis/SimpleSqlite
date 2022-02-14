@@ -19,7 +19,7 @@ namespace Simple.Sqlite
             foreach (var p in type.Items)
             {
                 if (!p.CanRead) continue;
-                var value = TypeHelper.ReadParamValue(p, parameters);
+                var value = TypeHelper.ReadParamValue(p, parameters, handleGuidAsByteArray: false);
                 adjustInsertValue(ref value, p, parameters);
 
                 if (value is null) value = DBNull.Value;
@@ -33,6 +33,16 @@ namespace Simple.Sqlite
             {
                 value = uri.ToString();
             }
+
+            // Adjust TypeHelper.ReadParamValue(p, parameters);
+            // Fixes #25ff772 from simple.databasewrapper
+            // Reverted back on #1abea14
+            //if (value is byte[] bVal
+            //    && bVal.Length == 16
+            //    && (p.Type == typeof(Guid) || p.Type == typeof(object)))
+            //{
+            //    value = new Guid((byte[])value);
+            //}
 
             if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
 
@@ -49,13 +59,6 @@ namespace Simple.Sqlite
             }
             else if (p.Type == typeof(Guid))
             {
-                // Adjust TypeHelper.ReadParamValue(p, parameters);
-                // Fixes #25ff772 from simple.databasewrapper
-                if (value is byte[])
-                {
-                    value = new Guid((byte[])value);
-                }
-
                 if ((Guid)value != Guid.Empty) return;
                 value = Guid.NewGuid();
 
