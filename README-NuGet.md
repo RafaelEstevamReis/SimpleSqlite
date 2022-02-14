@@ -4,6 +4,7 @@ A very simple Sqlite wrapper to plug spiders with it
 ## Compatibility
 
 Huge compatibility, supports:
+* NET 6.0
 * NET 5.0
 * NetCore 3.1
 * Net Framework 4.5
