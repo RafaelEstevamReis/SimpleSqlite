@@ -5,7 +5,7 @@ namespace Simple.Sqlite.Attributes
     /// <summary>
     /// Specify default value for this column
     /// </summary>
-    [Obsolete("Use DatabaseWrapper.Attributes.DefaultValueAttribute instead")]
+    [Obsolete("Use DatabaseWrapper.Attributes.DefaultValueAttribute instead", true)]
     public class DefaultValueAttribute : DatabaseWrapper.Attributes.DefaultValueAttribute
     {
         /// <summary>
