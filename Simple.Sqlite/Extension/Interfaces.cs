@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Simple.DatabaseWrapper.TypeReader;
 using System;
+using System.Data;
 
 namespace Simple.Sqlite.Extension
 {
@@ -19,11 +20,12 @@ namespace Simple.Sqlite.Extension
         /// Gets the underlying SqliteConnection
         /// </summary>
         public SqliteConnection GetUnderlyingConnection();
+        ISqliteTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified);
     }
     public interface ISqliteTransaction : IDisposable
     {
         internal ISqliteConnection connection { get; }
-        internal ISqliteTransaction transaction { get; }
+        internal SqliteTransaction transaction { get; }
 
         void Commit();
         void Rollback();

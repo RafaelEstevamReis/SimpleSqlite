@@ -15,9 +15,9 @@ namespace Simple.Sqlite.Extension
         public string DatabasFilePath => connection.DataSource;
         public SqliteConnection GetUnderlyingConnection() => connection;
 
-        public ISqliteTransaction OpenTransaction()
+        public ISqliteTransaction BeginTransaction(System.Data.IsolationLevel isolationLevel = System.Data.IsolationLevel.Unspecified)
         {
-            return new Transaction(this);
+            return new Transaction(this, isolationLevel);
         }
 
         public void Dispose()
@@ -29,16 +29,16 @@ namespace Simple.Sqlite.Extension
     internal class Transaction : ISqliteTransaction
     {
         private Connection connection;
-        private ISqliteTransaction transaction;
+        private SqliteTransaction transaction;
 
-        public Transaction(Connection connection)
+        public Transaction(Connection connection, System.Data.IsolationLevel isolationLevel)
         {
             this.connection = connection;
-            this.transaction = connection.OpenTransaction();
+            this.transaction = connection.connection.BeginTransaction(isolationLevel);
         }
 
         ISqliteConnection ISqliteTransaction.connection => connection;
-        ISqliteTransaction ISqliteTransaction.transaction => transaction;
+        SqliteTransaction ISqliteTransaction.transaction => transaction;
 
         public void Commit()
         {
