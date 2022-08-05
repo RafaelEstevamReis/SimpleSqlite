@@ -10,6 +10,12 @@ namespace Simple.Sqlite
     /// </summary>
     public class ConnectionFactory
     {
+        public static bool HandleGuidAsByteArray
+        {
+            get => HelperFunctions.handleGuidAsByteArray;
+            set => HelperFunctions.handleGuidAsByteArray = value;
+        }
+
         /// <summary>
         /// Current connection string
         /// </summary>

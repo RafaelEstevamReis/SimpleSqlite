@@ -21,6 +21,11 @@ namespace Simple.Sqlite
         /// Allows any instance of SqliteDB to execute a backup of the current database
         /// </summary>
         public static bool EnabledDatabaseBackup = true;
+        public static bool HandleGuidAsByteArray
+        {
+            get => HelperFunctions.handleGuidAsByteArray;
+            set => HelperFunctions.handleGuidAsByteArray = value;
+        }
 
         // Manual lock on Writes to avoid Exceptions
         private readonly object lockNonQuery;

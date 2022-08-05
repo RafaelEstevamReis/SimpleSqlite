@@ -10,6 +10,7 @@ namespace Simple.Sqlite
 {
     internal class HelperFunctions
     {
+        internal static bool handleGuidAsByteArray = false;
         internal static void fillParameters(SqliteCommand cmd, object parameters, ReaderCachedCollection typeCollection)
         {
             if (parameters == null) return;
@@ -19,7 +20,7 @@ namespace Simple.Sqlite
             foreach (var p in type.Items)
             {
                 if (!p.CanRead) continue;
-                var value = TypeHelper.ReadParamValue(p, parameters, handleGuidAsByteArray: false);
+                var value = TypeHelper.ReadParamValue(p, parameters, handleGuidAsByteArray);
                 adjustInsertValue(ref value, p, parameters);
 
                 if (value is null) value = DBNull.Value;
