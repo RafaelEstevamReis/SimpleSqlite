@@ -20,9 +20,12 @@ namespace Simple.Sqlite.Extension
         /// </summary>
         public SqliteConnection GetUnderlyingConnection();
     }
-    //public interface ISqliteTransaction : IDisposable
-    //{
-    //    internal ISqliteConnection connection { get; }
-    //    internal SqliteTransaction transaction { get; }
-    //}
+    public interface ISqliteTransaction : IDisposable
+    {
+        internal ISqliteConnection connection { get; }
+        internal ISqliteTransaction transaction { get; }
+
+        void Commit();
+        void Rollback();
+    }
 }

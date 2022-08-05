@@ -15,23 +15,44 @@ namespace Simple.Sqlite.Extension
         public string DatabasFilePath => connection.DataSource;
         public SqliteConnection GetUnderlyingConnection() => connection;
 
+        public ISqliteTransaction OpenTransaction()
+        {
+            return new Transaction(this);
+        }
+
         public void Dispose()
         {
             if (connection.State == System.Data.ConnectionState.Open) connection.Close();
             connection.Dispose();
         }
     }
-    //internal class Transaction : ISqliteTransaction
-    //{
-    //    ISqliteConnection ISqliteTransaction.connection => throw new NotImplementedException();
-    //    SqliteTransaction ISqliteTransaction.transaction => throw new NotImplementedException();
+    internal class Transaction : ISqliteTransaction
+    {
+        private Connection connection;
+        private ISqliteTransaction transaction;
 
-    //    public void Dispose()
-    //    {
-    //        //ISqliteTransaction.transaction.Dispose();
-    //    }
-    //}
+        public Transaction(Connection connection)
+        {
+            this.connection = connection;
+            this.transaction = connection.OpenTransaction();
+        }
 
+        ISqliteConnection ISqliteTransaction.connection => connection;
+        ISqliteTransaction ISqliteTransaction.transaction => transaction;
 
+        public void Commit()
+        {
+            transaction.Commit();
+        }
+        public void Rollback()
+        {
+            transaction.Rollback();
+        }
+
+        public void Dispose()
+        {
+            transaction.Dispose();
+        }
+    }
 
 }
