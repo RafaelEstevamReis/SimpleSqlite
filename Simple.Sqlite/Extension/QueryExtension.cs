@@ -17,11 +17,26 @@ namespace Simple.Sqlite.Extension
         /// <param name="parameters">Query parameters</param>
         /// <returns>A collection of values mapped from the result rows</returns>
         public static IEnumerable<T> Query<T>(this ISqliteConnection connection, string query, object parameters)
+            => query<T>(connection, null, query, parameters);
+
+        /// <summary>
+        /// Executes a query and map the result into a model within a transaction
+        /// </summary>
+        /// <typeparam name="T">Returning model type</typeparam>
+        /// <param name="transaction">The transaction to be used</param>
+        /// <param name="query">Query yo be executed</param>
+        /// <param name="parameters">Query parameters</param>
+        /// <returns>A collection of values mapped from the result rows</returns>
+        public static IEnumerable<T> Query<T>(this ISqliteTransaction transaction, string query, object parameters)
+           => query<T>(transaction.connection, transaction, query, parameters);
+
+        static IEnumerable<T> query<T>(ISqliteConnection connection, ISqliteTransaction transaction, string query, object parameters)
         {
             var typeT = typeof(T);
-            using var cmd = connection.connection.CreateCommand();
+            //using var cmd = connection.connection.CreateCommand();
+            //cmd.CommandText = query;
+            using var cmd = new Microsoft.Data.Sqlite.SqliteCommand(query, connection.connection, transaction?.transaction);
 
-            cmd.CommandText = query;
             HelperFunctions.fillParameters(cmd, parameters, connection.typeCollection);
 
             using var reader = cmd.ExecuteReader();
