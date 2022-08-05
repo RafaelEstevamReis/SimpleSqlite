@@ -10,7 +10,7 @@ namespace Simple.Sqlite
 {
     internal class HelperFunctions
     {
-        internal static bool handleGuidAsByteArray = false;
+        internal static bool handleGuidAsByteArray = true;
         internal static void fillParameters(SqliteCommand cmd, object parameters, ReaderCachedCollection typeCollection)
         {
             if (parameters == null) return;
