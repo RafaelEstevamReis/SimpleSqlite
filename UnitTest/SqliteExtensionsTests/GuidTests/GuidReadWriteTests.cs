@@ -9,7 +9,7 @@ namespace UnitTest.SqliteExtensionsTests.GuidTests
     public class GuidReadWriteTests
     {
         [Fact]
-        public void GuidTests_ReadWrite()
+        public void GuidTests_ReadWrite_GuidToByte()
         {
             ConnectionFactory.HandleGuidAsByteArray = true;
 
@@ -25,8 +25,40 @@ namespace UnitTest.SqliteExtensionsTests.GuidTests
 
             Assert.Equal(guid, new Guid(c2.Guid));
         }
+        [Fact]
+        public void GuidTests_ReadWrite_ByteToGuid_DefTrue()
+        {
+            ConnectionFactory.HandleGuidAsByteArray = true;
 
+            using var db = ConnectionFactory.CreateInMemory();
+            db.CreateTables()
+              .Add<MyByteClass>()
+              .Commit();
 
+            var guid = Guid.NewGuid();
+            // Write GUID, read Bytes
+            db.Insert(new MyByteClass() { Guid = guid.ToByteArray() });
+            var c2 = db.Query<MyGuidClass>("SELECT * FROM MyByteClass", null).FirstOrDefault();
+
+            Assert.Equal(guid, c2.Guid);
+        }
+        [Fact]
+        public void GuidTests_ReadWrite_ByteToGuid_DefFalse()
+        {
+            ConnectionFactory.HandleGuidAsByteArray = false;
+
+            using var db = ConnectionFactory.CreateInMemory();
+            db.CreateTables()
+              .Add<MyByteClass>()
+              .Commit();
+
+            var guid = Guid.NewGuid();
+            // Write GUID, read Bytes
+            db.Insert(new MyByteClass() { Guid = guid.ToByteArray() });
+            var c2 = db.Query<MyGuidClass>("SELECT * FROM MyByteClass", null).FirstOrDefault();
+
+            Assert.Equal(guid, c2.Guid);
+        }
 
         public class MyGuidClass
         {
