@@ -19,6 +19,17 @@ namespace Simple.Sqlite.Extension
         /// <returns>Returns the integer Primary Key or __ROWID__ of the inserted row</returns>
         public static long Insert<T>(this ISqliteConnection connection, T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
               => connection.ExecuteScalar<long>(HelperFunctions.buildInsertSql<T>(connection.typeCollection, resolution, tableName), item);
+        /// <summary>
+        /// Inserts a value into a table with a transaction
+        /// </summary>
+        /// <typeparam name="T">Value type</typeparam>
+        /// <param name="transaction">The transaction to be used</param>
+        /// <param name="item">Item to be inserted</param>
+        /// <param name="resolution">Conflict resolution policy</param>
+        /// <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
+        /// <returns>Returns the integer Primary Key or __ROWID__ of the inserted row</returns>
+        public static long Insert<T>(this ISqliteTransaction transaction, T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
+             => transaction.ExecuteScalar<long>(HelperFunctions.buildInsertSql<T>(transaction.connection.typeCollection, resolution, tableName), item);
 
         /// <summary>
         /// Inserts multiple values into a table efficiently using a transaction
