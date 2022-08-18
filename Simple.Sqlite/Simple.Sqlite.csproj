@@ -6,13 +6,13 @@
     <Authors>RafaelEstevam.net</Authors>
     <Company>Rafael Estevam</Company>
     <Description>A simple to use SqliteWrapper</Description>
-    <PackageProjectUrl>https://github.com/RafaelEstevamReis/SqliteWrapper</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/RafaelEstevamReis/SqliteWrapper.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/RafaelEstevamReis/SimpleSqlite</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/RafaelEstevamReis/SimpleSqlite.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Sqlite</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReleaseNotes>Paired with commit 4b24189
-https://github.com/RafaelEstevamReis/SqliteWrapper
+https://github.com/RafaelEstevamReis/SimpleSqlite
 </PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
