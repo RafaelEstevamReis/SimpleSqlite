@@ -1,7 +1,7 @@
 [![.NET Core](https://github.com/RafaelEstevamReis/SqliteWrapper/workflows/.NET%20Core/badge.svg)](https://github.com/RafaelEstevamReis/SimpleSqlite) 
 [![NuGet](https://buildstats.info/nuget/Simple.Sqlite)](https://www.nuget.org/packages/Simple.Sqlite)
 
-# SqliteWrapper
+# Simple.Sqlite
 A very simple Sqlite wrapper to plug spiders with it
 
 Underlying library: [Microsoft.Data.Sqlite](https://www.nuget.org/packages/Microsoft.Data.Sqlite/)
@@ -22,7 +22,7 @@ Huge compatibility, supports:
 
 ## Table of Contents
 
-- [SqliteWrapper](#sqlitewrapper)
+- [Simple.Sqlite](#simplesqlite)
   - [Compatibility](#compatibility)
   - [Table of Contents](#table-of-contents)
   - [Modules and Options](#modules-and-options)
