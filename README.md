@@ -32,7 +32,9 @@ Huge compatibility, supports:
   - [What this module automates ?](#what-this-module-automates-)
     - [Auto fill parameters](#auto-fill-parameters)
     - [Migration](#migration)
-- [SqliteDB - Sqlite wrapper](#sqlitedb---sqlite-wrapper)
+  - [Using with Dependency Injection](#using-with-dependency-injection)
+    - [Using with ASP .Net](#using-with-asp-net)
+- [SqliteDB - A simplified Sqlite wrapper](#sqlitedb---a-simplified-sqlite-wrapper)
   - [How to use:](#how-to-use-1)
 - [NoSqliteStorage - No-sql document storage](#nosqlitestorage---no-sql-document-storage)
   - [How to use:](#how-to-use-2)
@@ -180,7 +182,47 @@ Also,
 * Int properties with PK Attribute is also created as Auto-Increment
 * If neither Not-Null nor Allow-Null is applied, the library will assume by the attribute type
 
-# SqliteDB - Sqlite wrapper
+## Using with Dependency Injection
+
+~~~C#
+// Create a new instance
+var db = ConnectionFactory.FromFile("myExtendedStuff.db");
+// add to DI
+services.AddSingleton(db);
+
+// Execute schema Migration
+using var cnn = db.GetConnection();
+var result = cnn.CreateTables()
+   .Add<MyData>()
+   .Commit();
+
+// result contains migration details
+~~~
+
+### Using with ASP .Net
+
+~~~C#
+
+[ApiController]
+public class MyController : Controller
+{
+  private readonly ConnectionFactory db;
+  private readonly ILogger logger;
+  public AuthController(IDatabase db, ILogger<MyController> logger){
+    this.db = db;
+    this.logger = logger;
+  }
+
+  [HttpGet]
+  public async Task<IActionResult> GetData(){
+    using var cnn = db.GetConnection();
+    return cnn.GetWhere<MyData>("SomeField", 1234).ToArray();
+  }
+}
+
+~~~
+
+# SqliteDB - A simplified Sqlite wrapper
 
 Sqlite database to store data in tables
 
