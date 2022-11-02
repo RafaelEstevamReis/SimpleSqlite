@@ -4,37 +4,6 @@
         <name>Simple.Sqlite</name>
     </assembly>
     <members>
-        <member name="T:Simple.Sqlite.Attributes.AllowNullAttribute">
-            <summary>
-            Specify that this column should allow nulls
-            </summary>
-        </member>
-        <member name="T:Simple.Sqlite.Attributes.DefaultValueAttribute">
-            <summary>
-            Specify default value for this column
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.Attributes.DefaultValueAttribute.#ctor(System.Object)">
-            <summary>
-            Creates a new instance
-            </summary>
-            <param name="defaultValue"></param>
-        </member>
-        <member name="T:Simple.Sqlite.Attributes.NotNullAttribute">
-            <summary>
-            Specify that this column should not allow nulls
-            </summary>
-        </member>
-        <member name="T:Simple.Sqlite.Attributes.PrimaryKeyAttribute">
-            <summary>
-            Specify that this column is PrimaryKey
-            </summary>
-        </member>
-        <member name="T:Simple.Sqlite.Attributes.UniqueAttribute">
-            <summary>
-            Specify that this column should only have unique values
-            </summary>
-        </member>
         <member name="T:Simple.Sqlite.ConfigurationDB">
             <summary>
             Represents a easy to use configuration set
@@ -255,12 +224,31 @@
             <param name="parameters">object with parameters</param>
             <returns>Returns affected rows. -1 for selects</returns>
         </member>
+        <member name="M:Simple.Sqlite.Extension.ExecuteExtension.Execute(Simple.Sqlite.Extension.ISqliteTransaction,System.String,System.Object)">
+            <summary>
+            Executes a query in a transaction
+            </summary>
+            <param name="transaction">The transaction to be used</param>
+            <param name="query">SQL to be eecuted</param>
+            <param name="parameters">object with parameters</param>
+            <returns>Returns affected rows. -1 for selects</returns>
+        </member>
         <member name="M:Simple.Sqlite.Extension.ExecuteExtension.ExecuteScalar``1(Simple.Sqlite.Extension.ISqliteConnection,System.String,System.Object)">
             <summary>
             Executes a ScalarQuery
             </summary>
             <typeparam name="T">Value type</typeparam>
             <param name="connection">The connection to be used</param>
+            <param name="query">Query yo be executed</param>
+            <param name="parameters">object with parameters</param>
+            <returns>Scalar value</returns>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.ExecuteExtension.ExecuteScalar``1(Simple.Sqlite.Extension.ISqliteTransaction,System.String,System.Object)">
+            <summary>
+            Executes a ScalarQuery in a transaction
+            </summary>
+            <typeparam name="T">Value type</typeparam>
+            <param name="transaction">The transaction to be used</param>
             <param name="query">Query yo be executed</param>
             <param name="parameters">object with parameters</param>
             <returns>Scalar value</returns>
@@ -316,6 +304,17 @@
             <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
             <returns>Returns the integer Primary Key or __ROWID__ of the inserted row</returns>
         </member>
+        <member name="M:Simple.Sqlite.Extension.InsertExtension.Insert``1(Simple.Sqlite.Extension.ISqliteTransaction,``0,Simple.Sqlite.OnConflict,System.String)">
+            <summary>
+            Inserts a value into a table with a transaction
+            </summary>
+            <typeparam name="T">Value type</typeparam>
+            <param name="transaction">The transaction to be used</param>
+            <param name="item">Item to be inserted</param>
+            <param name="resolution">Conflict resolution policy</param>
+            <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
+            <returns>Returns the integer Primary Key or __ROWID__ of the inserted row</returns>
+        </member>
         <member name="M:Simple.Sqlite.Extension.InsertExtension.BulkInsert``1(Simple.Sqlite.Extension.ISqliteConnection,System.Collections.Generic.IEnumerable{``0},Simple.Sqlite.OnConflict,System.String)">
             <summary>
             Inserts multiple values into a table efficiently using a transaction
@@ -365,6 +364,16 @@
             </summary>
             <typeparam name="T">Returning model type</typeparam>
             <param name="connection">The connection to be used</param>
+            <param name="query">Query yo be executed</param>
+            <param name="parameters">Query parameters</param>
+            <returns>A collection of values mapped from the result rows</returns>
+        </member>
+        <member name="M:Simple.Sqlite.Extension.QueryExtension.Query``1(Simple.Sqlite.Extension.ISqliteTransaction,System.String,System.Object)">
+            <summary>
+            Executes a query and map the result into a model within a transaction
+            </summary>
+            <typeparam name="T">Returning model type</typeparam>
+            <param name="transaction">The transaction to be used</param>
             <param name="query">Query yo be executed</param>
             <param name="parameters">Query parameters</param>
             <returns>A collection of values mapped from the result rows</returns>
