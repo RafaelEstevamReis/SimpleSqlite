@@ -358,7 +358,7 @@
             Extension for "QueryExtension" stuff
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.Extension.QueryExtension.Query``1(Simple.Sqlite.Extension.ISqliteConnection,System.String,System.Object)">
+        <member name="M:Simple.Sqlite.Extension.QueryExtension.Query``1(Simple.Sqlite.Extension.ISqliteConnection,System.String,System.Object,System.Boolean)">
             <summary>
             Executes a query and map the result into a model
             </summary>
@@ -366,9 +366,10 @@
             <param name="connection">The connection to be used</param>
             <param name="query">Query yo be executed</param>
             <param name="parameters">Query parameters</param>
+            <param name="buffered">Defines if the results should be buffered in memory</param>
             <returns>A collection of values mapped from the result rows</returns>
         </member>
-        <member name="M:Simple.Sqlite.Extension.QueryExtension.Query``1(Simple.Sqlite.Extension.ISqliteTransaction,System.String,System.Object)">
+        <member name="M:Simple.Sqlite.Extension.QueryExtension.Query``1(Simple.Sqlite.Extension.ISqliteTransaction,System.String,System.Object,System.Boolean)">
             <summary>
             Executes a query and map the result into a model within a transaction
             </summary>
@@ -376,6 +377,7 @@
             <param name="transaction">The transaction to be used</param>
             <param name="query">Query yo be executed</param>
             <param name="parameters">Query parameters</param>
+            <param name="buffered">Defines if the results should be buffered in memory</param>
             <returns>A collection of values mapped from the result rows</returns>
         </member>
         <member name="T:Simple.Sqlite.Extension.TableSchemaExtension">
