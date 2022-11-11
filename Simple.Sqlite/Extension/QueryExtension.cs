@@ -20,7 +20,6 @@ namespace Simple.Sqlite.Extension
         /// <returns>A collection of values mapped from the result rows</returns>
         public static IEnumerable<T> Query<T>(this ISqliteConnection connection, string query, object parameters, bool buffered = true)
             => query<T>(connection, null, query, parameters, buffered);
-
         /// <summary>
         /// Executes a query and map the result into a model within a transaction
         /// </summary>
