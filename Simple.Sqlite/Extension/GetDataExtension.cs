@@ -50,12 +50,12 @@ namespace Simple.Sqlite.Extension
         /// </summary>
         public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection, string tableName)
             => connection.Query<T>($"SELECT * FROM {tableName} ", null);
+ 
         /// <summary>
         /// Select filtered values from the table T WHERE filterColumn = filterValue
         /// </summary>
         public static IEnumerable<T> GetWhere<T>(this ISqliteConnection connection, string filterColumn, object filterValue)
-                    => connection.Query<T>($"SELECT * FROM {typeof(T).Name} WHERE {filterColumn} = @filterValue ", new { filterValue });
-
+            => connection.Query<T>($"SELECT * FROM {typeof(T).Name} WHERE {filterColumn} = @filterValue ", new { filterValue });
 
     }
 }
