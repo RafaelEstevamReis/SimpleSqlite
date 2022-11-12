@@ -90,7 +90,7 @@ namespace Simple.Sqlite
             }
 
             var lstExistingIndexes = connection.Query<string>("SELECT name FROM sqlite_master WHERE type = 'index';", null)
-                                               .ToHashSet();
+                                               .ToList();
             var newIndexes = t.Columns.SelectMany(c => ((Column)c).Indexes)
                                       .Distinct()
                                       .Where(ix => !lstExistingIndexes.Contains(ix))
@@ -100,7 +100,7 @@ namespace Simple.Sqlite
             {
                 var columns = t.Columns.Where(c => ((Column)c).Indexes.Contains(ix))
                                        .Select(c => c.ColumnName)
-                .ToArray();
+                                       .ToArray();
 
                 string columnList = string.Join(", ", columns);
                 connection.Execute($"CREATE INDEX {ix} ON {t.TableName} ({columnList});", null);
