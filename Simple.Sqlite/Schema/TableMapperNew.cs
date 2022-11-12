@@ -3,6 +3,7 @@ using Simple.Sqlite.Extension;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 
 namespace Simple.Sqlite
@@ -88,6 +89,23 @@ namespace Simple.Sqlite
                 connection.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
             }
 
+            var lstExistingIndexes = connection.Query<string>("SELECT name FROM sqlite_master WHERE type = 'index';", null)
+                                               .ToHashSet();
+            var newIndexes = t.Columns.SelectMany(c => ((Column)c).Indexes)
+                                      .Distinct()
+                                      .Where(ix => !lstExistingIndexes.Contains(ix))
+                                      .ToArray();
+
+            foreach (var ix in newIndexes)
+            {
+                var columns = t.Columns.Where(c => ((Column)c).Indexes.Contains(ix))
+                                       .Select(c => c.ColumnName)
+                .ToArray();
+
+                string columnList = string.Join(", ", columns);
+                connection.Execute($"CREATE INDEX {ix} ON {t.TableName} ({columnList});", null);
+            }
+
             if (newColumns.Length > 0)
             {
                 return new TableCommitResult()
@@ -96,6 +114,7 @@ namespace Simple.Sqlite
                     WasTableCreated = false,
                     ColumnsAdded = newColumns.Select(o => o.ColumnName)
                                                .ToArray(),
+                    IndexesAdded = newIndexes,
                 };
             }
 
@@ -118,6 +137,7 @@ namespace Simple.Sqlite
             /// Gets the new added columns, if any
             /// </summary>
             public string[] ColumnsAdded { get; set; }
+            public string[] IndexesAdded { get; set; }
 
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -45,6 +46,10 @@ namespace Simple.Sqlite
         /// Default value on NULL
         /// </summary>
         public object DefaultValue { get; set; }
+
+        public string[] Indexes { get; set; }
+
+
         /// <summary>
         /// Create a column schema from TypeInfoItem
         /// </summary>
@@ -64,12 +69,18 @@ namespace Simple.Sqlite
             bool isUnique = pi.Is(DatabaseWrapper.ColumnAttributes.Unique);
 
             object defVal = null;
+            List<string> indexes = new List<string>();
             foreach (var attr in pi.DBAttributes)
             {
                 if (attr.Attribute is DefaultValueAttribute def)
                 {
                     defVal = def;
-                    break;
+                    continue;
+                }
+                if (attr.Attribute is IndexAttribute ix)
+                {
+                    indexes.Add(ix.IndexName);
+                    continue;
                 }
             }
 
@@ -84,6 +95,8 @@ namespace Simple.Sqlite
                 IsPK = isKey,
                 IsAI = isKey && dataType == SqliteType.INTEGER,
                 IsUnique = isUnique,
+
+                Indexes = indexes.ToArray(),
             };
         }
 
