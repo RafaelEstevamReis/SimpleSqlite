@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0;NET48;NET472;NET461</TargetFrameworks>
 		<LangVersion>10.0</LangVersion>
-		<Version>1.0.0.0-rc</Version>
+		<Version>1.0.0.1-rc</Version>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Authors>RafaelEstevam.net</Authors>
@@ -13,9 +13,8 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Sqlite</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageReleaseNotes>
-			Paired with commit 6f63903
-			https://github.com/RafaelEstevamReis/SimpleSqlite
+		<PackageReleaseNotes>Paired with commit 12d3c15
+https://github.com/RafaelEstevamReis/SimpleSqlite
 		</PackageReleaseNotes>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
