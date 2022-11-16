@@ -91,14 +91,14 @@ namespace Simple.Sqlite
 
             var lstExistingIndexes = connection.Query<string>("SELECT name FROM sqlite_master WHERE type = 'index';", null)
                                                .ToList();
-            var newIndexes = t.Columns.SelectMany(c => ((Column)c).Indexes)
+            var newIndexes = t.Columns.SelectMany(c => c.Indexes)
                                       .Distinct()
                                       .Where(ix => !lstExistingIndexes.Contains(ix))
                                       .ToArray();
 
             foreach (var ix in newIndexes)
             {
-                var columns = t.Columns.Where(c => ((Column)c).Indexes.Contains(ix))
+                var columns = t.Columns.Where(c => c.Indexes.Contains(ix))
                                        .Select(c => c.ColumnName)
                                        .ToArray();
 
