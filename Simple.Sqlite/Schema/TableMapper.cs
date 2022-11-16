@@ -123,6 +123,7 @@ namespace Simple.Sqlite
             /// </summary>
             public string[] ColumnsAdded { get; set; }
 
+            public string[] IndexesAdded => throw new NotSupportedException();
         }
     }
 }
