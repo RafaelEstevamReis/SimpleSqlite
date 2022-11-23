@@ -65,6 +65,8 @@ namespace Simple.Sqlite
                 {
                     if (guid != Guid.Empty) return;
                     value = Guid.NewGuid();
+                    // Write back to the object
+                    p.SetValue(parameters, value);
                 }
                 // Se for byte[] <=> Guid, preencher os [0,0,0,..]
                 if (value is byte[] b)
@@ -72,12 +74,12 @@ namespace Simple.Sqlite
                     // Se todos forem zero, inicializar
                     if (b.All(o => o == 0))
                     {
-                        value = Guid.NewGuid().ToByteArray();
+                        var newGuid = Guid.NewGuid();
+                        value = newGuid.ToByteArray();
+                        // Write back to the object
+                        p.SetValue(parameters, newGuid);
                     }
                 }
-
-                // write new guid on object
-                p.SetValue(parameters, value);
             }
         }
 
