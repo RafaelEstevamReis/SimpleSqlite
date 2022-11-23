@@ -13,7 +13,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Sqlite</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageReleaseNotes>Paired with commit 5a8cf63
+		<PackageReleaseNotes>Paired with commit ffaca22
 https://github.com/RafaelEstevamReis/SimpleSqlite
 		</PackageReleaseNotes>
 	</PropertyGroup>
