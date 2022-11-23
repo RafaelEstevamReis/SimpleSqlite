@@ -60,8 +60,21 @@ namespace Simple.Sqlite
             }
             else if (p.Type == typeof(Guid))
             {
-                if ((Guid)value != Guid.Empty) return;
-                value = Guid.NewGuid();
+                // Se for Guid <=> Guid, preencher os EMPTY
+                if (value is Guid guid)
+                {
+                    if (guid != Guid.Empty) return;
+                    value = Guid.NewGuid();
+                }
+                // Se for byte[] <=> Guid, preencher os [0,0,0,..]
+                if (value is byte[] b)
+                {
+                    // Se todos forem zero, inicializar
+                    if (b.All(o => o == 0))
+                    {
+                        value = Guid.NewGuid().ToByteArray();
+                    }
+                }
 
                 // write new guid on object
                 p.SetValue(parameters, value);
