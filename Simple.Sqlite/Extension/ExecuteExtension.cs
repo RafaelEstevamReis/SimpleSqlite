@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Simple.Sqlite.Extension
+namespace Simple.Sqlite
 {
     /// <summary>
     /// Extension for "Execute" stuff

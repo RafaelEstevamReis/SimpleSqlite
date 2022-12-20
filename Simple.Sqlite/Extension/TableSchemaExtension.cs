@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Linq;
 
-namespace Simple.Sqlite.Extension
+namespace Simple.Sqlite
 {
     /// <summary>
     /// Extension for "TableSchemaExtension" stuff

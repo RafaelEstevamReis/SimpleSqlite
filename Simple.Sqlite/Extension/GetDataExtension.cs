@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Simple.Sqlite.Extension
+namespace Simple.Sqlite
 {
     /// <summary>
     /// Extension for "GetDataExtension" stuff

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 
-namespace Simple.Sqlite.Extension
+namespace Simple.Sqlite
 {
     /// <summary>
     /// Extension for "InsertExtension" stuff

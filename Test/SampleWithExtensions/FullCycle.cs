@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Simple.Sqlite;
-using Simple.Sqlite.Extension;
 
 namespace Test.SampleWithExtensions
 {

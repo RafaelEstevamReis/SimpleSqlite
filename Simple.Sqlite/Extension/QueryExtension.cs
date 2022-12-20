@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Simple.Sqlite.Extension
+namespace Simple.Sqlite
 {
     /// <summary>
     /// Extension for "QueryExtension" stuff

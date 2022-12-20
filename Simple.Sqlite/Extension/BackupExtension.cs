@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace Simple.Sqlite.Extension
+namespace Simple.Sqlite
 {    /// <summary>
      /// Extension for "Backup" related stuff
      /// </summary>

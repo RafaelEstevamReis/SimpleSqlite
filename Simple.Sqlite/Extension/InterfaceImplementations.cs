@@ -2,7 +2,7 @@
 using Simple.DatabaseWrapper.TypeReader;
 using System;
 
-namespace Simple.Sqlite.Extension
+namespace Simple.Sqlite
 {
     internal class Connection : ISqliteConnection
     {

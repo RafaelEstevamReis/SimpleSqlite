@@ -1,6 +1,6 @@
 ﻿using Simple.DatabaseWrapper.Interfaces;
 
-namespace Simple.Sqlite.Extension
+namespace Simple.Sqlite
 {
     /// <summary>
     /// Extension for "MigrationExtension" stuff

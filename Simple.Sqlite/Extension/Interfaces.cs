@@ -3,7 +3,7 @@ using Simple.DatabaseWrapper.TypeReader;
 using System;
 using System.Data;
 
-namespace Simple.Sqlite.Extension
+namespace Simple.Sqlite
 {
     /// <summary>
     /// SqliteConnection interface wrapper
