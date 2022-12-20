@@ -1,6 +1,5 @@
 ﻿using Simple.DatabaseWrapper.Attributes;
 using Simple.Sqlite;
-using Simple.Sqlite.Extension;
 using System;
 using System.Linq;
 using Xunit;

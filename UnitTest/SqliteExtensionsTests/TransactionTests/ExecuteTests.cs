@@ -1,5 +1,4 @@
 ﻿using Simple.Sqlite;
-using Simple.Sqlite.Extension;
 using Xunit;
 
 namespace UnitTest.SqliteExtensionsTests.TransactionTests
