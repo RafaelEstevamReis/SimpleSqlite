@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Simple.Sqlite
 {
@@ -57,11 +55,6 @@ namespace Simple.Sqlite
             });
         }
 
-        /// <summary>
-        /// [DEPRECATED] Use 'GetConfig' instead
-        /// </summary>
-        [Obsolete("Use 'GetConfig' instead")]
-        public T ReadConfig<T>(string ConfigKey, string ConfigCategory, T Default) => GetConfig(ConfigKey, ConfigCategory, Default);
         /// <summary>
         /// Gets a configuration value
         /// </summary>
