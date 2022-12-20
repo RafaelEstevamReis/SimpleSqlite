@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Simple.DatabaseWrapper.Attributes;
+using Simple.DatabaseWrapper.Interfaces;
+using Simple.DatabaseWrapper.TypeReader;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using Simple.DatabaseWrapper.Attributes;
-using Simple.DatabaseWrapper.Interfaces;
-using Simple.DatabaseWrapper.TypeReader;
 
 namespace Simple.Sqlite
 {
@@ -46,7 +46,9 @@ namespace Simple.Sqlite
         /// Default value on NULL
         /// </summary>
         public object DefaultValue { get; set; }
-
+        /// <summary>
+        /// Indexes including this column
+        /// </summary>
         public string[] Indexes { get; set; }
 
 

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Simple.DatabaseWrapper.Interfaces;
+using Simple.DatabaseWrapper.TypeReader;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Simple.DatabaseWrapper.Interfaces;
-using Simple.DatabaseWrapper.TypeReader;
 
 namespace Simple.Sqlite
 {
