@@ -5,9 +5,8 @@ A very simple Sqlite wrapper to plug spiders with it
 
 Huge compatibility, supports:
 * NET 6.0
-* NET 5.0
 * NetCore 3.1
-* Net Framework 4.5
+* Net Framework 4.5+
 * Net Standard 2.0
 
 Project Repository: https://github.com/RafaelEstevamReis/SimpleSqlite

@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net7.0;net6.0;net5.0;netcoreapp3.1;netstandard2.0;netstandard2.1;NET48;NET472;NET461</TargetFrameworks>
 		<LangVersion>10.0</LangVersion>
-		<Version>1.0.0.4-rc</Version>
+		<Version>1.0.1</Version>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Authors>RafaelEstevam.net</Authors>
@@ -16,12 +16,19 @@
 		<PackageReleaseNotes>Paired with commit 9e16780
 https://github.com/RafaelEstevamReis/SimpleSqlite
 		</PackageReleaseNotes>
+		<PackageReadmeFile>README-NuGet.md</PackageReadmeFile>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>../Simple.Sqlite.xml</DocumentationFile>
 	</PropertyGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' != 'NET40'">
 		<PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="..\README-NuGet.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Simple.DatabaseWrapper" Version="1.3.6" />
