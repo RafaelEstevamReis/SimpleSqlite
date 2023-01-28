@@ -34,8 +34,6 @@ Huge compatibility, supports:
     - [Migration](#migration)
   - [Using with Dependency Injection](#using-with-dependency-injection)
     - [Using with ASP .Net](#using-with-asp-net)
-- [SqliteDB - A simplified Sqlite wrapper](#sqlitedb---a-simplified-sqlite-wrapper)
-  - [How to use:](#how-to-use-1)
 - [NoSqliteStorage - No-sql document storage](#nosqlitestorage---no-sql-document-storage)
   - [How to use:](#how-to-use-2)
   - [What this module automates ?](#what-this-module-automates--1)
