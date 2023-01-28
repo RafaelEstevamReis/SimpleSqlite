@@ -68,8 +68,6 @@ A Sqlite connection factory for `ISqliteConnection` to use with extension method
 
 
 ~~~C#
-using Simple.Sqlite.Extension;
-
 // Create a new instance
 using var cnn = Simple.Sqlite.ConnectionFactory.CreateConnection("myExtendedStuff.db");
 
