@@ -222,37 +222,6 @@ public class MyController : Controller
 
 ~~~
 
-# SqliteDB - A simplified Sqlite wrapper
-
-Sqlite database to store data in tables
-
-On new instance all database are backed up locally, see more [here](#backup)
-
-## How to use:
-
-~~~C#
-// Create a new instance
-SqliteDB db = new SqliteDB("myStuff.db");
-
-// Create a DB Schema
-db.CreateTables()
-  .Add<MyData>()
-  .Commit();
-
-var d = new MyData()
-{
-    //fill your object
-};
-// call INSERT
-db.Insert(d);
-
-// use GetAll to retrieve all data
-var allData = db.GetAll<MyData>();
-// Use queries to get back data
-var allBobs = db.Query<MyData>("SELECT * FROM MyData WHERE MyName = @name ", new { name = "bob" });
-~~~
-
-
 # NoSqliteStorage - No-sql document storage
 
 Need a fast to setup, no-installation no-sql database ? This module get you covered
