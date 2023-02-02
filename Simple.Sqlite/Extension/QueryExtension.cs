@@ -1,4 +1,5 @@
 ﻿using Simple.DatabaseWrapper.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,6 +32,57 @@ namespace Simple.Sqlite
         /// <returns>A collection of values mapped from the result rows</returns>
         public static IEnumerable<T> Query<T>(this ISqliteTransaction transaction, string query, object parameters, bool buffered = true)
            => query<T>(transaction.connection, transaction, query, parameters, buffered);
+
+        /// <summary>
+        /// Builds and Executes a query using the parameters for the where clause then map the result into a model
+        /// </summary>
+        /// <typeparam name="T">Returning model type</typeparam>
+        /// <param name="connection">The connection to be used</param>
+        /// <param name="parameters">Columns to be filtered. A Where clause will be builded with the paramters property's name.</param>
+        /// <param name="buffered">Defines if the results should be buffered in memory</param>
+        /// <returns>A collection of values mapped from the result rows</returns>
+        public static IEnumerable<T> Query<T>(this ISqliteConnection connection, object parameters, bool buffered = true)
+           => queryWithBuild<T>(connection, null, parameters, buffered);
+
+        /// <summary>
+        /// Builds and Executes a query using the parameters for the where clause then map the result into a model
+        /// </summary>
+        /// <typeparam name="T">Returning model type</typeparam>
+        /// <param name="transaction">The transaction to be used</param>
+        /// <param name="parameters">Columns to be filtered. A Where clause will be builded with the paramters property's name.</param>
+        /// <param name="buffered">Defines if the results should be buffered in memory</param>
+        /// <returns>A collection of values mapped from the result rows</returns>
+        public static IEnumerable<T> Query<T>(this ISqliteTransaction transaction, object parameters, bool buffered = true)
+           => queryWithBuild<T>(transaction.connection, transaction, parameters, buffered);
+
+        static IEnumerable<T> queryWithBuild<T>(ISqliteConnection connection, ISqliteTransaction transaction, object parameters, bool buffered = true)
+        {
+            if (parameters is null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            return query<T>(connection, transaction, queryBuilder<T>(connection, parameters), parameters, buffered);
+        }
+
+        static string queryBuilder<T>(ISqliteConnection connection, object parameters)
+        {
+            var tInfo = connection.typeCollection.GetInfo(typeof(T));
+            var tColumns = tInfo.GetNames().ToArray();
+
+            string baseQuery = $"SELECT * FROM {tInfo.TypeName} WHERE ";
+            var filterColumns = HelperFunctions.getParametersNames(parameters, connection.typeCollection);
+
+            var pairs = filterColumns.Select(c =>
+            {
+                var columnParamName = c;
+                var columnName = tColumns.First(cn => cn.Equals(columnParamName, StringComparison.InvariantCultureIgnoreCase));
+
+                return $"{columnName} = @{columnParamName}";
+            });
+
+            return $"SELECT * FROM {tInfo.TypeName} WHERE {string.Join(" AND ", pairs)}";
+        }
 
         static IEnumerable<T> query<T>(ISqliteConnection connection, ISqliteTransaction transaction, string query, object parameters, bool buffered)
         {
