@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using Microsoft.VisualBasic;
 using Simple.DatabaseWrapper.Helpers;
 using Simple.DatabaseWrapper.TypeReader;
 using System;
@@ -27,6 +28,13 @@ namespace Simple.Sqlite
 
                 cmd.Parameters.AddWithValue(p.Name, value);
             }
+        }
+        internal static IEnumerable<string> getParametersNames(object parameters, ReaderCachedCollection typeCollection)
+        {
+            return typeCollection.GetInfo(parameters.GetType())
+                       .Items
+                       .Where(p => p.CanRead)
+                       .Select(p => p.Name);
         }
         internal static void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
         {
