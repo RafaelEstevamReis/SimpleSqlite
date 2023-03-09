@@ -75,6 +75,11 @@
             Current connection string
             </summary>
         </member>
+        <member name="M:Simple.Sqlite.ConnectionFactory.#ctor(Microsoft.Data.Sqlite.SqliteConnectionStringBuilder)">
+            <summary>
+            Factory constructor
+            </summary>
+        </member>
         <member name="M:Simple.Sqlite.ConnectionFactory.#ctor(System.String)">
             <summary>
             Factory constructor
@@ -86,7 +91,7 @@
             </summary>
             <returns>An open connection of the database</returns>
         </member>
-        <member name="M:Simple.Sqlite.ConnectionFactory.FromFile(System.String)">
+        <member name="M:Simple.Sqlite.ConnectionFactory.FromFile(System.String,System.Boolean)">
             <summary>
             Creates a Factory to a sqlite file
             </summary>
@@ -94,11 +99,6 @@
         <member name="M:Simple.Sqlite.ConnectionFactory.CreateConnection(System.String)">
             <summary>
             Creates a ISqliteConnection instance from a file
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.ConnectionFactory.CreateConnection(Microsoft.Data.Sqlite.SqliteConnection)">
-            <summary>
-            Wraps a Microsoft.Data.Sqlite.SqliteConnection into a ISqliteConnection instance
             </summary>
         </member>
         <member name="M:Simple.Sqlite.ConnectionFactory.CreateInMemory">
