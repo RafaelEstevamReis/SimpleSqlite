@@ -23,6 +23,13 @@ namespace Simple.Sqlite
         /// <summary>
         /// Factory constructor
         /// </summary>
+        public ConnectionFactory(SqliteConnectionStringBuilder builder)
+            : this(builder.ToString())
+        { }
+
+        /// <summary>
+        /// Factory constructor
+        /// </summary>
         public ConnectionFactory(string cnnString)
         {
             if (string.IsNullOrWhiteSpace(cnnString))
@@ -51,13 +58,13 @@ namespace Simple.Sqlite
         /// <summary>
         /// Creates a Factory to a sqlite file
         /// </summary>
-        public static ConnectionFactory FromFile(string databaseFile)
+        public static ConnectionFactory FromFile(string databaseFile, bool readOnly = false)
         {
-            var cnnString = sqliteFileToCnnString(databaseFile);
+            var cnnString = sqliteFileToCnnString(databaseFile, readOnly ? SqliteOpenMode.ReadOnly : SqliteOpenMode.ReadWriteCreate);
             return new ConnectionFactory(cnnString);
         }
 
-        private static string sqliteFileToCnnString(string databaseFile)
+        private static string sqliteFileToCnnString(string databaseFile, SqliteOpenMode mode = SqliteOpenMode.ReadWriteCreate)
         {
             var fi = new FileInfo(databaseFile);
             if (!fi.Directory.Exists) fi.Directory.Create();
@@ -65,6 +72,7 @@ namespace Simple.Sqlite
             var sb = new SqliteConnectionStringBuilder
             {
                 DataSource = databaseFile,
+                Mode = mode
             };
             return sb.ToString();
         }
@@ -84,18 +92,7 @@ namespace Simple.Sqlite
                 connection = SqliteConnection,
             };
         }
-        /// <summary>
-        /// Wraps a Microsoft.Data.Sqlite.SqliteConnection into a ISqliteConnection instance
-        /// </summary>
-        public static ISqliteConnection CreateConnection(SqliteConnection connection)
-        {
-            return new Connection()
-            {
-                typeCollection = new DatabaseWrapper.TypeReader.ReaderCachedCollection(),
-                connection = connection,
-            };
-        }
-
+       
         /// <summary>
         /// Opens a non-Shared in memory connection
         /// </summary>
