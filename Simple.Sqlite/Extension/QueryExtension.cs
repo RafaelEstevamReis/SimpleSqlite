@@ -19,7 +19,7 @@ namespace Simple.Sqlite
         /// <param name="parameters">Query parameters</param>
         /// <param name="buffered">Defines if the results should be buffered in memory</param>
         /// <returns>A collection of values mapped from the result rows</returns>
-        public static IEnumerable<T> Query<T>(this ISqliteConnection connection, string query, object parameters, bool buffered = true)
+        public static IEnumerable<T> Query<T>(this ISqliteConnection connection, string query, object parameters = null, bool buffered = true)
             => query<T>(connection, null, query, parameters, buffered);
         /// <summary>
         /// Executes a query and map the result into a model within a transaction
@@ -30,7 +30,7 @@ namespace Simple.Sqlite
         /// <param name="parameters">Query parameters</param>
         /// <param name="buffered">Defines if the results should be buffered in memory</param>
         /// <returns>A collection of values mapped from the result rows</returns>
-        public static IEnumerable<T> Query<T>(this ISqliteTransaction transaction, string query, object parameters, bool buffered = true)
+        public static IEnumerable<T> Query<T>(this ISqliteTransaction transaction, string query, object parameters = null, bool buffered = true)
            => query<T>(transaction.connection, transaction, query, parameters, buffered);
 
         /// <summary>
