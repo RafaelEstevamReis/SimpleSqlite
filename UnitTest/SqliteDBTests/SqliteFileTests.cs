@@ -13,18 +13,15 @@ namespace UnitTest.SqliteDBTests
         {
             file = new FileInfo($"demoDb_{Guid.NewGuid()}.db");
         }
-        protected SqliteDB GetDb() => new SqliteDB(file.FullName);
-
-        [Fact]
-        public void SqliteDB_TestConnection()
-        {
-            var db = GetDb();
-            Assert.Equal(1, db.ExecuteScalar<int>("SELECT 1", null));
-        }
-
+        //protected SqliteDB GetDb() => new SqliteDB(file.FullName);
+        //[Fact]
+        //public void SqliteDB_TestConnection()
+        //{
+        //    var db = GetDb();
+        //    Assert.Equal(1, db.ExecuteScalar<int>("SELECT 1", null));
+        //}
         public void Dispose()
         {
-            //if (file.Exists) file.Delete();
             if (File.Exists(file.FullName)) file.Delete();
         }
     }

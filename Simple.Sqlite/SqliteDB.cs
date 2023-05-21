@@ -49,13 +49,6 @@ namespace Simple.Sqlite
                 if (File.Exists(DatabaseFileName)) backupDatabase();
             }
 
-            // uses builder to avoid escape issues
-            SqliteConnectionStringBuilder sb = new SqliteConnectionStringBuilder
-            {
-                DataSource = DatabaseFileName,
-                //Version = 3
-            };
-
             db = ConnectionFactory.FromFile(fileName);
         }
 
@@ -127,8 +120,10 @@ namespace Simple.Sqlite
         /// </summary>
         public T ExecuteScalar<T>(string text, object parameters)
         {
-            using var cnn = db.GetConnection();
-            return cnn.ExecuteScalar<T>(text, parameters);
+            using (var cnn = db.GetConnection())
+            {
+                return cnn.ExecuteScalar<T>(text, parameters);
+            }
         }
 
         /// <summary>
