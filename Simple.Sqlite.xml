@@ -594,12 +594,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Simple.Sqlite.TableMapper">
-            <summary>
-            Table mapping class
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.TableMapper.#ctor(Simple.Sqlite.SqliteDB,Simple.DatabaseWrapper.TypeReader.ReaderCachedCollection)">
+        <member name="M:Simple.Sqlite.TableMapper.#ctor(Simple.Sqlite.ISqliteConnection)">
             <summary>
             Creates a new instance
             </summary>
@@ -635,46 +630,6 @@
             </summary>
         </member>
         <member name="P:Simple.Sqlite.TableMapper.TableCommitResult.ColumnsAdded">
-            <summary>
-            Gets the new added columns, if any
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.TableMapperNew.#ctor(Simple.Sqlite.ISqliteConnection)">
-            <summary>
-            Creates a new instance
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.TableMapperNew.Add``1">
-            <summary>
-            Adds a table
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.TableMapperNew.ConfigureTable(System.Action{Simple.DatabaseWrapper.Interfaces.ITable})">
-            <summary>
-            Allows last added table to be editted
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.TableMapperNew.Commit">
-            <summary>
-            Commit all new tables to the db (old schemas are not updated (yet)
-            </summary>
-        </member>
-        <member name="T:Simple.Sqlite.TableMapperNew.TableCommitResult">
-            <summary>
-            Class for the table commit results
-            </summary>
-        </member>
-        <member name="P:Simple.Sqlite.TableMapperNew.TableCommitResult.TableName">
-            <summary>
-            Name of the table added/altered
-            </summary>
-        </member>
-        <member name="P:Simple.Sqlite.TableMapperNew.TableCommitResult.WasTableCreated">
-            <summary>
-            Gets if the table was altered
-            </summary>
-        </member>
-        <member name="P:Simple.Sqlite.TableMapperNew.TableCommitResult.ColumnsAdded">
             <summary>
             Gets the new added columns, if any
             </summary>

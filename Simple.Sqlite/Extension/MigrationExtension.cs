@@ -12,6 +12,6 @@ namespace Simple.Sqlite
         /// </summary>
         /// <param name="connection">The connection to be used</param>
         /// <returns>A database migration object</returns>
-        public static ITableMapper CreateTables(this ISqliteConnection connection) => new TableMapperNew(connection);
+        public static ITableMapper CreateTables(this ISqliteConnection connection) => new TableMapper(connection);
     }
 }
