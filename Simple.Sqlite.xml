@@ -594,12 +594,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Simple.Sqlite.TableMapper">
-            <summary>
-            Table mapping class
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.TableMapper.#ctor(Simple.Sqlite.SqliteDB,Simple.DatabaseWrapper.TypeReader.ReaderCachedCollection)">
+        <member name="M:Simple.Sqlite.TableMapper.#ctor(Simple.Sqlite.ISqliteConnection)">
             <summary>
             Creates a new instance
             </summary>
@@ -635,46 +630,6 @@
             </summary>
         </member>
         <member name="P:Simple.Sqlite.TableMapper.TableCommitResult.ColumnsAdded">
-            <summary>
-            Gets the new added columns, if any
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.TableMapperNew.#ctor(Simple.Sqlite.ISqliteConnection)">
-            <summary>
-            Creates a new instance
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.TableMapperNew.Add``1">
-            <summary>
-            Adds a table
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.TableMapperNew.ConfigureTable(System.Action{Simple.DatabaseWrapper.Interfaces.ITable})">
-            <summary>
-            Allows last added table to be editted
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.TableMapperNew.Commit">
-            <summary>
-            Commit all new tables to the db (old schemas are not updated (yet)
-            </summary>
-        </member>
-        <member name="T:Simple.Sqlite.TableMapperNew.TableCommitResult">
-            <summary>
-            Class for the table commit results
-            </summary>
-        </member>
-        <member name="P:Simple.Sqlite.TableMapperNew.TableCommitResult.TableName">
-            <summary>
-            Name of the table added/altered
-            </summary>
-        </member>
-        <member name="P:Simple.Sqlite.TableMapperNew.TableCommitResult.WasTableCreated">
-            <summary>
-            Gets if the table was altered
-            </summary>
-        </member>
-        <member name="P:Simple.Sqlite.TableMapperNew.TableCommitResult.ColumnsAdded">
             <summary>
             Gets the new added columns, if any
             </summary>
@@ -725,11 +680,6 @@
             Allows any instance of SqliteDB to execute a backup of the current database
             </summary>
         </member>
-        <member name="P:Simple.Sqlite.SqliteDB.IsInMemoryDatabase">
-            <summary>
-            Gets if this instance is an InMemoryDatabase
-            </summary>
-        </member>
         <member name="P:Simple.Sqlite.SqliteDB.DatabaseFileName">
             <summary>
             Database file full path
@@ -760,11 +710,6 @@
             Gets columns names for a table
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.SqliteDB.ExecuteNonQuery(System.String,System.Object)">
-            <summary>
-            Use 'Execute' instead
-            </summary>
-        </member>
         <member name="M:Simple.Sqlite.SqliteDB.Execute(System.String,System.Object)">
             <summary>
             Executes a NonQuery command, this method locks the execution
@@ -778,11 +723,6 @@
         <member name="M:Simple.Sqlite.SqliteDB.Query``1(System.String,System.Object)">
             <summary>
             Executes a query and returns the value as a T collection
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.SqliteDB.ExecuteQuery``1(System.String,System.Object)">
-            <summary>
-            Use 'Query' instead
             </summary>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.QueryFirst``1(System.String,System.Object)">
@@ -862,11 +802,6 @@
             <summary>
             Creates an online backup of the current database.
             Can be used to save an InMemory database
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.SqliteDB.CreateInMemory">
-            <summary>
-            Creates a InMemory database instance
             </summary>
         </member>
     </members>

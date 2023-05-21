@@ -1,5 +1,4 @@
 ﻿using Simple.DatabaseWrapper.Interfaces;
-using Simple.DatabaseWrapper.TypeReader;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,30 +6,36 @@ using System.Linq;
 
 namespace Simple.Sqlite
 {
-    /// <summary>
-    /// Table mapping class
-    /// </summary>
+    [Obsolete("Use TableMapper isntead", error: true)]
+    public class TableMapperNew : TableMapper
+    {
+        public TableMapperNew(ISqliteConnection connection)
+            : base(connection)
+        { }
+    }
+
     public class TableMapper : IColumnMapper
     {
-        private readonly SqliteDB db;
-        private readonly ReaderCachedCollection typeCollection;
         private readonly List<Table> tables;
+        private readonly ISqliteConnection connection;
+
+        public bool DisposeOnCommit { get; set; } = false;
 
         /// <summary>
         /// Creates a new instance
         /// </summary>
-        public TableMapper(SqliteDB database, ReaderCachedCollection typeCollection)
+        public TableMapper(ISqliteConnection connection)
         {
-            db = database;
-            this.typeCollection = typeCollection;
             tables = new List<Table>();
+            this.connection = connection;
         }
+
         /// <summary>
         /// Adds a table
         /// </summary>
         public IColumnMapper Add<T>() where T : new()
         {
-            var info = typeCollection.GetInfo<T>();
+            var info = connection.typeCollection.GetInfo<T>();
             tables.Add(Table.FromType(info));
             return this;
         }
@@ -53,7 +58,7 @@ namespace Simple.Sqlite
         {
             var results = new List<TableCommitResult>();
 
-            var tableNames = db.Query<string>(@"SELECT name
+            var tableNames = connection.Query<string>(@"SELECT name
  FROM sqlite_master
  WHERE type = 'table' ", null).ToArray();
 
@@ -64,6 +69,7 @@ namespace Simple.Sqlite
             }
 
             tables.Clear();
+            if (DisposeOnCommit) connection.Dispose();
             return results.ToArray();
         }
 
@@ -71,7 +77,7 @@ namespace Simple.Sqlite
         {
             if (!existingTable)
             {
-                db.Execute(t.ExportCreateTable(), null);
+                connection.Execute(t.ExportCreateTable(), null);
                 return new TableCommitResult()
                 {
                     TableName = t.TableName,
@@ -81,7 +87,7 @@ namespace Simple.Sqlite
             }
 
             // migrate ?
-            var dbColumns = db.GetTableColumnNames(t.TableName);
+            var dbColumns = connection.GetTableColumnNames(t.TableName);
             var newColumns = t.Columns
                               .Where(c => !dbColumns.Contains(c.ColumnName))
                               .ToArray();
@@ -89,7 +95,24 @@ namespace Simple.Sqlite
             foreach (var c in newColumns)
             {
                 string addColumn = c.ExportAddColumnAsStatement();
-                db.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
+                connection.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
+            }
+
+            var lstExistingIndexes = connection.Query<string>("SELECT name FROM sqlite_master WHERE type = 'index';", null)
+                                               .ToList();
+            var newIndexes = t.Columns.SelectMany(c => c.Indexes)
+                                      .Distinct()
+                                      .Where(ix => !lstExistingIndexes.Contains(ix))
+                                      .ToArray();
+
+            foreach (var ix in newIndexes)
+            {
+                var columns = t.Columns.Where(c => c.Indexes.Contains(ix))
+                                       .Select(c => c.ColumnName)
+                                       .ToArray();
+
+                string columnList = string.Join(", ", columns);
+                connection.Execute($"CREATE INDEX {ix} ON {t.TableName} ({columnList});", null);
             }
 
             if (newColumns.Length > 0)
@@ -100,6 +123,7 @@ namespace Simple.Sqlite
                     WasTableCreated = false,
                     ColumnsAdded = newColumns.Select(o => o.ColumnName)
                                                .ToArray(),
+                    IndexesAdded = newIndexes,
                 };
             }
 
@@ -122,8 +146,8 @@ namespace Simple.Sqlite
             /// Gets the new added columns, if any
             /// </summary>
             public string[] ColumnsAdded { get; set; }
+            public string[] IndexesAdded { get; set; }
 
-            public string[] IndexesAdded => throw new NotSupportedException();
         }
     }
 }

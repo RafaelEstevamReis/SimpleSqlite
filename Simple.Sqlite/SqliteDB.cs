@@ -1,13 +1,10 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using Simple.DatabaseWrapper.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using Microsoft.Data.Sqlite;
-using Simple.DatabaseWrapper.Helpers;
-using Simple.DatabaseWrapper.Interfaces;
-using Simple.DatabaseWrapper.TypeReader;
 
 namespace Simple.Sqlite
 {
@@ -15,31 +12,20 @@ namespace Simple.Sqlite
     /// Easy access a local database
     /// How to use: Create new instance, call CreateTables(), chain Add[T] to add tables to it then Commit(), after that just call the other methods
     /// </summary>
-    [Obsolete("Use ConnectionFactory instead")]
     public class SqliteDB
     {
         /// <summary>
         /// Allows any instance of SqliteDB to execute a backup of the current database
         /// </summary>
         public static bool EnabledDatabaseBackup = true;
+
         public static bool HandleGuidAsByteArray
         {
             get => HelperFunctions.handleGuidAsByteArray;
             set => HelperFunctions.handleGuidAsByteArray = value;
         }
 
-        // Manual lock on Writes to avoid Exceptions
-        private readonly object lockNonQuery;
-        private readonly string cnnString;
-        private readonly ReaderCachedCollection typeCollection;
-
-        #region In Memory
-        /// <summary>
-        /// Gets if this instance is an InMemoryDatabase
-        /// </summary>
-        public bool IsInMemoryDatabase { get; private set; }
-        SqliteConnection permanentConnection;
-        #endregion
+        private readonly ConnectionFactory db;
 
         /// <summary>
         /// Database file full path
@@ -50,40 +36,24 @@ namespace Simple.Sqlite
         /// Creates a new instance
         /// </summary>
         public SqliteDB(string fileName)
+            : this(fileName, EnabledDatabaseBackup)
+        { }
+        public SqliteDB(string fileName, bool executeBackup)
         {
             var fi = new FileInfo(fileName);
             if (!fi.Directory.Exists) fi.Directory.Create();
 
             DatabaseFileName = fi.FullName;
-            // if now exists, creates one (can be done in the ConnectionString)
-
-            //if (!File.Exists(DatabaseFileName)) SqliteConnection.CreateFile(DatabaseFileName);
-            //else backupDatabase();
-            if (File.Exists(DatabaseFileName)) backupDatabase();
-
-            // uses builder to avoid escape issues
-            SqliteConnectionStringBuilder sb = new SqliteConnectionStringBuilder
+            if (executeBackup)
             {
-                DataSource = DatabaseFileName,
-                //Version = 3
-            };
+                if (File.Exists(DatabaseFileName)) backupDatabase();
+            }
 
-            cnnString = sb.ToString();
-            typeCollection = new ReaderCachedCollection();
-            lockNonQuery = new object();
-        }
-        private SqliteDB(SqliteConnectionStringBuilder sb, string databaseFileName)
-        {
-            DatabaseFileName = databaseFileName;
-            cnnString = sb.ToString();
-            typeCollection = new ReaderCachedCollection();
-            lockNonQuery = new object();
+            db = ConnectionFactory.FromFile(fileName);
         }
 
         private void backupDatabase()
         {
-            if (!EnabledDatabaseBackup) return;
-
             var temp = Path.GetTempFileName();
             using var fsInput = File.Open(DatabaseFileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using (var fsTempOut = File.OpenWrite(temp))
@@ -100,132 +70,60 @@ namespace Simple.Sqlite
             File.Move(temp, bkp);
         }
 
-        private SqliteConnection getNewConnection()
-        {
-            var SqliteConnection = new SqliteConnection(cnnString);
-            SqliteConnection.Open();
-            return SqliteConnection;
-        }
-        private SqliteConnection getConnection()
-        {
-            if (IsInMemoryDatabase)
-            {
-                if (permanentConnection == null)
-                    permanentConnection = getNewConnection();
-
-                return permanentConnection;
-            }
-            else
-            {
-                return getNewConnection();
-            }
-        }
-
         /// <summary>
         /// Builds the table creation sequence, should be finished with Commit()
         /// </summary>
         public ITableMapper CreateTables()
         {
-            return new TableMapper(this, typeCollection);
+            using var cnn = db.GetConnection();
+            var mapper = new TableMapper(cnn);
+            mapper.DisposeOnCommit = true;
+            return mapper;
         }
+
         /// <summary>
         /// Get a list of all tables
         /// </summary>
         public string[] GetAllTables()
         {
-            return Query<string>("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", null).ToArray();
+            //return Query<string>("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", null).ToArray();
+            using var cnn = db.GetConnection();
+            return cnn.GetAllTables();
         }
         /// <summary>
         /// Gets the schema for a table
         /// </summary>
         public DataTable GetTableSchema(string tableName)
         {
-            var cnn = getConnection();
-
-            using var cmd = cnn.CreateCommand();
-
-            cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
-
-            DataTable dt;
-            using (var reader = cmd.ExecuteReader())
-            {
-                dt = reader.GetSchemaTable();
-            }
-
-            if (!IsInMemoryDatabase) cnn.Close();
-            return dt;
+            using var cnn = db.GetConnection();
+            return cnn.GetTableSchema(tableName);
         }
         /// <summary>
         /// Gets columns names for a table
         /// </summary>
         public string[] GetTableColumnNames(string tableName)
         {
-            var cnn = getConnection();
-
-            using var cmd = cnn.CreateCommand();
-            cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
-
-            string[] columns;
-            using (var reader = cmd.ExecuteReader())
-            {
-                columns = Enumerable.Range(0, reader.FieldCount)
-                                    .Select(idx => reader.GetName(idx))
-                                    .ToArray();
-            }
-
-            if (!IsInMemoryDatabase) cnn.Close();
-            return columns;
+            using var cnn = db.GetConnection();
+            return cnn.GetTableColumnNames(tableName);
         }
-
-        /// <summary>
-        /// Use 'Execute' instead
-        /// </summary>
-        [Obsolete("Use 'Execute' instead", true)]
-        public int ExecuteNonQuery(string text, object parameters = null) => Execute(text, parameters);
 
         /// <summary>
         /// Executes a NonQuery command, this method locks the execution
         /// </summary>
         public int Execute(string text, object parameters = null)
         {
-            var cnn = getConnection();
-            using var cmd = cnn.CreateCommand();
-
-            cmd.CommandText = text;
-            HelperFunctions.fillParameters(cmd, parameters, typeCollection);
-
-            lock (lockNonQuery)
-            {
-                int val = cmd.ExecuteNonQuery();
-                if (!IsInMemoryDatabase) cnn.Close();
-                return val;
-            }
+            using var cnn = db.GetConnection();
+            return cnn.Execute(text, parameters);
         }
         /// <summary>
         /// Executes a Scalar commands and return the value as T
         /// </summary>
         public T ExecuteScalar<T>(string text, object parameters)
         {
-            var cnn = getConnection();
-
-            using var cmd = cnn.CreateCommand();
-
-            cmd.CommandText = text;
-            HelperFunctions.fillParameters(cmd, parameters, typeCollection);
-
-            var obj = cmd.ExecuteScalar();
-            if (!IsInMemoryDatabase) cnn.Close();
-
-            // In SQLite DateTime is returned as STRING after aggregate operations
-            if (typeof(T) == typeof(DateTime))
+            using (var cnn = db.GetConnection())
             {
-                if (DateTime.TryParse(obj.ToString(), out DateTime dt))
-                {
-                    return (T)(object)dt;
-                }
-                return default;
+                return cnn.ExecuteScalar<T>(text, parameters);
             }
-            return (T)Convert.ChangeType(obj, typeof(T));
         }
 
         /// <summary>
@@ -233,44 +131,9 @@ namespace Simple.Sqlite
         /// </summary>
         public IEnumerable<T> Query<T>(string text, object parameters)
         {
-            var cnn = getConnection();
-
-            var typeT = typeof(T);
-            using var cmd = cnn.CreateCommand();
-
-            cmd.CommandText = text;
-            HelperFunctions.fillParameters(cmd, parameters, typeCollection);
-
-            using var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows)
-            {
-                if (!IsInMemoryDatabase) cnn.Close();
-                yield break;
-            }
-
-            var colNames = HelperFunctions.getSchemaColumns(reader);
-            while (reader.Read())
-            {
-                // build new
-                if (typeT.CheckIfSimpleType())
-                {
-                    yield return (T)TypeMapper.ReadValue(reader, typeT, 0);
-                }
-                else
-                {
-                    yield return TypeMapper.MapObject<T>(colNames, reader, typeCollection);
-                }
-            }
-            if (!IsInMemoryDatabase) cnn.Close();
+            using var cnn = db.GetConnection();
+            return cnn.Query<T>(text, parameters);
         }
-
-        /// <summary>
-        /// Use 'Query' instead
-        /// </summary>
-        [Obsolete("Use 'Query' instead", true)]
-        public IEnumerable<T> ExecuteQuery<T>(string text, object parameters)
-            => Query<T>(text, parameters);
 
         /// <summary>
         /// Executes a query and returns the result the first T, 
@@ -293,16 +156,8 @@ namespace Simple.Sqlite
         /// </summary>
         public T Get<T>(string keyColumn, object keyValue)
         {
-            var info = typeCollection.GetInfo<T>();
-
-            string column = keyColumn
-                            ?? info.Items.Where(o => o.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey))
-                                   .Select(o => o.Name)
-                                   .FirstOrDefault()
-                            ?? "_rowid_";
-            var data = Query<T>($"SELECT * FROM {info.TypeName} WHERE {column} = @keyValue LIMIT 1 ", new { keyValue });
-            // The enumeration should finalize to connection be closed
-            return getFirstOrDefault(data);
+            using var cnn = db.GetConnection();
+            return cnn.Get<T>(keyColumn, keyValue);
         }
         /// <summary>
         /// Work around to force enumerables to finalize
@@ -362,7 +217,10 @@ namespace Simple.Sqlite
         /// <param name="tableName">Name of the table, uses T class name if null</param>
         /// <returns></returns>
         public long Insert<T>(T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
-            => ExecuteScalar<long>(HelperFunctions.buildInsertSql<T>(typeCollection, resolution, tableName), item);
+        {
+            using var cnn = db.GetConnection();
+            return cnn.Insert(item, resolution, tableName);
+        }
 
         /// <summary>
         /// Inserts a new T or replace with current T and return it's ID, this method locks the execution.
@@ -381,35 +239,14 @@ namespace Simple.Sqlite
         /// <param name="tableName">Name of the table, uses T class name if null</param>
         public long[] BulkInsert<T>(IEnumerable<T> items, OnConflict resolution = OnConflict.Abort, string tableName = null)
         {
-            var cnn = getConnection();
-
-            List<long> ids = new List<long>();
-            string sql = HelperFunctions.buildInsertSql<T>(typeCollection, resolution, tableName);
-
-            lock (lockNonQuery)
-            {
-                using var trn = cnn.BeginTransaction();
-
-                foreach (var item in items)
-                {
-                    using var cmd = new SqliteCommand(sql, cnn, trn);
-                    HelperFunctions.fillParameters(cmd, item, typeCollection);
-
-                    var scalar = cmd.ExecuteScalar();
-                    if (scalar is long sL) ids.Add(sL);
-                }
-
-                trn.Commit();
-            }
-
-            if (!IsInMemoryDatabase) cnn.Close();
-            return ids.ToArray();
+            using var cnn = db.GetConnection();
+            return cnn.BulkInsert<T>(items, resolution, tableName);
         }
 
         /// <summary>
         /// Inserts many T items into the database and return their IDs, this method locks the execution
         /// </summary>
-        public long[] BulkInsert<T>(IEnumerable<T> items, bool addReplace) 
+        public long[] BulkInsert<T>(IEnumerable<T> items, bool addReplace)
             => BulkInsert<T>(items, addReplace ? OnConflict.Replace : OnConflict.Abort, null);
 
         /// <summary>
@@ -418,32 +255,9 @@ namespace Simple.Sqlite
         /// </summary>
         public void CreateBackup(string fileName)
         {
-            var source = getConnection();
-            SqliteConnectionStringBuilder sb = new SqliteConnectionStringBuilder
-            {
-                DataSource = fileName,
-                //Version = 3
-            };
-            using var destination = new SqliteConnection(sb.ToString());
-            destination.Open();
-            source.BackupDatabase(destination); //, "main", "main", -1, null, 0);
-
-            if (!IsInMemoryDatabase) source.Close();
+            using var source = db.GetConnection();
+            source.CreateBackup(fileName); //, "main", "main", -1, null, 0);
         }
-
-        /* Statics */
-        /// <summary>
-        /// Creates a InMemory database instance
-        /// </summary>
-        public static SqliteDB CreateInMemory()
-        {
-            var builder = new SqliteConnectionStringBuilder($"Data Source=:memory:");
-            return new SqliteDB(builder, "")
-            {
-                IsInMemoryDatabase = true,
-            };
-        }
-
 
     }
 }
