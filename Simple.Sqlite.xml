@@ -725,11 +725,6 @@
             Allows any instance of SqliteDB to execute a backup of the current database
             </summary>
         </member>
-        <member name="P:Simple.Sqlite.SqliteDB.IsInMemoryDatabase">
-            <summary>
-            Gets if this instance is an InMemoryDatabase
-            </summary>
-        </member>
         <member name="P:Simple.Sqlite.SqliteDB.DatabaseFileName">
             <summary>
             Database file full path
@@ -760,11 +755,6 @@
             Gets columns names for a table
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.SqliteDB.ExecuteNonQuery(System.String,System.Object)">
-            <summary>
-            Use 'Execute' instead
-            </summary>
-        </member>
         <member name="M:Simple.Sqlite.SqliteDB.Execute(System.String,System.Object)">
             <summary>
             Executes a NonQuery command, this method locks the execution
@@ -778,11 +768,6 @@
         <member name="M:Simple.Sqlite.SqliteDB.Query``1(System.String,System.Object)">
             <summary>
             Executes a query and returns the value as a T collection
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.SqliteDB.ExecuteQuery``1(System.String,System.Object)">
-            <summary>
-            Use 'Query' instead
             </summary>
         </member>
         <member name="M:Simple.Sqlite.SqliteDB.QueryFirst``1(System.String,System.Object)">
@@ -862,11 +847,6 @@
             <summary>
             Creates an online backup of the current database.
             Can be used to save an InMemory database
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.SqliteDB.CreateInMemory">
-            <summary>
-            Creates a InMemory database instance
             </summary>
         </member>
     </members>

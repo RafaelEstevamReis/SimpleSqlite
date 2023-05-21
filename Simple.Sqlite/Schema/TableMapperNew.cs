@@ -11,6 +11,8 @@ namespace Simple.Sqlite
         private readonly List<Table> tables;
         private readonly ISqliteConnection connection;
 
+        public bool DisposeOnCommit { get; set; } = false;
+
         /// <summary>
         /// Creates a new instance
         /// </summary>
@@ -59,6 +61,7 @@ namespace Simple.Sqlite
             }
 
             tables.Clear();
+            if (DisposeOnCommit) connection.Dispose();
             return results.ToArray();
         }
 
