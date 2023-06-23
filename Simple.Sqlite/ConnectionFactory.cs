@@ -64,7 +64,7 @@ namespace Simple.Sqlite
             return new ConnectionFactory(cnnString);
         }
 
-        private static string sqliteFileToCnnString(string databaseFile, SqliteOpenMode mode = SqliteOpenMode.ReadWriteCreate)
+        protected static string sqliteFileToCnnString(string databaseFile, SqliteOpenMode mode = SqliteOpenMode.ReadWriteCreate)
         {
             var fi = new FileInfo(databaseFile);
             if (!fi.Directory.Exists) fi.Directory.Create();
