@@ -410,9 +410,14 @@
             Gets columns names for a table
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.TableSchemaExtension.GetAllTables(Simple.Sqlite.ISqliteConnection)">
+        <member name="M:Simple.Sqlite.TableSchemaExtension.GetAllTables(Simple.Sqlite.ISqliteConnection,System.Boolean)">
             <summary>
             Get all tables
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.TableSchemaExtension.GetAllIndexes(Simple.Sqlite.ISqliteConnection,System.Boolean)">
+            <summary>
+            Get all indexes
             </summary>
         </member>
         <member name="T:Simple.Sqlite.NoSqliteStorage">

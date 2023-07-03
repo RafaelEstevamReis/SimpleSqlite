@@ -40,9 +40,20 @@ namespace Simple.Sqlite
         /// <summary>
         /// Get all tables
         /// </summary>
-        public static string[] GetAllTables(this ISqliteConnection Connection)
+        public static string[] GetAllTables(this ISqliteConnection Connection, bool include_sqlite_tables = true)
         {
-            return Connection.Query<string>("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", null).ToArray();
+            return Connection.Query<string>("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", null)
+                             .Where(o => include_sqlite_tables || !o.StartsWith("sqlite_"))
+                             .ToArray();
+        }
+        /// <summary>
+        /// Get all indexes
+        /// </summary>
+        public static string[] GetAllIndexes(this ISqliteConnection Connection, bool include_sqlite_indexes = true)
+        {
+            return Connection.Query<string>("SELECT name FROM sqlite_master WHERE type='index' ORDER BY name;", null)
+                             .Where(o => include_sqlite_indexes || !o.StartsWith("sqlite_"))
+                             .ToArray();
         }
     }
 }
