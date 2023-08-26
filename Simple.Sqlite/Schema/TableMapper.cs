@@ -75,27 +75,38 @@ namespace Simple.Sqlite
 
         private TableCommitResult commitTable(Table t, bool existingTable)
         {
+            TableCommitResult result;
             if (!existingTable)
             {
                 connection.Execute(t.ExportCreateTable(), null);
-                return new TableCommitResult()
+                result = new TableCommitResult()
                 {
                     TableName = t.TableName,
                     WasTableCreated = true,
                     ColumnsAdded = new string[0],
                 };
             }
-
-            // migrate ?
-            var dbColumns = connection.GetTableColumnNames(t.TableName);
-            var newColumns = t.Columns
-                              .Where(c => !dbColumns.Contains(c.ColumnName))
-                              .ToArray();
-
-            foreach (var c in newColumns)
+            else
             {
-                string addColumn = c.ExportAddColumnAsStatement();
-                connection.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
+                // migrate ?
+                var dbColumns = connection.GetTableColumnNames(t.TableName);
+                var newColumns = t.Columns
+                                  .Where(c => !dbColumns.Contains(c.ColumnName))
+                                  .ToArray();
+
+                foreach (var c in newColumns)
+                {
+                    string addColumn = c.ExportAddColumnAsStatement();
+                    connection.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
+                }
+
+                result = new TableCommitResult()
+                {
+                    TableName = t.TableName,
+                    WasTableCreated = false,
+                    ColumnsAdded = newColumns.Select(o => o.ColumnName)
+                                               .ToArray(),
+                };
             }
 
             var lstExistingIndexes = connection.Query<string>("SELECT name FROM sqlite_master WHERE type = 'index';", null)
@@ -104,6 +115,7 @@ namespace Simple.Sqlite
                                       .Distinct()
                                       .Where(ix => !lstExistingIndexes.Contains(ix))
                                       .ToArray();
+            result.IndexesAdded = newIndexes;
 
             foreach (var ix in newIndexes)
             {
@@ -115,17 +127,7 @@ namespace Simple.Sqlite
                 connection.Execute($"CREATE INDEX {ix} ON {t.TableName} ({columnList});", null);
             }
 
-            if (newColumns.Length > 0)
-            {
-                return new TableCommitResult()
-                {
-                    TableName = t.TableName,
-                    WasTableCreated = false,
-                    ColumnsAdded = newColumns.Select(o => o.ColumnName)
-                                               .ToArray(),
-                    IndexesAdded = newIndexes,
-                };
-            }
+            if (result.WasTableCreated || result.ColumnsAdded.Length > 0 || result.IndexesAdded.Length > 0) return result;
 
             return null;
         }
