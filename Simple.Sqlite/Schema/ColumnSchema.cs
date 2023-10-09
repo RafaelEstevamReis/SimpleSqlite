@@ -126,6 +126,7 @@ namespace Simple.Sqlite
             // Others Mapped of NUMERIC
             else if (info.Type == typeof(bool)) dataType = SqliteType.NUMERIC;
             else if (info.Type == typeof(DateTime)) dataType = SqliteType.NUMERIC;
+            else if (info.Type == typeof(TimeSpan)) dataType = SqliteType.NUMERIC;
             // Other
             else if (info.Type == typeof(Guid)) dataType = SqliteType.BLOB;
             else if (info.Type == typeof(Color)) dataType = SqliteType.BLOB;
