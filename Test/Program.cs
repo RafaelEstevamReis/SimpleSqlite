@@ -42,5 +42,6 @@ public class MyData
     }
     [Ignore]
     public int IgnoreMe { get; set; }
+    public TimeSpan MyTimeSpan { get; set; }
 }
 
