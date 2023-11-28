@@ -75,7 +75,7 @@ namespace Simple.Sqlite
         /// </summary>
         public ITableMapper CreateTables()
         {
-            using var cnn = db.GetConnection();
+            var cnn = db.GetConnection();
             var mapper = new TableMapper(cnn);
             mapper.DisposeOnCommit = true;
             return mapper;
