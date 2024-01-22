@@ -1,6 +1,8 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.IO;
+using System.IO.Compression;
+using System.Text;
 
 namespace Simple.Sqlite
 {
@@ -122,6 +124,66 @@ namespace Simple.Sqlite
                 connection = SqliteConnection,
             };
         }
+
+        /// <summary>
+        /// Some operational systems do not support DELETE journal mode (like Azure linux AppServices)
+        /// This method creates a new database file already in WAL mode
+        /// </summary>
+        /// <param name="filename">Filename for new database</param>
+        /// <returns>True if a new file was created, false if a file already exists</returns>
+        public static bool CreateEmptyWalDB(string filename)
+        {
+            if (File.Exists(filename)) return false;
+            var bytesRes = BinaryResources.getEmptyV3_WAL();
+            File.WriteAllBytes(filename, bytesRes);
+
+            return true;
+        }
+
+#if DEBUG
+        // BinaryResources builder functions
+        public static bool checkEquals(string fileName)
+        {
+            var bytesOrg = File.ReadAllBytes(fileName);
+            var bytesRes = BinaryResources.getEmptyV3_WAL();
+
+            if (bytesOrg.Length != bytesRes.Length) return false;
+
+            for (int i = 0; i < bytesOrg.Length; i++)
+            {
+                if (bytesOrg[i] != bytesRes[i]) return false;
+            }
+            return true;
+        }
+        public static void buidEmptyWalFile(string fileName)
+        {
+            string tmpFileName = "tmp.db.gz";
+
+            using (FileStream originalFileStream = File.Open(fileName, FileMode.Open))
+            {
+                using FileStream compressedFileStream = File.Create(tmpFileName);
+                using var compressor = new GZipStream(compressedFileStream, (CompressionLevel)3);
+                originalFileStream.CopyTo(compressor);
+            }
+
+            var bytesGz = File.ReadAllBytes(tmpFileName);
+            var sb = new StringBuilder();
+
+            sb.AppendLine("byte[] source = new byte[] {");
+            for (int i = 0; i < bytesGz.Length; i++)
+            {
+                if (i > 0) sb.Append(", ");
+                if (i % 16 == 0 && i > 0) sb.AppendLine();
+
+                sb.Append("0x");
+                sb.Append(bytesGz[i].ToString("X2"));
+            }
+            sb.AppendLine();
+            sb.AppendLine("}");
+
+            File.WriteAllText("source.txt", sb.ToString());
+        }
+#endif
 
     }
 }
