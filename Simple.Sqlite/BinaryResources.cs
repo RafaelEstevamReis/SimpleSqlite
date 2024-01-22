@@ -8,7 +8,7 @@ internal class BinaryResources
     /// <summary>
     /// Empty sqlitev3 database file, in WAL mode, compressed with .Net GZ
     /// </summary>
-    private static readonly byte[] empty_v3_wal_gz = new byte[] {
+    private static readonly byte[] empty_v3_wal_gz = {
         0x1F, 0x8B, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x0A, 0xED, 0xD0, 0x3D, 0x0A, 0xC2, 0x40,
         0x10, 0xC5, 0xF1, 0xC9, 0xC6, 0x56, 0xCC, 0x05, 0x02, 0x53, 0x6A, 0x63, 0xE3, 0x05, 0x8C, 0x92,
         0x2E, 0x20, 0x6A, 0x2E, 0x10, 0x71, 0x95, 0x45, 0xF3, 0xC1, 0xB2, 0x4D, 0x0A, 0x6F, 0xE5, 0x01,
@@ -23,7 +23,7 @@ internal class BinaryResources
     };
     internal static byte[] getEmptyV3_WAL()
     {
-        using MemoryStream compressed = new MemoryStream(empty_v3_wal_gz);
+        using var compressed = new MemoryStream(empty_v3_wal_gz);
         using var gz = new GZipStream(compressed, CompressionMode.Decompress);
         using var result = new MemoryStream();
         gz.CopyTo(result);
