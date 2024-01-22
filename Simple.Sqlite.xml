@@ -4,6 +4,11 @@
         <name>Simple.Sqlite</name>
     </assembly>
     <members>
+        <member name="F:Simple.Sqlite.BinaryResources.empty_v3_wal_gz">
+            <summary>
+            Empty sqlitev3 database file, in WAL mode, compressed with .Net GZ
+            </summary>
+        </member>
         <member name="T:Simple.Sqlite.ConfigurationDB">
             <summary>
             Represents a easy to use configuration set
@@ -111,6 +116,14 @@
             Opens a non-Shared in memory connection
             </summary>
             <param name="sharedName">Data source shared name</param>
+        </member>
+        <member name="M:Simple.Sqlite.ConnectionFactory.CreateEmptyWalDB(System.String)">
+            <summary>
+            Some operational systems do not support DELETE journal mode (like Azure linux AppServices)
+            This method creates a new database file already in WAL mode
+            </summary>
+            <param name="filename">Filename for new database</param>
+            <returns>True if a new file was created, false if a file already exists</returns>
         </member>
         <member name="T:Simple.Sqlite.SqliteType">
             <summary>
