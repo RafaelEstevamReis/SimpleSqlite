@@ -125,6 +125,12 @@
             <param name="filename">Filename for new database</param>
             <returns>True if a new file was created, false if a file already exists</returns>
         </member>
+        <member name="M:Simple.Sqlite.ConnectionFactory.ClearAllPools">
+            <summary>
+            Empties the connection pool.
+            Calls Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools()
+            </summary>
+        </member>
         <member name="T:Simple.Sqlite.SqliteType">
             <summary>
             Represents a Sqlite internal type

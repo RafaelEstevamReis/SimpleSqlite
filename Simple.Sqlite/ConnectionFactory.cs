@@ -1,8 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.IO;
-using System.IO.Compression;
-using System.Text;
 
 namespace Simple.Sqlite
 {
@@ -138,6 +136,15 @@ namespace Simple.Sqlite
             File.WriteAllBytes(filename, bytesRes);
 
             return true;
+        }
+
+        /// <summary>
+        /// Empties the connection pool.
+        /// Calls Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools()
+        /// </summary>
+        public static void ClearAllPools()
+        {
+            SqliteConnection.ClearAllPools();
         }
 
 #if DEBUG
