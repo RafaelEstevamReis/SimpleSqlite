@@ -169,12 +169,12 @@ namespace Simple.Sqlite
             using (FileStream originalFileStream = File.Open(fileName, FileMode.Open))
             {
                 using FileStream compressedFileStream = File.Create(tmpFileName);
-                using var compressor = new GZipStream(compressedFileStream, (CompressionLevel)3);
+                using var compressor = new System.IO.Compression.GZipStream(compressedFileStream, (System.IO.Compression.CompressionLevel)3);
                 originalFileStream.CopyTo(compressor);
             }
 
             var bytesGz = File.ReadAllBytes(tmpFileName);
-            var sb = new StringBuilder();
+            var sb = new System.Text.StringBuilder();
 
             sb.AppendLine("byte[] source = new byte[] {");
             for (int i = 0; i < bytesGz.Length; i++)
