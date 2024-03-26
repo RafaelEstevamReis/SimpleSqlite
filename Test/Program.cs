@@ -22,10 +22,12 @@ public class MyData
 
     [PrimaryKey]
     public Guid MyUID { get; set; }
+    [Index("ixMyData_MyId")]
     public int MyId { get; set; }
     public string MyName { get; set; }
     public Uri MyWebsite { get; set; }
     public DateTime MyBirthDate { get; set; }
+    public TimeSpan MyTimeSpan { get; set; }
     public Color MyFavColor { get; set; }
     public decimal MyDecimalValue { get; set; }
     public double MyDoubleValue { get; set; }
@@ -42,6 +44,5 @@ public class MyData
     }
     [Ignore]
     public int IgnoreMe { get; set; }
-    public TimeSpan MyTimeSpan { get; set; }
 }
 
