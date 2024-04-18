@@ -37,8 +37,8 @@ namespace Simple.Sqlite
             if (keyColumn is null) throw new ArgumentNullException(nameof(keyColumn));
 
             var data = connection.Query<T>($"SELECT * FROM {tableName} WHERE {keyColumn} = @keyValue LIMIT 1 ", new { keyValue });
-
-            return SqliteDB.getFirstOrDefault(data);
+            // Need to complete enumeration
+            return data.ToArray().FirstOrDefault(); //SqliteDB.getFirstOrDefault(data);
         }
         /// <summary>
         /// Select all values from a table `T`
