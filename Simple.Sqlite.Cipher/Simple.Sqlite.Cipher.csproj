@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0;net6.0</TargetFrameworks>
 		<LangVersion>12.0</LangVersion>
-		<Version>1.3.0</Version>
+		<Version>1.3.1</Version>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Authors>RafaelEstevam.net</Authors>
@@ -20,19 +20,19 @@
 		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Include="..\Simple.Sqlite\Enums.cs" Link="Enums.cs" />
-	  <Compile Include="..\Simple.Sqlite\Extension\ExecuteExtension.cs" Link="Extensions\ExecuteExtension.cs" />
-	  <Compile Include="..\Simple.Sqlite\Extension\GetDataExtension.cs" Link="Extensions\GetDataExtension.cs" />
-	  <Compile Include="..\Simple.Sqlite\Extension\InsertExtension.cs" Link="Extensions\InsertExtension.cs" />
-	  <Compile Include="..\Simple.Sqlite\Extension\InterfaceImplementations.cs" Link="InterfaceImplementations.cs" />
-	  <Compile Include="..\Simple.Sqlite\Extension\Interfaces.cs" Link="Interfaces.cs" />
-	  <Compile Include="..\Simple.Sqlite\Extension\MigrationExtension.cs" Link="Extensions\MigrationExtension.cs" />
-	  <Compile Include="..\Simple.Sqlite\Extension\QueryExtension.cs" Link="Extensions\QueryExtension.cs" />
-	  <Compile Include="..\Simple.Sqlite\Extension\TableSchemaExtension.cs" Link="Extensions\TableSchemaExtension.cs" />
-	  <Compile Include="..\Simple.Sqlite\HelperFunctions.cs" Link="HelperFunctions.cs" />
-	  <Compile Include="..\Simple.Sqlite\Schema\ColumnSchema.cs" Link="ColumnSchema.cs" />
-	  <Compile Include="..\Simple.Sqlite\Schema\TableMapper.cs" Link="TableMapper.cs" />
-	  <Compile Include="..\Simple.Sqlite\Schema\TableSchema.cs" Link="TableSchema.cs" />
+		<Compile Include="..\Simple.Sqlite\Enums.cs" Link="Enums.cs" />
+		<Compile Include="..\Simple.Sqlite\Extension\ExecuteExtension.cs" Link="Extensions\ExecuteExtension.cs" />
+		<Compile Include="..\Simple.Sqlite\Extension\GetDataExtension.cs" Link="Extensions\GetDataExtension.cs" />
+		<Compile Include="..\Simple.Sqlite\Extension\InsertExtension.cs" Link="Extensions\InsertExtension.cs" />
+		<Compile Include="..\Simple.Sqlite\Extension\InterfaceImplementations.cs" Link="InterfaceImplementations.cs" />
+		<Compile Include="..\Simple.Sqlite\Extension\Interfaces.cs" Link="Interfaces.cs" />
+		<Compile Include="..\Simple.Sqlite\Extension\MigrationExtension.cs" Link="Extensions\MigrationExtension.cs" />
+		<Compile Include="..\Simple.Sqlite\Extension\QueryExtension.cs" Link="Extensions\QueryExtension.cs" />
+		<Compile Include="..\Simple.Sqlite\Extension\TableSchemaExtension.cs" Link="Extensions\TableSchemaExtension.cs" />
+		<Compile Include="..\Simple.Sqlite\HelperFunctions.cs" Link="HelperFunctions.cs" />
+		<Compile Include="..\Simple.Sqlite\Schema\ColumnSchema.cs" Link="ColumnSchema.cs" />
+		<Compile Include="..\Simple.Sqlite\Schema\TableMapper.cs" Link="TableMapper.cs" />
+		<Compile Include="..\Simple.Sqlite\Schema\TableSchema.cs" Link="TableSchema.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="..\README-NuGet.md">
@@ -46,6 +46,6 @@
 		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.8" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Extensions\" />
+		<Folder Include="Extensions\" />
 	</ItemGroup>
 </Project>
