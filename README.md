@@ -9,8 +9,8 @@ Underlying library: [Microsoft.Data.Sqlite](https://www.nuget.org/packages/Micro
 ## Compatibility
 
 Huge compatibility, supports:
+* NET 8.0
 * NET 6.0
-* NET 5.0
 * NetCore 3.1
 * Net Framework 4.6.1
 * Net Standard 2.0
@@ -59,6 +59,7 @@ Look at the examples int the project [Test](https://github.com/RafaelEstevamReis
 
 Or follow any of examples bellow
 
+For Cipher (password) support, use [NuGet package](https://www.nuget.org/packages/Simple.Sqlite.Cipher): `Install-Package Simple.Sqlite.Cipher` instead
 
 # ConnectionFactory - Allow to use as Extensions
 
