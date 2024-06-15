@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTest.csproj", "{F0BA2D04-B05F-47E2-82BA-24640C141BB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.Sqlite.Cipher", "Simple.Sqlite.Cipher\Simple.Sqlite.Cipher.csproj", "{15C37256-BCB9-4EEF-AFF6-F2F34B1518F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.Sqlite.Cipher", "Simple.Sqlite.Cipher\Simple.Sqlite.Cipher.csproj", "{15C37256-BCB9-4EEF-AFF6-F2F34B1518F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.CipherNotes", "Sample.CipherNotes\Sample.CipherNotes.csproj", "{06323FC3-1387-4617-94E9-151E605B1B7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{15C37256-BCB9-4EEF-AFF6-F2F34B1518F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15C37256-BCB9-4EEF-AFF6-F2F34B1518F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15C37256-BCB9-4EEF-AFF6-F2F34B1518F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06323FC3-1387-4617-94E9-151E605B1B7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06323FC3-1387-4617-94E9-151E605B1B7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06323FC3-1387-4617-94E9-151E605B1B7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06323FC3-1387-4617-94E9-151E605B1B7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
