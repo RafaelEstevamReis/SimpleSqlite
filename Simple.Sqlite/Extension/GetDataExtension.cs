@@ -43,13 +43,13 @@ namespace Simple.Sqlite
         /// <summary>
         /// Select all values from a table `T`
         /// </summary>
-        public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection)
-            => GetAll<T>(connection, typeof(T).Name);
+        public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection, bool buffered = true)
+            => GetAll<T>(connection, typeof(T).Name, buffered);
         /// <summary>
         /// Select all values from a table
         /// </summary>
-        public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection, string tableName)
-            => connection.Query<T>($"SELECT * FROM {tableName} ", null);
+        public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection, string tableName, bool buffered = true)
+            => connection.Query<T>($"SELECT * FROM {tableName} ", null, buffered);
  
         /// <summary>
         /// Select filtered values from the table T WHERE filterColumn = filterValue

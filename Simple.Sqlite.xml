@@ -287,12 +287,12 @@
             Select a value from a table using specified column and value
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.GetDataExtension.GetAll``1(Simple.Sqlite.ISqliteConnection)">
+        <member name="M:Simple.Sqlite.GetDataExtension.GetAll``1(Simple.Sqlite.ISqliteConnection,System.Boolean)">
             <summary>
             Select all values from a table `T`
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.GetDataExtension.GetAll``1(Simple.Sqlite.ISqliteConnection,System.String)">
+        <member name="M:Simple.Sqlite.GetDataExtension.GetAll``1(Simple.Sqlite.ISqliteConnection,System.String,System.Boolean)">
             <summary>
             Select all values from a table
             </summary>
