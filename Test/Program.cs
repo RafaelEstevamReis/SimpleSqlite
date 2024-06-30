@@ -30,6 +30,7 @@ public class MyData
     public TimeSpan MyTimeSpan { get; set; }
     public Color MyFavColor { get; set; }
     public decimal MyDecimalValue { get; set; }
+    public decimal? MyDecimalOptionalValue { get; set; }
     public double MyDoubleValue { get; set; }
     public float MyFloatValue { get; set; }
     public eIntEnum MyEnum { get; set; }

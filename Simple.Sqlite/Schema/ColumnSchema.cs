@@ -64,7 +64,13 @@ namespace Simple.Sqlite
             // Auto select
             bool allowNulls = dataType == SqliteType.TEXT
                               || dataType == SqliteType.BLOB;
-            // was specified ?
+
+            if (pi.Type.IsGenericType && pi.Type.Name == "Nullable`1")
+            {
+                allowNulls = true;
+            }            
+
+            // was specified? then overide
             if (pi.Is(DatabaseWrapper.ColumnAttributes.AllowNull)) allowNulls = true;
             if (pi.Is(DatabaseWrapper.ColumnAttributes.NotNull)) allowNulls = false;
 
@@ -114,19 +120,30 @@ namespace Simple.Sqlite
             else if (info.Type == typeof(Uri)) dataType = SqliteType.TEXT;
             // Float point Numbers
             else if (info.Type == typeof(float)) dataType = SqliteType.REAL;
+            else if (info.Type == typeof(float?)) dataType = SqliteType.REAL;
             else if (info.Type == typeof(double)) dataType = SqliteType.REAL;
+            else if (info.Type == typeof(double?)) dataType = SqliteType.REAL;
             // Fixed FloatPoint
             else if (info.Type == typeof(decimal)) dataType = SqliteType.NUMERIC;
+            else if (info.Type == typeof(decimal?)) dataType = SqliteType.NUMERIC;
             // Integers
             else if (info.Type == typeof(byte)) dataType = SqliteType.INTEGER;
+            else if (info.Type == typeof(byte?)) dataType = SqliteType.INTEGER;
             else if (info.Type == typeof(int)) dataType = SqliteType.INTEGER;
+            else if (info.Type == typeof(int?)) dataType = SqliteType.INTEGER;
             else if (info.Type == typeof(uint)) dataType = SqliteType.INTEGER;
+            else if (info.Type == typeof(uint?)) dataType = SqliteType.INTEGER;
             else if (info.Type == typeof(long)) dataType = SqliteType.INTEGER;
+            else if (info.Type == typeof(long?)) dataType = SqliteType.INTEGER;
             else if (info.Type == typeof(ulong)) dataType = SqliteType.INTEGER;
+            else if (info.Type == typeof(ulong?)) dataType = SqliteType.INTEGER;
             // Others Mapped of NUMERIC
             else if (info.Type == typeof(bool)) dataType = SqliteType.NUMERIC;
+            else if (info.Type == typeof(bool?)) dataType = SqliteType.NUMERIC;
             else if (info.Type == typeof(DateTime)) dataType = SqliteType.NUMERIC;
+            else if (info.Type == typeof(DateTime?)) dataType = SqliteType.NUMERIC;
             else if (info.Type == typeof(TimeSpan)) dataType = SqliteType.NUMERIC;
+            else if (info.Type == typeof(TimeSpan?)) dataType = SqliteType.NUMERIC;
             // Other
             else if (info.Type == typeof(Guid)) dataType = SqliteType.BLOB;
             else if (info.Type == typeof(Color)) dataType = SqliteType.BLOB;
