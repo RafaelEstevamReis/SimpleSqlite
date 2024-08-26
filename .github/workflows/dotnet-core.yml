@@ -18,7 +18,7 @@ jobs:
       with:
         dotnet-version: 8.0.*
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore Simple.Sqlite/Simple.Sqlite.csproj
     - name: Build
       run: dotnet build Simple.Sqlite/Simple.Sqlite.csproj --configuration Release --no-restore
     - name: Test
