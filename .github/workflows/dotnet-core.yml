@@ -22,4 +22,5 @@ jobs:
     - name: Build
       run: dotnet build Simple.Sqlite/Simple.Sqlite.csproj --configuration Release --no-restore
     - name: Test
+      run: dotnet restore UnitTest/UnitTest.csproj
       run: dotnet test UnitTest/UnitTest.csproj --no-restore --verbosity normal
