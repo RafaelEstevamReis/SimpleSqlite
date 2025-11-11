@@ -1,5 +1,5 @@
 [![.NET Core](https://github.com/RafaelEstevamReis/SqliteWrapper/workflows/.NET%20Core/badge.svg)](https://github.com/RafaelEstevamReis/SimpleSqlite) 
-[![NuGet](https://buildstats.info/nuget/Simple.Sqlite)](https://www.nuget.org/packages/Simple.Sqlite) / [![NuGet](https://buildstats.info/nuget/Simple.Sqlite.Cipher)](https://www.nuget.org/packages/Simple.Sqlite.Cipher) (Cipher) 
+[![NuGet](https://img.shields.io/nuget/v/Simple.Sqlite)](https://www.nuget.org/packages/Simple.Sqlite) / [![NuGet](https://img.shields.io/nuget/v/Simple.Sqlite.Cipher)](https://www.nuget.org/packages/Simple.Sqlite.Cipher) (Cipher) 
 
 # Simple.Sqlite
 A very simple Sqlite wrapper to plug spiders with it
