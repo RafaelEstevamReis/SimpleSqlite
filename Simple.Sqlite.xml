@@ -161,6 +161,11 @@
             Numeric value. Includes Bool, Date and Datetime
             </summary>
         </member>
+        <member name="F:Simple.Sqlite.SqliteType.ANY">
+            <summary>
+            Accepts any kind of data
+            </summary>
+        </member>
         <member name="T:Simple.Sqlite.OnConflict">
             <summary>
             OnConflict clause options
@@ -671,6 +676,11 @@
         <member name="P:Simple.Sqlite.Table.Columns">
             <summary>
             Table's columns
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.Table.AsStrict">
+            <summary>
+            Creates table with 'STRICT' keyword
             </summary>
         </member>
         <member name="P:Simple.Sqlite.Table.Item(System.Int32)">
