@@ -2,10 +2,8 @@ namespace Sample.CipherNotes;
 
 using Microsoft.Data.Sqlite;
 using Simple.Sqlite;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 public partial class frmNotes : Form
 {
