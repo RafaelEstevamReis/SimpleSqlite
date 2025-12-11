@@ -124,8 +124,8 @@ namespace Simple.Sqlite
             else if (info.Type == typeof(double)) dataType = SqliteType.REAL;
             else if (info.Type == typeof(double?)) dataType = SqliteType.REAL;
             // Fixed FloatPoint
-            else if (info.Type == typeof(decimal)) dataType = SqliteType.NUMERIC;
-            else if (info.Type == typeof(decimal?)) dataType = SqliteType.NUMERIC;
+            else if (info.Type == typeof(decimal)) dataType = SqliteType.REAL;
+            else if (info.Type == typeof(decimal?)) dataType = SqliteType.REAL;
             // Integers
             else if (info.Type == typeof(byte)) dataType = SqliteType.INTEGER;
             else if (info.Type == typeof(byte?)) dataType = SqliteType.INTEGER;
@@ -138,12 +138,12 @@ namespace Simple.Sqlite
             else if (info.Type == typeof(ulong)) dataType = SqliteType.INTEGER;
             else if (info.Type == typeof(ulong?)) dataType = SqliteType.INTEGER;
             // Others Mapped of NUMERIC
-            else if (info.Type == typeof(bool)) dataType = SqliteType.NUMERIC;
-            else if (info.Type == typeof(bool?)) dataType = SqliteType.NUMERIC;
-            else if (info.Type == typeof(DateTime)) dataType = SqliteType.NUMERIC;
-            else if (info.Type == typeof(DateTime?)) dataType = SqliteType.NUMERIC;
-            else if (info.Type == typeof(TimeSpan)) dataType = SqliteType.NUMERIC;
-            else if (info.Type == typeof(TimeSpan?)) dataType = SqliteType.NUMERIC;
+            else if (info.Type == typeof(bool)) dataType = SqliteType.INTEGER;
+            else if (info.Type == typeof(bool?)) dataType = SqliteType.INTEGER;
+            else if (info.Type == typeof(DateTime)) dataType = SqliteType.ANY;
+            else if (info.Type == typeof(DateTime?)) dataType = SqliteType.ANY;
+            else if (info.Type == typeof(TimeSpan)) dataType = SqliteType.ANY;
+            else if (info.Type == typeof(TimeSpan?)) dataType = SqliteType.ANY;
             // Other
             else if (info.Type == typeof(Guid)) dataType = SqliteType.BLOB;
             else if (info.Type == typeof(Color)) dataType = SqliteType.BLOB;
@@ -245,6 +245,7 @@ namespace Simple.Sqlite
                 case SqliteType.NUMERIC:
                 case SqliteType.INTEGER:
                 case SqliteType.REAL:
+                case SqliteType.ANY:
                     column.DefaultValue = 0;
                     break;
                 case SqliteType.TEXT: // NotNull text, is empty

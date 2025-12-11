@@ -20,6 +20,11 @@ namespace Simple.Sqlite
         /// </summary>
         public IColumn[] Columns { get; set; }
         /// <summary>
+        /// Creates table with 'STRICT' keyword
+        /// </summary>
+        public bool AsStrict { get; set; }
+
+        /// <summary>
         /// Gets the N-th column
         /// </summary>
         public IColumn this[int index] => Columns[index];
@@ -57,7 +62,11 @@ namespace Simple.Sqlite
 
             var columns = string.Join(",", Columns.Select(c => c.ExportColumnDefinitionAsStatement()));
             sb.Append(columns);
-            sb.Append("\n);");
+            sb.Append("\n)");
+
+            if(AsStrict) sb.Append(" STRICT ");
+
+            sb.Append(';');
 
             return sb.ToString();
         }

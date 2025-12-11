@@ -1,4 +1,6 @@
-﻿namespace Simple.Sqlite
+﻿using System;
+
+namespace Simple.Sqlite
 {
 
     /// <summary>
@@ -25,7 +27,12 @@
         /// <summary>
         /// Numeric value. Includes Bool, Date and Datetime
         /// </summary>
+        [Obsolete("Not supported on STRICT tables")]
         NUMERIC,
+        /// <summary>
+        /// Accepts any kind of data
+        /// </summary>
+        ANY,
     }
     /// <summary>
     /// OnConflict clause options
