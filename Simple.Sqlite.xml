@@ -601,6 +601,11 @@
             Indexes including this column
             </summary>
         </member>
+        <member name="P:Simple.Sqlite.Column.Attributes">
+            <summary>
+            Attributes of this type
+            </summary>
+        </member>
         <member name="M:Simple.Sqlite.Column.FromInfo(Simple.DatabaseWrapper.TypeReader.TypeInfo,Simple.DatabaseWrapper.TypeReader.TypeItemInfo)">
             <summary>
             Create a column schema from TypeInfoItem

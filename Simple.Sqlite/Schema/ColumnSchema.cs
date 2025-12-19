@@ -50,6 +50,10 @@ namespace Simple.Sqlite
         /// Indexes including this column
         /// </summary>
         public string[] Indexes { get; set; }
+        /// <summary>
+        /// Attributes of this type
+        /// </summary>
+        public AttributeInfo[] Attributes { get; set; }
 
 
         /// <summary>
@@ -105,6 +109,7 @@ namespace Simple.Sqlite
                 IsUnique = isUnique,
 
                 Indexes = indexes.ToArray(),
+                Attributes = pi.DBAttributes.ToArray(), // copy
             };
         }
 
