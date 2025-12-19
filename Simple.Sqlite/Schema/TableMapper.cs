@@ -1,4 +1,5 @@
-﻿using Simple.DatabaseWrapper.Interfaces;
+﻿using Simple.DatabaseWrapper.Attributes;
+using Simple.DatabaseWrapper.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -117,11 +118,24 @@ namespace Simple.Sqlite
                                       .ToArray();
             result.IndexesAdded = newIndexes;
 
+            var allColumnsInexes = t.Columns.Select(c => (Column)c) // IColumn still don't have Attributes
+                                    .SelectMany(k =>
+                                    {
+                                        var attr = k.Attributes.Select(o => o.Attribute).OfType<IndexAttribute>();
+                                        return attr.Select(o => new
+                                        {
+                                            o.IndexName,
+                                            o.ColumnOrder,
+                                            k.ColumnName,
+                                        });
+                                    })
+                                    .ToArray();
             foreach (var ix in newIndexes)
             {
-                var columns = t.Columns.Where(c => c.Indexes.Contains(ix))
-                                       .Select(c => c.ColumnName)
-                                       .ToArray();
+                var columns = allColumnsInexes.Where(o => o.IndexName == ix)
+                                              .OrderBy(o => o.ColumnOrder)
+                                              .Select(o => o.ColumnName)
+                                              .ToArray();
 
                 string columnList = string.Join(", ", columns);
                 connection.Execute($"CREATE INDEX {ix} ON {t.TableName} ({columnList});", null);
