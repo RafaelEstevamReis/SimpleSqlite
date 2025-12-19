@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net9.0;net8.0;net6.0</TargetFrameworks>
 		<LangVersion>12.0</LangVersion>
-		<Version>1.4.4</Version>
+		<Version>1.4.5</Version>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Authors>RafaelEstevam.net</Authors>
