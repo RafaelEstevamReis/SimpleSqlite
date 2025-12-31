@@ -19,6 +19,7 @@ namespace Test.SampleWithExtensions
             // Create a DB Schema
             var result = cnn.CreateTables()
                             .Add<MyData>()
+                            .ConfigureTable(t => ((Table)t).AsStrict = false)
                             .Commit();
             if (result.Length > 0 && result[0].WasTableCreated)
             {
@@ -38,6 +39,7 @@ namespace Test.SampleWithExtensions
                 MyDoubleValue = 456.7,
                 MyFloatValue = 789.3f,
                 MyEnum = MyData.eIntEnum.Zero,
+                MyTextEnum = MyData.eTextEnum.Oranges
             };
 
             Console.WriteLine($"New data to insert: Id={d.MyId} MyUID={d.MyUID}");

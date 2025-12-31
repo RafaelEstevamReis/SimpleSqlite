@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using Simple.DatabaseWrapper.Attributes;
 using Simple.DatabaseWrapper.Helpers;
 using Simple.DatabaseWrapper.TypeReader;
 using System;
@@ -42,16 +43,16 @@ namespace Simple.Sqlite
                 value = uri.ToString();
             }
 
-            // Adjust TypeHelper.ReadParamValue(p, parameters);
-            // Fixes #25ff772 from simple.databasewrapper
-            // Reverted back on #1abea14
-            //if (value is byte[] bVal
-            //    && bVal.Length == 16
-            //    && (p.Type == typeof(Guid) || p.Type == typeof(object)))
-            //{
-            //    value = new Guid((byte[])value);
-            //}
+            if (p.Type.IsEnum)
+            {
+                var policy = p.GetAttribute<EnumPolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
+                if (policy != null && policy.Policy == EnumPolicyAttribute.Policies.AsText)
+                {
+                    value = value.ToString();
+                }
+            }
 
+            // Process Only Primary Keys
             if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
 
             //  Check for INT or LONGs equals to zero

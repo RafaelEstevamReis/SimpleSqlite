@@ -154,7 +154,13 @@ namespace Simple.Sqlite
             else if (info.Type == typeof(Color)) dataType = SqliteType.BLOB;
             else if (info.Type == typeof(byte[])) dataType = SqliteType.BLOB;
             //Int enums
-            else if (info.Type.IsEnum) dataType = SqliteType.INTEGER;
+            else if (info.Type.IsEnum)
+            {
+                dataType = SqliteType.INTEGER;
+
+                var policy = info.GetAttribute<EnumPolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
+                if (policy != null && policy.Policy == EnumPolicyAttribute.Policies.AsText) dataType = SqliteType.TEXT;
+            }
             else
             {
                 throw new Exception($"Type {info.Type.Name} is not supported on field {info.Name}");
