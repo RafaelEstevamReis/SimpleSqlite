@@ -37,7 +37,7 @@ namespace Simple.Sqlite
         public IColumnMapper Add<T>() where T : new()
         {
             var info = connection.typeCollection.GetInfo<T>();
-            tables.Add(Table.FromType(info));
+            tables.Add(Table.FromType(info, typeof(T)));
             return this;
         }
         /// <summary>
