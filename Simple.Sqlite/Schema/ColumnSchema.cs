@@ -253,7 +253,9 @@ namespace Simple.Sqlite
 
             switch (SqliteType)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 case SqliteType.NUMERIC:
+#pragma warning restore CS0618 // Type or member is obsolete
                 case SqliteType.INTEGER:
                 case SqliteType.REAL:
                 case SqliteType.ANY:
