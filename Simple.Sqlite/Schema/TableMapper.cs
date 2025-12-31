@@ -7,14 +7,6 @@ using System.Linq;
 
 namespace Simple.Sqlite
 {
-    [Obsolete("Use TableMapper isntead", error: true)]
-    public class TableMapperNew : TableMapper
-    {
-        public TableMapperNew(ISqliteConnection connection)
-            : base(connection)
-        { }
-    }
-
     public class TableMapper : IColumnMapper
     {
         private readonly List<Table> tables;
@@ -40,10 +32,16 @@ namespace Simple.Sqlite
             tables.Add(Table.FromType(info, typeof(T)));
             return this;
         }
+
         /// <summary>
         /// Allows last added table to be editted
         /// </summary>
-        public ITableMapper ConfigureTable(Action<ITable> Options)
+        [Obsolete($"Use {nameof(EditTable)} instead")]
+        public ITableMapper ConfigureTable(Action<ITable> Options) => EditTable(Options);
+        /// <summary>
+        /// Allows last added table to be editted
+        /// </summary>
+        public ITableMapper EditTable(Action<ITable> Options)
         {
 #if NETSTANDARD || NETFRAMEWORK
             Options(tables.Last());
@@ -52,6 +50,7 @@ namespace Simple.Sqlite
 #endif
             return this;
         }
+
         /// <summary>
         /// Commit all new tables to the db (old schemas are not updated (yet)
         /// </summary>
