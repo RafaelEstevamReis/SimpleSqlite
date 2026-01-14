@@ -643,6 +643,11 @@
             Allows last added table to be editted
             </summary>
         </member>
+        <member name="M:Simple.Sqlite.TableMapper.EditTable(System.Action{Simple.DatabaseWrapper.Interfaces.ITable})">
+            <summary>
+            Allows last added table to be editted
+            </summary>
+        </member>
         <member name="M:Simple.Sqlite.TableMapper.Commit">
             <summary>
             Commit all new tables to the db (old schemas are not updated (yet)
@@ -703,7 +708,7 @@
             Creates a CREATE TABLE statment from current schema
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.Table.FromType(Simple.DatabaseWrapper.TypeReader.TypeInfo)">
+        <member name="M:Simple.Sqlite.Table.FromType(Simple.DatabaseWrapper.TypeReader.TypeInfo,System.Type)">
             <summary>
             Creates a table schema from a Type
             </summary>
