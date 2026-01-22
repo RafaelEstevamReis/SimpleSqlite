@@ -229,12 +229,12 @@
             <param name="source">Source database</param>
             <param name="fileName">Destination database filename</param>
         </member>
-        <member name="T:Simple.Sqlite.Extension.CsvIngestionExtensions">
+        <member name="T:Simple.Sqlite.CsvIngestionExtensions">
             <summary>
             Extension for Ingesting CSVs
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.Extension.CsvIngestionExtensions.LoadFromCsvFile``1(Simple.Sqlite.ISqliteConnection,System.String,System.Func{System.String[],``0},System.Int32,System.Text.Encoding,System.Char,System.Char)">
+        <member name="M:Simple.Sqlite.CsvIngestionExtensions.LoadFromCsvFile``1(Simple.Sqlite.ISqliteConnection,System.String,System.Func{System.String[],``0},System.Int32,System.Text.Encoding,System.Char,System.Char)">
             <summary>
             Load a CSV file into a database. 
             For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
@@ -462,6 +462,33 @@
             <summary>
             Get all indexes
             </summary>
+        </member>
+        <member name="T:Simple.Sqlite.KeyValueStorage">
+            <summary>
+            A Simple KeyValue storage
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.KeyValueStorage.Item(System.String)">
+            <summary>
+            Gets or Sets Values for Keys
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.KeyValueStorage.#ctor(Simple.Sqlite.ConnectionFactory)">
+            <summary>
+            Creates a new KeyValueStorage using a ConnectionFactory
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.KeyValueStorage.SetKey(System.String,System.String)">
+            <summary>
+            Sets a new KeyValue pair
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.KeyValueStorage.GetKey(System.String)">
+            <summary>
+            Gets the Value from a Key
+            Inexistent keys returns as null
+            </summary>
+            <returns>Key's value or NULL</returns>
         </member>
         <member name="T:Simple.Sqlite.NoSqliteStorage">
             <summary>
