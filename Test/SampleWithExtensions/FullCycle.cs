@@ -19,7 +19,7 @@ namespace Test.SampleWithExtensions
             // Create a DB Schema
             var result = cnn.CreateTables()
                             .Add<MyData>()
-                            .ConfigureTable(t => ((Table)t).AsStrict = false)
+                            .EditTable(t => ((Table)t).AsStrict = false)
                             .Commit();
             if (result.Length > 0 && result[0].WasTableCreated)
             {
