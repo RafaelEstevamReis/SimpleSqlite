@@ -12,7 +12,7 @@ using System.Linq;
 internal class HelperFunctions
 {
     internal static bool handleGuidAsByteArray = true;
-    internal static void fillParameters(SqliteCommand cmd, object parameters, ReaderCachedCollection typeCollection)
+    internal static void fillParameters(SqliteCommand cmd, object? parameters, ReaderCachedCollection typeCollection)
     {
         if (parameters == null) return;
 
@@ -48,7 +48,7 @@ internal class HelperFunctions
             var policy = p.GetAttribute<EnumPolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
             if (policy != null && policy.Policy == EnumPolicyAttribute.Policies.AsText)
             {
-                value = value.ToString();
+                value = value.ToString() ?? default!;
             }
         }
 
@@ -59,12 +59,12 @@ internal class HelperFunctions
         if (p.Type == typeof(int))
         {
             if ((int)value != 0) return;
-            value = null;
+            value = default!;
         }
         else if (p.Type == typeof(long))
         {
             if ((long)value != 0) return;
-            value = null;
+            value = default!;
         }
         else if (p.Type == typeof(Guid))
         {
@@ -98,7 +98,7 @@ internal class HelperFunctions
                          .ToArray();
     }
 
-    internal static string buildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string tableName = null)
+    internal static string buildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string? tableName = null)
     {
         var info = typeCollection.GetInfo<T>();
         if (tableName == null) tableName = info.TypeName;

@@ -11,11 +11,11 @@ using Simple.DatabaseWrapper.Attributes;
 internal class nsDocuments
 {
     [PrimaryKey]
-    public string Id { get; set; }
-    public byte[] Object { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public byte[] Object { get; set; } = [];
     public bool Compressed { get; set; }
 
-    internal T Unpack<T>()
+    internal T? Unpack<T>()
     {
         var ms = new MemoryStream(Object);
         if (Compressed)
@@ -31,13 +31,11 @@ internal class nsDocuments
         }
 
     }
-    private static T deserialize<T>(Stream ms)
+    private static T? deserialize<T>(Stream ms)
     {
-        using (var reader = new BsonDataReader(ms))
-        {
-            JsonSerializer serializer = new JsonSerializer();
-            return (T)serializer.Deserialize(reader, typeof(T));
-        }
+        using var reader = new BsonDataReader(ms);
+        JsonSerializer serializer = new JsonSerializer();
+        return (T?)serializer.Deserialize(reader, typeof(T));
     }
 
     internal static nsDocuments Build<T>(string key, T obj, bool compress)
@@ -46,10 +44,8 @@ internal class nsDocuments
 
         if (compress)
         {
-            using (var compressionStream = new DeflateStream(ms, CompressionMode.Compress))
-            {
-                serialize(compressionStream, obj);
-            }
+            using var compressionStream = new DeflateStream(ms, CompressionMode.Compress);
+            serialize(compressionStream, obj);
         }
         else
         {
@@ -66,11 +62,9 @@ internal class nsDocuments
 
     private static void serialize<T>(Stream ms, T obj)
     {
-        using (var writer = new BsonDataWriter(ms))
-        {
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.Serialize(writer, obj);
-        }
+        using var writer = new BsonDataWriter(ms);
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.Serialize(writer, obj);
     }
 
 }

@@ -67,7 +67,7 @@ public class ConnectionFactory
     protected static string sqliteFileToCnnString(string databaseFile, SqliteOpenMode mode = SqliteOpenMode.ReadWriteCreate)
     {
         var fi = new FileInfo(databaseFile);
-        if (!fi.Directory.Exists) fi.Directory.Create();
+        if (!fi.Directory!.Exists) fi.Directory.Create();
 
         var sb = new SqliteConnectionStringBuilder
         {

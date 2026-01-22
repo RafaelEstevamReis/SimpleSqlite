@@ -14,7 +14,7 @@ public static class ExecuteExtension
     /// <param name="query">SQL to be eecuted</param>
     /// <param name="parameters">object with parameters</param>
     /// <returns>Returns affected rows. -1 for selects</returns>
-    public static int Execute(this ISqliteConnection connection, string query, object parameters = null)
+    public static int Execute(this ISqliteConnection connection, string query, object? parameters = null)
         => execute(connection, null, query, parameters);
     /// <summary>
     /// Executes a query in a transaction
@@ -23,10 +23,10 @@ public static class ExecuteExtension
     /// <param name="query">SQL to be eecuted</param>
     /// <param name="parameters">object with parameters</param>
     /// <returns>Returns affected rows. -1 for selects</returns>
-    public static int Execute(this ISqliteTransaction transaction, string query, object parameters = null)
+    public static int Execute(this ISqliteTransaction transaction, string query, object? parameters = null)
         => execute(transaction.connection, transaction, query, parameters);
 
-    private static int execute(ISqliteConnection connection, ISqliteTransaction transaction, string query, object parameters = null)
+    private static int execute(ISqliteConnection connection, ISqliteTransaction? transaction, string query, object? parameters = null)
     {
         //using var cmd = connection.connection.CreateCommand();
         //cmd.CommandText = query;
@@ -45,7 +45,7 @@ public static class ExecuteExtension
     /// <param name="query">Query yo be executed</param>
     /// <param name="parameters">object with parameters</param>
     /// <returns>Scalar value</returns>
-    public static T ExecuteScalar<T>(this ISqliteConnection connection, string query, object parameters = null)
+    public static T ExecuteScalar<T>(this ISqliteConnection connection, string query, object? parameters = null)
         => executeScalar<T>(connection, null, query, parameters);
     /// <summary>
     /// Executes a ScalarQuery in a transaction
@@ -55,10 +55,10 @@ public static class ExecuteExtension
     /// <param name="query">Query yo be executed</param>
     /// <param name="parameters">object with parameters</param>
     /// <returns>Scalar value</returns>
-    public static T ExecuteScalar<T>(this ISqliteTransaction transaction, string query, object parameters = null)
+    public static T ExecuteScalar<T>(this ISqliteTransaction transaction, string query, object? parameters = null)
        => executeScalar<T>(transaction.connection, transaction, query, parameters);
 
-    static T executeScalar<T>(this ISqliteConnection connection, ISqliteTransaction transaction, string query, object parameters = null)
+    static T executeScalar<T>(this ISqliteConnection connection, ISqliteTransaction? transaction, string query, object? parameters = null)
     {
         //using var cmd = connection.connection.CreateCommand();
         //cmd.CommandText = query;
@@ -75,8 +75,8 @@ public static class ExecuteExtension
             {
                 return (T)(object)dt;
             }
-            return default;
+            return default!;
         }
-        return (T)Convert.ChangeType(obj, typeof(T));
+        return (T)Convert.ChangeType(obj, typeof(T))!;
     }
 }

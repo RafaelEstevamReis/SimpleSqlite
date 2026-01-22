@@ -22,7 +22,7 @@ public static class CsvIngestionExtensions
     /// <param name="encoding">CSV Enconding</param>
     /// <param name="delimiter">CSV delimiter char</param>
     /// <param name="quote">CSV quote char</param>
-    public static void LoadFromCsvFile<T>(this ISqliteConnection connection, string csvFile, Func<string[], T> mapping, int bufferSize = 10_000, Encoding encoding = null, char delimiter = ';', char quote = '"')
+    public static void LoadFromCsvFile<T>(this ISqliteConnection connection, string csvFile, Func<string[], T> mapping, int bufferSize = 10_000, Encoding? encoding = null, char delimiter = ';', char quote = '"')
     {
         using DataBuffer<T> buffer = new DataBuffer<T>(bufferSize, data =>
         {

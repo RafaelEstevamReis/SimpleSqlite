@@ -5,8 +5,8 @@ using Simple.DatabaseWrapper.Attributes;
 internal class nsConfig
 {
     [PrimaryKey]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
-    public object Value { get; set; }
+    public object? Value { get; set; }
 
 }

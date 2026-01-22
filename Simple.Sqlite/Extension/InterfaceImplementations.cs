@@ -5,8 +5,8 @@ using Simple.DatabaseWrapper.TypeReader;
 
 internal class Connection : ISqliteConnection
 {
-    internal SqliteConnection connection { get; set; }
-    internal ReaderCachedCollection typeCollection { get; set; }
+    internal SqliteConnection connection { get; set; } = default!;
+    internal ReaderCachedCollection typeCollection { get; set; } = default!;
 
     SqliteConnection ISqliteConnection.connection => connection;
     ReaderCachedCollection ISqliteConnection.typeCollection => typeCollection;

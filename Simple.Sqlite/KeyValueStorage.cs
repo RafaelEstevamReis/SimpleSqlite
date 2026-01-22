@@ -13,7 +13,7 @@ public class KeyValueStorage
     /// <summary>
     /// Gets or Sets Values for Keys
     /// </summary>
-    public string this[string key]
+    public string? this[string key]
     {
         get => GetKey(key);
         set => SetKey(key, value);
@@ -34,7 +34,7 @@ public class KeyValueStorage
     /// <summary>
     /// Sets a new KeyValue pair
     /// </summary>
-    public void SetKey(string key, string value)
+    public void SetKey(string key, string? value)
     {
         if (string.IsNullOrEmpty(key))
         {
@@ -42,7 +42,15 @@ public class KeyValueStorage
         }
 
         using var cnn = db.GetConnection();
-        cnn.Insert(new KVStorageTable { Key = normalizeKey(key), Value = value }, OnConflict.Replace);
+
+        if (value == null)
+        {
+            cnn.Execute($"DELETE FROM KVStorageTable WHERE {nameof(KVStorageTable.Key)} = @key", new { key });
+        }
+        else
+        {
+            cnn.Insert(new KVStorageTable { Key = normalizeKey(key), Value = value }, OnConflict.Replace);
+        }
     }
 
     /// <summary>
@@ -63,7 +71,7 @@ public class KeyValueStorage
     internal record KVStorageTable
     {
         [Unique]
-        public string Key { get; set; }
-        public string Value { get; set; }
+        public string Key { get; set; } = default!;
+        public string Value { get; set; } = default!;
     }
 }

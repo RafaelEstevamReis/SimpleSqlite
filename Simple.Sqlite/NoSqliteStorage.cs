@@ -98,7 +98,7 @@ public class NoSqliteStorage : IEnumerable<string>
     public T Retrieve<T>(string Key)
     {
         var doc = internalDb.Get<nsDocuments>(Key);
-        if (doc == null) return default(T);
+        if (doc == null) return default(T)!;
         return doc.Unpack<T>();
     }
     /// <summary>

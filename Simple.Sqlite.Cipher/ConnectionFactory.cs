@@ -66,7 +66,7 @@ namespace Simple.Sqlite
         protected static string sqliteFileToCnnString(string databaseFile, string password, SqliteOpenMode mode = SqliteOpenMode.ReadWriteCreate)
         {
             var fi = new FileInfo(databaseFile);
-            if (!fi.Directory.Exists) fi.Directory.Create();
+            if (!fi.Directory!.Exists) fi.Directory.Create();
 
             var sb = new SqliteConnectionStringBuilder
             {

@@ -17,7 +17,7 @@ public class Column : IColumn
     /// <summary>
     /// Column name
     /// </summary>
-    public string ColumnName { get; set; }
+    public string ColumnName { get; set; } = string.Empty;
     /// <summary>
     /// Type on SQLite database
     /// </summary>
@@ -25,7 +25,7 @@ public class Column : IColumn
     /// <summary>
     /// Native object type
     /// </summary>
-    public Type NativeType { get; set; }
+    public Type NativeType { get; set; } = default!;
     /// <summary>
     /// Is PrimaryKey ?
     /// </summary>
@@ -45,15 +45,15 @@ public class Column : IColumn
     /// <summary>
     /// Default value on NULL
     /// </summary>
-    public object DefaultValue { get; set; }
+    public object? DefaultValue { get; set; }
     /// <summary>
     /// Indexes including this column
     /// </summary>
-    public string[] Indexes { get; set; }
+    public string[] Indexes { get; set; } = [];
     /// <summary>
     /// Attributes of this type
     /// </summary>
-    public AttributeInfo[] Attributes { get; set; }
+    public AttributeInfo[] Attributes { get; set; } = [];
 
 
     /// <summary>
@@ -80,7 +80,7 @@ public class Column : IColumn
 
         bool isUnique = pi.Is(DatabaseWrapper.ColumnAttributes.Unique);
 
-        object defVal = null;
+        object? defVal = null;
         List<string> indexes = new List<string>();
         foreach (var attr in pi.DBAttributes)
         {

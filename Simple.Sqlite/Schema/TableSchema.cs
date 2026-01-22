@@ -15,11 +15,11 @@ public class Table : ITable
     /// <summary>
     /// Table's name
     /// </summary>
-    public string TableName { get; set; }
+    public string TableName { get; set; } = string.Empty;
     /// <summary>
     /// Table's columns
     /// </summary>
-    public IColumn[] Columns { get; set; }
+    public IColumn[] Columns { get; set; } = [];
     /// <summary>
     /// Creates table with 'STRICT' keyword
     /// </summary>

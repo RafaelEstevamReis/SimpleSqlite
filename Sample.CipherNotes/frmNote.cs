@@ -17,7 +17,7 @@ public partial class frmNote : Form
 
     private void frmNote_Load(object sender, EventArgs e)
     {
-        tbNotes note;
+        tbNotes? note;
         using (var cnn = db.GetConnection())
         {
             note = cnn.Get<tbNotes>(NoteId);

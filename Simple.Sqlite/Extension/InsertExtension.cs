@@ -17,7 +17,7 @@ public static class InsertExtension
     /// <param name="resolution">Conflict resolution policy</param>
     /// <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
     /// <returns>Returns the integer Primary Key or __ROWID__ of the inserted row</returns>
-    public static long Insert<T>(this ISqliteConnection connection, T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
+    public static long Insert<T>(this ISqliteConnection connection, T item, OnConflict resolution = OnConflict.Abort, string? tableName = null)
           => connection.ExecuteScalar<long>(HelperFunctions.buildInsertSql<T>(connection.typeCollection, resolution, tableName), item);
     /// <summary>
     /// Inserts a value into a table with a transaction
@@ -28,7 +28,7 @@ public static class InsertExtension
     /// <param name="resolution">Conflict resolution policy</param>
     /// <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
     /// <returns>Returns the integer Primary Key or __ROWID__ of the inserted row</returns>
-    public static long Insert<T>(this ISqliteTransaction transaction, T item, OnConflict resolution = OnConflict.Abort, string tableName = null)
+    public static long Insert<T>(this ISqliteTransaction transaction, T item, OnConflict resolution = OnConflict.Abort, string? tableName = null)
          => transaction.ExecuteScalar<long>(HelperFunctions.buildInsertSql<T>(transaction.connection.typeCollection, resolution, tableName), item);
 
     /// <summary>
@@ -40,9 +40,9 @@ public static class InsertExtension
     /// <param name="resolution">Conflict resolution policy</param>
     /// <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
     /// <returns>Returns the integer Primary Key or __ROWID__ of the inserted rows</returns>
-    public static long[] BulkInsert<T>(this ISqliteConnection connection, IEnumerable<T> items, OnConflict resolution = OnConflict.Abort, string tableName = null)
+    public static long[] BulkInsert<T>(this ISqliteConnection connection, IEnumerable<T> items, OnConflict resolution = OnConflict.Abort, string? tableName = null)
     {
-        List<long> ids = new List<long>();
+        List<long> ids = [];
         string sql = HelperFunctions.buildInsertSql<T>(connection.typeCollection, resolution, tableName);
 
         using var trn = connection.connection.BeginTransaction();

@@ -12,12 +12,12 @@ public static class GetDataExtension
     /// <summary>
     /// Select a value from a table `T` using it's primary key or `__rowid__`
     /// </summary>
-    public static T Get<T>(this ISqliteConnection connection, object keyValue)
+    public static T? Get<T>(this ISqliteConnection connection, object keyValue)
         => connection.Get<T>(null, keyValue);
     /// <summary>
     /// Select a value from a table `T` using specified column and value
     /// </summary>
-    public static T Get<T>(this ISqliteConnection connection, string keyColumn, object keyValue)
+    public static T? Get<T>(this ISqliteConnection connection, string? keyColumn, object keyValue)
     {
         var info = connection.typeCollection.GetInfo<T>();
         string column = keyColumn
@@ -31,14 +31,14 @@ public static class GetDataExtension
     /// <summary>
     /// Select a value from a table using specified column and value
     /// </summary>
-    public static T Get<T>(this ISqliteConnection connection, string tableName, string keyColumn, object keyValue)
+    public static T? Get<T>(this ISqliteConnection connection, string tableName, string keyColumn, object keyValue)
     {
         if (tableName is null) throw new ArgumentNullException(nameof(tableName));
         if (keyColumn is null) throw new ArgumentNullException(nameof(keyColumn));
 
         var data = connection.Query<T>($"SELECT * FROM {tableName} WHERE {keyColumn} = @keyValue LIMIT 1 ", new { keyValue });
         // Need to complete enumeration
-        return data.ToArray().FirstOrDefault(); //SqliteDB.getFirstOrDefault(data);
+        return data.ToArray().FirstOrDefault();
     }
     /// <summary>
     /// Select all values from a table `T`

@@ -72,7 +72,7 @@ public class TableMapper : IColumnMapper
         return results.ToArray();
     }
 
-    private TableCommitResult commitTable(Table t, bool existingTable)
+    private TableCommitResult? commitTable(Table t, bool existingTable)
     {
         TableCommitResult result;
         if (!existingTable)
@@ -151,7 +151,7 @@ public class TableMapper : IColumnMapper
         /// <summary>
         /// Name of the table added/altered
         /// </summary>
-        public string TableName { get; set; }
+        public string TableName { get; set; } = string.Empty;
         /// <summary>
         /// Gets if the table was altered
         /// </summary>
@@ -159,8 +159,7 @@ public class TableMapper : IColumnMapper
         /// <summary>
         /// Gets the new added columns, if any
         /// </summary>
-        public string[] ColumnsAdded { get; set; }
-        public string[] IndexesAdded { get; set; }
-
+        public string[] ColumnsAdded { get; set; } = [];
+        public string[] IndexesAdded { get; set; } = [];
     }
 }

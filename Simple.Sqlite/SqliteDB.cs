@@ -128,7 +128,7 @@ public class SqliteDB
     /// <summary>
     /// Executes a query and returns the value as a T collection
     /// </summary>
-    public IEnumerable<T> Query<T>(string text, object parameters)
+    public IEnumerable<T> Query<T>(string text, object? parameters)
     {
         using var cnn = db.GetConnection();
         return cnn.Query<T>(text, parameters);
