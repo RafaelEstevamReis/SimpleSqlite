@@ -1,4 +1,6 @@
-﻿using Microsoft.Data.Sqlite;
+﻿namespace Simple.Sqlite;
+
+using Microsoft.Data.Sqlite;
 using Simple.DatabaseWrapper.Attributes;
 using Simple.DatabaseWrapper.Helpers;
 using Simple.DatabaseWrapper.TypeReader;
@@ -7,131 +9,128 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace Simple.Sqlite
+internal class HelperFunctions
 {
-    internal class HelperFunctions
+    internal static bool handleGuidAsByteArray = true;
+    internal static void fillParameters(SqliteCommand cmd, object parameters, ReaderCachedCollection typeCollection)
     {
-        internal static bool handleGuidAsByteArray = true;
-        internal static void fillParameters(SqliteCommand cmd, object parameters, ReaderCachedCollection typeCollection)
+        if (parameters == null) return;
+
+        var type = typeCollection.GetInfo(parameters.GetType());
+
+        foreach (var p in type.Items)
         {
-            if (parameters == null) return;
+            if (!p.CanRead) continue;
+            var value = TypeHelper.ReadParamValue(p, parameters, handleGuidAsByteArray);
+            adjustInsertValue(ref value, p, parameters);
 
-            var type = typeCollection.GetInfo(parameters.GetType());
+            if (value is null) value = DBNull.Value;
 
-            foreach (var p in type.Items)
+            cmd.Parameters.AddWithValue(p.Name, value);
+        }
+    }
+    internal static IEnumerable<string> getParametersNames(object parameters, ReaderCachedCollection typeCollection)
+    {
+        return typeCollection.GetInfo(parameters.GetType())
+                   .Items
+                   .Where(p => p.CanRead)
+                   .Select(p => p.Name);
+    }
+    internal static void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
+    {
+        if (value is Uri uri)
+        {
+            value = uri.ToString();
+        }
+
+        if (p.Type.IsEnum)
+        {
+            var policy = p.GetAttribute<EnumPolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
+            if (policy != null && policy.Policy == EnumPolicyAttribute.Policies.AsText)
             {
-                if (!p.CanRead) continue;
-                var value = TypeHelper.ReadParamValue(p, parameters, handleGuidAsByteArray);
-                adjustInsertValue(ref value, p, parameters);
-
-                if (value is null) value = DBNull.Value;
-
-                cmd.Parameters.AddWithValue(p.Name, value);
+                value = value.ToString();
             }
         }
-        internal static IEnumerable<string> getParametersNames(object parameters, ReaderCachedCollection typeCollection)
+
+        // Process Only Primary Keys
+        if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
+
+        //  Check for INT or LONGs equals to zero
+        if (p.Type == typeof(int))
         {
-            return typeCollection.GetInfo(parameters.GetType())
-                       .Items
-                       .Where(p => p.CanRead)
-                       .Select(p => p.Name);
+            if ((int)value != 0) return;
+            value = null;
         }
-        internal static void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
+        else if (p.Type == typeof(long))
         {
-            if (value is Uri uri)
+            if ((long)value != 0) return;
+            value = null;
+        }
+        else if (p.Type == typeof(Guid))
+        {
+            // Se for Guid <=> Guid, preencher os EMPTY
+            if (value is Guid guid)
             {
-                value = uri.ToString();
+                if (guid != Guid.Empty) return;
+                value = Guid.NewGuid();
+                // Write back to the object
+                p.SetValue(parameters, value);
             }
-
-            if (p.Type.IsEnum)
+            // Se for byte[] <=> Guid, preencher os [0,0,0,..]
+            if (value is byte[] b)
             {
-                var policy = p.GetAttribute<EnumPolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
-                if (policy != null && policy.Policy == EnumPolicyAttribute.Policies.AsText)
+                // Se todos forem zero, inicializar
+                if (b.All(o => o == 0))
                 {
-                    value = value.ToString();
-                }
-            }
-
-            // Process Only Primary Keys
-            if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
-
-            //  Check for INT or LONGs equals to zero
-            if (p.Type == typeof(int))
-            {
-                if ((int)value != 0) return;
-                value = null;
-            }
-            else if (p.Type == typeof(long))
-            {
-                if ((long)value != 0) return;
-                value = null;
-            }
-            else if (p.Type == typeof(Guid))
-            {
-                // Se for Guid <=> Guid, preencher os EMPTY
-                if (value is Guid guid)
-                {
-                    if (guid != Guid.Empty) return;
-                    value = Guid.NewGuid();
+                    var newGuid = Guid.NewGuid();
+                    value = newGuid.ToByteArray();
                     // Write back to the object
-                    p.SetValue(parameters, value);
-                }
-                // Se for byte[] <=> Guid, preencher os [0,0,0,..]
-                if (value is byte[] b)
-                {
-                    // Se todos forem zero, inicializar
-                    if (b.All(o => o == 0))
-                    {
-                        var newGuid = Guid.NewGuid();
-                        value = newGuid.ToByteArray();
-                        // Write back to the object
-                        p.SetValue(parameters, newGuid);
-                    }
+                    p.SetValue(parameters, newGuid);
                 }
             }
         }
+    }
 
-        internal static string[] getSchemaColumns(IDataReader reader)
+    internal static string[] getSchemaColumns(IDataReader reader)
+    {
+        return Enumerable.Range(0, reader.FieldCount)
+                         .Select(idx => reader.GetName(idx))
+                         .ToArray();
+    }
+
+    internal static string buildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string tableName = null)
+    {
+        var info = typeCollection.GetInfo<T>();
+        if (tableName == null) tableName = info.TypeName;
+
+        var names = getNames(info, !info.IsAnonymousType);
+        var fields = string.Join(",", names);
+        var values = string.Join(",", names.Select(n => $"@{n}"));
+
+        if (resolution == OnConflict.Abort)
         {
-            return Enumerable.Range(0, reader.FieldCount)
-                             .Select(idx => reader.GetName(idx))
-                             .ToArray();
+            return $"INSERT INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
         }
-
-        internal static string buildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string tableName = null)
+        else
         {
-            var info = typeCollection.GetInfo<T>();
-            if (tableName == null) tableName = info.TypeName;
-
-            var names = getNames(info, !info.IsAnonymousType);
-            var fields = string.Join(",", names);
-            var values = string.Join(",", names.Select(n => $"@{n}"));
-
-            if (resolution == OnConflict.Abort)
+            string txtConflict = resolution switch
             {
-                return $"INSERT INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
-            }
-            else
-            {
-                string txtConflict = resolution switch
-                {
-                    OnConflict.RollBack => "ROLLBACK",
-                    OnConflict.Fail => "FAIL",
-                    OnConflict.Ignore => "IGNORE",
-                    OnConflict.Replace => "REPLACE",
-                    _ => throw new ArgumentException($"Invalid resolution: {resolution}"),
-                };
+                OnConflict.RollBack => "ROLLBACK",
+                OnConflict.Fail => "FAIL",
+                OnConflict.Ignore => "IGNORE",
+                OnConflict.Replace => "REPLACE",
+                _ => throw new ArgumentException($"Invalid resolution: {resolution}"),
+            };
 
-                return $"INSERT OR {txtConflict} INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
-            }
+            return $"INSERT OR {txtConflict} INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
         }
-        private static IEnumerable<string> getNames(TypeInfo type, bool needWrite)
-        {
-            return type.Items
-                       .Where(o => !o.Is(DatabaseWrapper.ColumnAttributes.Ignore))
-                       .Where(o => o.CanRead)
-                       .Where(o => !needWrite || o.CanWrite) // Be careful with NOTs and ORs
-                       .Select(o => o.Name);
-        }
+    }
+    private static IEnumerable<string> getNames(TypeInfo type, bool needWrite)
+    {
+        return type.Items
+                   .Where(o => !o.Is(DatabaseWrapper.ColumnAttributes.Ignore))
+                   .Where(o => o.CanRead)
+                   .Where(o => !needWrite || o.CanWrite) // Be careful with NOTs and ORs
+                   .Select(o => o.Name);
     }
 }

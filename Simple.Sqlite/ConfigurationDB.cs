@@ -1,124 +1,123 @@
-﻿using System;
+﻿namespace Simple.Sqlite;
+
+using System;
 using System.Linq;
 
-namespace Simple.Sqlite
+/// <summary>
+/// Represents a easy to use configuration set
+/// </summary>
+public class ConfigurationDB
 {
     /// <summary>
-    /// Represents a easy to use configuration set
+    /// Exposes the internal database engine
     /// </summary>
-    public class ConfigurationDB
+    internal protected SqliteDB internalDb;
+
+    /// <summary>
+    /// Database file full path
+    /// </summary>
+    public string DatabaseFileName => internalDb.DatabaseFileName;
+
+    /// <summary>
+    /// Creates a new instance
+    /// </summary>
+    public ConfigurationDB(string fileName)
+        : this(new SqliteDB(fileName))
+    { }
+    private ConfigurationDB(SqliteDB internalDb)
     {
-        /// <summary>
-        /// Exposes the internal database engine
-        /// </summary>
-        internal protected SqliteDB internalDb;
+        this.internalDb = internalDb;
+        createConfigTable();
+    }
 
-        /// <summary>
-        /// Database file full path
-        /// </summary>
-        public string DatabaseFileName => internalDb.DatabaseFileName;
-
-        /// <summary>
-        /// Creates a new instance
-        /// </summary>
-        public ConfigurationDB(string fileName)
-            : this(new SqliteDB(fileName))
-        { }
-        private ConfigurationDB(SqliteDB internalDb)
-        {
-            this.internalDb = internalDb;
-            createConfigTable();
-        }
-
-        private void createConfigTable()
-        {
-            internalDb.Execute(
+    private void createConfigTable()
+    {
+        internalDb.Execute(
 @"CREATE TABLE IF NOT EXISTS nsConfig (
     Id         TEXT NOT NULL,
     Value    BLOB,
     PRIMARY KEY(Id)
 );");
-        }
-        /// <summary>
-        /// Sets a configuration value
-        /// </summary>
-        /// <typeparam name="T">Type of the configuration value</typeparam>
-        /// <param name="ConfigKey">Key to locate the configration in the category</param>
-        /// <param name="ConfigCategory">Category of the configuration</param>
-        /// <param name="Value">Value to be stored</param>
-        public void SetConfig<T>(string ConfigKey, string ConfigCategory, T Value)
+    }
+    /// <summary>
+    /// Sets a configuration value
+    /// </summary>
+    /// <typeparam name="T">Type of the configuration value</typeparam>
+    /// <param name="ConfigKey">Key to locate the configration in the category</param>
+    /// <param name="ConfigCategory">Category of the configuration</param>
+    /// <param name="Value">Value to be stored</param>
+    public void SetConfig<T>(string ConfigKey, string ConfigCategory, T Value)
+    {
+        internalDb.InsertOrReplace(new nsConfig()
         {
-            internalDb.InsertOrReplace(new nsConfig()
-            {
-                Id = buildKey(ConfigKey, ConfigCategory),
-                Value = Value
-            });
+            Id = buildKey(ConfigKey, ConfigCategory),
+            Value = Value
+        });
+    }
+
+    /// <summary>
+    /// Gets a configuration value
+    /// </summary>
+    /// <typeparam name="T">Type of the configuration value</typeparam>
+    /// <param name="ConfigKey">Key to locate the configration in the category</param>
+    /// <param name="ConfigCategory">Category of the configuration</param>
+    /// <param name="Default">Default value if none exists</param>
+    /// <returns>Saved value</returns>
+    public T GetConfig<T>(string ConfigKey, string ConfigCategory, T Default)
+    {
+        var values = internalDb.Query<T>("SELECT Value FROM nsConfig WHERE Id = @id",
+                                               new { id = buildKey(ConfigKey, ConfigCategory) })
+                               .ToArray();
+        if (values.Length == 0) return Default;
+        return values[0];
+    }
+    /// <summary>
+    /// Remove a stored item
+    /// </summary>
+    /// <param name="ConfigKey">Key to locate the configration in the category</param>
+    /// <param name="ConfigCategory">Category of the configuration</param>
+    public void RemoveConfig(string ConfigKey, string ConfigCategory)
+    {
+        internalDb.Execute("DELETE FROM nsConfig WHERE Id = @id",
+                                   new { id = buildKey(ConfigKey, ConfigCategory) });
+    }
+
+    private static string buildKey(string ConfigKey, string ConfigCategory)
+    {
+        if (string.IsNullOrEmpty(ConfigKey))
+        {
+            throw new ArgumentException($"'{nameof(ConfigKey)}' cannot be null or empty", nameof(ConfigKey));
         }
 
-        /// <summary>
-        /// Gets a configuration value
-        /// </summary>
-        /// <typeparam name="T">Type of the configuration value</typeparam>
-        /// <param name="ConfigKey">Key to locate the configration in the category</param>
-        /// <param name="ConfigCategory">Category of the configuration</param>
-        /// <param name="Default">Default value if none exists</param>
-        /// <returns>Saved value</returns>
-        public T GetConfig<T>(string ConfigKey, string ConfigCategory, T Default)
+        if (ConfigCategory is null)
         {
-            var values = internalDb.Query<T>("SELECT Value FROM nsConfig WHERE Id = @id",
-                                                   new { id = buildKey(ConfigKey, ConfigCategory) })
-                                   .ToArray();
-            if (values.Length == 0) return Default;
-            return values[0];
-        }
-        /// <summary>
-        /// Remove a stored item
-        /// </summary>
-        /// <param name="ConfigKey">Key to locate the configration in the category</param>
-        /// <param name="ConfigCategory">Category of the configuration</param>
-        public void RemoveConfig(string ConfigKey, string ConfigCategory)
-        {
-            internalDb.Execute("DELETE FROM nsConfig WHERE Id = @id",
-                                       new { id = buildKey(ConfigKey, ConfigCategory) });
+            ConfigCategory = string.Empty;
         }
 
-        private static string buildKey(string ConfigKey, string ConfigCategory)
-        {
-            if (string.IsNullOrEmpty(ConfigKey))
-            {
-                throw new ArgumentException($"'{nameof(ConfigKey)}' cannot be null or empty", nameof(ConfigKey));
-            }
+        return $"{ConfigCategory}::{ConfigKey}";
+    }
 
-            if (ConfigCategory is null)
-            {
-                ConfigCategory = string.Empty;
-            }
-
-            return $"{ConfigCategory}::{ConfigKey}";
-        }
-
-        /// <summary>
-        /// Create a new instance based on an existing ConfigurationDB
-        /// </summary>
-        public static ConfigurationDB FromDB(ConfigurationDB cfg)
-        {
-            return new ConfigurationDB(cfg.internalDb);
-        }
+    /// <summary>
+    /// Create a new instance based on an existing ConfigurationDB
+    /// </summary>
+    public static ConfigurationDB FromDB(ConfigurationDB cfg)
+    {
+        return new ConfigurationDB(cfg.internalDb);
+    }
 #if !NET40
-        /// <summary>
-        /// Create a new instance based on an existing NoSqliteStorage
-        /// </summary>
-        public static ConfigurationDB FromDB(NoSqliteStorage nss)
-        {
-            return new ConfigurationDB(nss.internalDb);
-        }
+    /// <summary>
+    /// Create a new instance based on an existing NoSqliteStorage
+    /// </summary>
+    public static ConfigurationDB FromDB(NoSqliteStorage nss)
+    {
+        return new ConfigurationDB(nss.internalDb);
+    }
 #endif
-        /// <summary>
-        /// Create a new instance based on an existing SqliteDB
-        /// </summary>
-        public static ConfigurationDB FromDB(SqliteDB db)
-        {
-            return new ConfigurationDB(db);
-        }
+    /// <summary>
+    /// Create a new instance based on an existing SqliteDB
+    /// </summary>
+    public static ConfigurationDB FromDB(SqliteDB db)
+    {
+        return new ConfigurationDB(db);
     }
 }

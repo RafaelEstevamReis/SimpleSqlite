@@ -10,6 +10,18 @@ public class KeyValueStorage
 {
     private readonly ConnectionFactory db;
 
+    /// <summary>
+    /// Gets or Sets Values for Keys
+    /// </summary>
+    public string this[string key]
+    {
+        get => GetKey(key);
+        set => SetKey(key, value);
+    }
+
+    /// <summary>
+    /// Creates a new KeyValueStorage using a ConnectionFactory
+    /// </summary>
     public KeyValueStorage(ConnectionFactory db)
     {
         this.db = db;

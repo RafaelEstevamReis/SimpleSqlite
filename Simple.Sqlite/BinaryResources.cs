@@ -1,7 +1,7 @@
-﻿using System.IO;
-using System.IO.Compression;
+﻿namespace Simple.Sqlite;
 
-namespace Simple.Sqlite;
+using System.IO;
+using System.IO.Compression;
 
 internal class BinaryResources
 {
