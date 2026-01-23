@@ -161,9 +161,9 @@ public class Column : IColumn
             var policy = info.GetAttribute<EnumPolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
             if (policy != null && policy.Policy == EnumPolicyAttribute.Policies.AsText) dataType = SqliteType.TEXT;
         }
-        else
+        else 
         {
-            throw new Exception($"Type {info.Type.Name} is not supported on field {info.Name}");
+            dataType = SqliteType.ANY;
         }
         return dataType;
     }
