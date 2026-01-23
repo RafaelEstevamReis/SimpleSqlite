@@ -9,67 +9,6 @@
             Empty sqlitev3 database file, in WAL mode, compressed with .Net GZ
             </summary>
         </member>
-        <member name="T:Simple.Sqlite.ConfigurationDB">
-            <summary>
-            Represents a easy to use configuration set
-            </summary>
-        </member>
-        <member name="F:Simple.Sqlite.ConfigurationDB.internalDb">
-            <summary>
-            Exposes the internal database engine
-            </summary>
-        </member>
-        <member name="P:Simple.Sqlite.ConfigurationDB.DatabaseFileName">
-            <summary>
-            Database file full path
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.ConfigurationDB.#ctor(System.String)">
-            <summary>
-            Creates a new instance
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.ConfigurationDB.SetConfig``1(System.String,System.String,``0)">
-            <summary>
-            Sets a configuration value
-            </summary>
-            <typeparam name="T">Type of the configuration value</typeparam>
-            <param name="ConfigKey">Key to locate the configration in the category</param>
-            <param name="ConfigCategory">Category of the configuration</param>
-            <param name="Value">Value to be stored</param>
-        </member>
-        <member name="M:Simple.Sqlite.ConfigurationDB.GetConfig``1(System.String,System.String,``0)">
-            <summary>
-            Gets a configuration value
-            </summary>
-            <typeparam name="T">Type of the configuration value</typeparam>
-            <param name="ConfigKey">Key to locate the configration in the category</param>
-            <param name="ConfigCategory">Category of the configuration</param>
-            <param name="Default">Default value if none exists</param>
-            <returns>Saved value</returns>
-        </member>
-        <member name="M:Simple.Sqlite.ConfigurationDB.RemoveConfig(System.String,System.String)">
-            <summary>
-            Remove a stored item
-            </summary>
-            <param name="ConfigKey">Key to locate the configration in the category</param>
-            <param name="ConfigCategory">Category of the configuration</param>
-        </member>
-        <member name="M:Simple.Sqlite.ConfigurationDB.FromDB(Simple.Sqlite.ConfigurationDB)">
-            <summary>
-            Create a new instance based on an existing ConfigurationDB
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.ConfigurationDB.FromDB(Simple.Sqlite.NoSqliteStorage)">
-            <summary>
-            Create a new instance based on an existing NoSqliteStorage
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.ConfigurationDB.FromDB(Simple.Sqlite.SqliteDB)">
-            <summary>
-            Create a new instance based on an existing SqliteDB
-            </summary>
-        </member>
         <member name="T:Simple.Sqlite.ConnectionFactory">
             <summary>
             Creates ISqliteConnection connections
@@ -468,27 +407,110 @@
             A Simple KeyValue storage
             </summary>
         </member>
-        <member name="P:Simple.Sqlite.KeyValueStorage.Item(System.String)">
-            <summary>
-            Gets or Sets Values for Keys
-            </summary>
-        </member>
         <member name="M:Simple.Sqlite.KeyValueStorage.#ctor(Simple.Sqlite.ConnectionFactory)">
             <summary>
             Creates a new KeyValueStorage using a ConnectionFactory
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.KeyValueStorage.SetKey(System.String,System.String)">
+        <member name="M:Simple.Sqlite.KeyValueStorage.SetKey``1(System.String,``0)">
             <summary>
             Sets a new KeyValue pair
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.KeyValueStorage.GetKey(System.String)">
+        <member name="M:Simple.Sqlite.KeyValueStorage.GetKey``1(System.String)">
             <summary>
             Gets the Value from a Key
             Inexistent keys returns as null
             </summary>
             <returns>Key's value or NULL</returns>
+        </member>
+        <member name="T:Simple.Sqlite.KeyValueStringStorage">
+            <summary>
+            A Simple KeyValue storage
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.KeyValueStringStorage.Item(System.String)">
+            <summary>
+            Gets or Sets Values for Keys
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.KeyValueStringStorage.#ctor(Simple.Sqlite.ConnectionFactory)">
+            <summary>
+            Creates a new KeyValueStorage using a ConnectionFactory
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.KeyValueStringStorage.SetKey(System.String,System.String)">
+            <summary>
+            Sets a new KeyValue pair
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.KeyValueStringStorage.GetKey(System.String)">
+            <summary>
+            Gets the Value from a Key
+            Inexistent keys returns as null
+            </summary>
+            <returns>Key's value or NULL</returns>
+        </member>
+        <member name="T:Simple.Sqlite.ConfigurationDB">
+            <summary>
+            Represents a easy to use configuration set
+            </summary>
+        </member>
+        <member name="F:Simple.Sqlite.ConfigurationDB.internalDb">
+            <summary>
+            Exposes the internal database engine
+            </summary>
+        </member>
+        <member name="P:Simple.Sqlite.ConfigurationDB.DatabaseFileName">
+            <summary>
+            Database file full path
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.#ctor(System.String)">
+            <summary>
+            Creates a new instance
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.SetConfig``1(System.String,System.String,``0)">
+            <summary>
+            Sets a configuration value
+            </summary>
+            <typeparam name="T">Type of the configuration value</typeparam>
+            <param name="ConfigKey">Key to locate the configration in the category</param>
+            <param name="ConfigCategory">Category of the configuration</param>
+            <param name="Value">Value to be stored</param>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.GetConfig``1(System.String,System.String,``0)">
+            <summary>
+            Gets a configuration value
+            </summary>
+            <typeparam name="T">Type of the configuration value</typeparam>
+            <param name="ConfigKey">Key to locate the configration in the category</param>
+            <param name="ConfigCategory">Category of the configuration</param>
+            <param name="Default">Default value if none exists</param>
+            <returns>Saved value</returns>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.RemoveConfig(System.String,System.String)">
+            <summary>
+            Remove a stored item
+            </summary>
+            <param name="ConfigKey">Key to locate the configration in the category</param>
+            <param name="ConfigCategory">Category of the configuration</param>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.FromDB(Simple.Sqlite.ConfigurationDB)">
+            <summary>
+            Create a new instance based on an existing ConfigurationDB
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.FromDB(Simple.Sqlite.NoSqliteStorage)">
+            <summary>
+            Create a new instance based on an existing NoSqliteStorage
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.ConfigurationDB.FromDB(Simple.Sqlite.SqliteDB)">
+            <summary>
+            Create a new instance based on an existing SqliteDB
+            </summary>
         </member>
         <member name="T:Simple.Sqlite.NoSqliteStorage">
             <summary>

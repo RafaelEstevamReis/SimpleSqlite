@@ -1,6 +1,7 @@
 ﻿namespace Simple.Sqlite;
 
 using Microsoft.Data.Sqlite;
+using Simple.Sqlite.Helpers;
 using System.Collections.Generic;
 
 /// <summary>

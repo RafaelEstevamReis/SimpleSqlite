@@ -2,27 +2,19 @@
 
 using Simple.DatabaseWrapper.Attributes;
 using System;
+using System.Linq;
 
 /// <summary>
 /// A Simple KeyValue storage
 /// </summary>
-public class KeyValueStringStorage
+public class KeyValueStorage
 {
     private readonly ConnectionFactory db;
 
     /// <summary>
-    /// Gets or Sets Values for Keys
-    /// </summary>
-    public string? this[string key]
-    {
-        get => GetKey(key);
-        set => SetKey(key, value);
-    }
-
-    /// <summary>
     /// Creates a new KeyValueStorage using a ConnectionFactory
     /// </summary>
-    public KeyValueStringStorage(ConnectionFactory db)
+    public KeyValueStorage(ConnectionFactory db)
     {
         this.db = db;
 
@@ -34,7 +26,7 @@ public class KeyValueStringStorage
     /// <summary>
     /// Sets a new KeyValue pair
     /// </summary>
-    public void SetKey(string key, string? value)
+    public void SetKey<T>(string key, T? value)
     {
         if (string.IsNullOrEmpty(key))
         {
@@ -58,12 +50,14 @@ public class KeyValueStringStorage
     /// Inexistent keys returns as null
     /// </summary>
     /// <returns>Key's value or NULL</returns>
-    public string? GetKey(string key)
+    public T? GetKey<T>(string key)
     {
         using var cnn = db.GetConnection();
-        var kvp = cnn.Get<KVStorageTable>("Key", normalizeKey(key));
+        var values = cnn.Query<T>("SELECT Value FROM KVStorageTable WHERE Key = @Key", new { Key = normalizeKey(key) })
+                        .ToArray();
 
-        return kvp?.Value;
+        if (values.Length == 0) return default;
+        return values[0];
     }
 
     private static string normalizeKey(string key) => key.Trim().ToUpper();
@@ -72,6 +66,6 @@ public class KeyValueStringStorage
     {
         [PrimaryKey]
         public string Key { get; set; } = default!;
-        public string Value { get; set; } = default!;
+        public object Value { get; set; } = default!;
     }
 }

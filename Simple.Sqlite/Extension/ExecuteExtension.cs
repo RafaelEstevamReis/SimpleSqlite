@@ -1,5 +1,6 @@
 ﻿namespace Simple.Sqlite;
 
+using Simple.Sqlite.Helpers;
 using System;
 
 /// <summary>
@@ -71,7 +72,7 @@ public static class ExecuteExtension
         // In SQLite DateTime is returned as STRING after aggregate operations
         if (typeof(T) == typeof(DateTime))
         {
-            if (DateTime.TryParse(obj.ToString(), out DateTime dt))
+            if (DateTime.TryParse(obj?.ToString(), out DateTime dt))
             {
                 return (T)(object)dt;
             }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using Simple.Sqlite.Helpers;
 using System;
 using System.IO;
 

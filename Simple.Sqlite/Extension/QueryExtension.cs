@@ -1,6 +1,7 @@
 ﻿namespace Simple.Sqlite;
 
 using Simple.DatabaseWrapper.Helpers;
+using Simple.Sqlite.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,13 +85,13 @@ public static class QueryExtension
         return $"SELECT * FROM {tInfo.TypeName} WHERE {string.Join(" AND ", pairs)}";
     }
 
-    static IEnumerable<T> query<T>(ISqliteConnection connection, ISqliteTransaction? transaction, string query, object parameters, bool buffered)
+    static IEnumerable<T> query<T>(ISqliteConnection connection, ISqliteTransaction? transaction, string query, object? parameters, bool buffered)
     {
         var q = _query<T>(connection, transaction, query, parameters);
         if (buffered) q = q.ToList();
         return q;
     }
-    static IEnumerable<T> _query<T>(ISqliteConnection connection, ISqliteTransaction? transaction, string query, object parameters)
+    static IEnumerable<T> _query<T>(ISqliteConnection connection, ISqliteTransaction? transaction, string query, object? parameters)
     {
         using var cmd = new Microsoft.Data.Sqlite.SqliteCommand(query, connection.connection, transaction?.transaction);
         HelperFunctions.fillParameters(cmd, parameters, connection.typeCollection);

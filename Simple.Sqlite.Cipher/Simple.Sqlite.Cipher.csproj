@@ -30,7 +30,7 @@
 		<Compile Include="..\Simple.Sqlite\Extension\MigrationExtension.cs" Link="Extensions\MigrationExtension.cs" />
 		<Compile Include="..\Simple.Sqlite\Extension\QueryExtension.cs" Link="Extensions\QueryExtension.cs" />
 		<Compile Include="..\Simple.Sqlite\Extension\TableSchemaExtension.cs" Link="Extensions\TableSchemaExtension.cs" />
-		<Compile Include="..\Simple.Sqlite\HelperFunctions.cs" Link="HelperFunctions.cs" />
+		<Compile Include="..\Simple.Sqlite\Helpers\HelperFunctions.cs" Link="Helpers\HelperFunctions.cs" />
 		<Compile Include="..\Simple.Sqlite\Schema\ColumnSchema.cs" Link="ColumnSchema.cs" />
 		<Compile Include="..\Simple.Sqlite\Schema\TableMapper.cs" Link="TableMapper.cs" />
 		<Compile Include="..\Simple.Sqlite\Schema\TableSchema.cs" Link="TableSchema.cs" />
@@ -49,5 +49,6 @@
 	<ItemGroup>
 		<Folder Include="Extensions\" />
 		<Folder Include="Attributes\" />
+		<Folder Include="Helpers\" />
 	</ItemGroup>
 </Project>

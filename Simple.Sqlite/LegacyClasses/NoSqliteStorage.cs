@@ -88,14 +88,14 @@ public class NoSqliteStorage : IEnumerable<string>
     /// <typeparam name="T">Type of stored item</typeparam>
     /// <param name="Key">The Key to locate the stored item</param>
     /// <returns>Stored item or Defult(T)</returns>
-    public T Retrieve<T>(Guid Key) => Retrieve<T>(Key.ToString());
+    public T? Retrieve<T>(Guid Key) => Retrieve<T>(Key.ToString());
     /// <summary>
     /// Retrieves a stored item
     /// </summary>
     /// <typeparam name="T">Type of stored item</typeparam>
     /// <param name="Key">The Key to locate the stored item</param>
     /// <returns>Stored item or Defult(T)</returns>
-    public T Retrieve<T>(string Key)
+    public T? Retrieve<T>(string Key)
     {
         var doc = internalDb.Get<nsDocuments>(Key);
         if (doc == null) return default(T)!;
