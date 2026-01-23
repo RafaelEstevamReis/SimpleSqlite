@@ -24,6 +24,19 @@ public class KeyValueStorage
            .Commit();
     }
     /// <summary>
+    /// Creates a new KeyValueStorage using a Sqlite File
+    /// </summary>
+    public KeyValueStorage(string databaseFile)
+        : this(ConnectionFactory.FromFile(databaseFile))
+    { }
+
+    /// <summary>
+    /// Sets a new KeyValue pair for a category
+    /// </summary>
+    public void SetKey<T>(string category, string key, T? value)
+        => SetKey(buildCategorizedKey(category, key), value);
+
+    /// <summary>
     /// Sets a new KeyValue pair
     /// </summary>
     public void SetKey<T>(string key, T? value)
@@ -46,6 +59,12 @@ public class KeyValueStorage
     }
 
     /// <summary>
+    /// Gets the Value from a Key of a category
+    /// </summary>
+    public T? GetKey<T>(string category, string key)
+        => GetKey<T>(buildCategorizedKey(category, key));
+
+    /// <summary>
     /// Gets the Value from a Key
     /// Inexistent keys returns as null
     /// </summary>
@@ -60,6 +79,7 @@ public class KeyValueStorage
         return values[0];
     }
 
+    public static string buildCategorizedKey(string category, string key) => $"{category}::{key}";
     private static string normalizeKey(string key) => key.Trim().ToUpper();
 
     internal record KVStorageTable

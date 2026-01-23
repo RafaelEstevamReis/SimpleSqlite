@@ -412,9 +412,24 @@
             Creates a new KeyValueStorage using a ConnectionFactory
             </summary>
         </member>
+        <member name="M:Simple.Sqlite.KeyValueStorage.#ctor(System.String)">
+            <summary>
+            Creates a new KeyValueStorage using a Sqlite File
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.KeyValueStorage.SetKey``1(System.String,System.String,``0)">
+            <summary>
+            Sets a new KeyValue pair for a category
+            </summary>
+        </member>
         <member name="M:Simple.Sqlite.KeyValueStorage.SetKey``1(System.String,``0)">
             <summary>
             Sets a new KeyValue pair
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.KeyValueStorage.GetKey``1(System.String,System.String)">
+            <summary>
+            Gets the Value from a Key of a category
             </summary>
         </member>
         <member name="M:Simple.Sqlite.KeyValueStorage.GetKey``1(System.String)">
