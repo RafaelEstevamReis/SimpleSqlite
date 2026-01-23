@@ -6,7 +6,7 @@ using System;
 /// <summary>
 /// A Simple KeyValue storage
 /// </summary>
-public class KeyValueStorage
+public class KeyValueStringStorage
 {
     private readonly ConnectionFactory db;
 
@@ -22,7 +22,7 @@ public class KeyValueStorage
     /// <summary>
     /// Creates a new KeyValueStorage using a ConnectionFactory
     /// </summary>
-    public KeyValueStorage(ConnectionFactory db)
+    public KeyValueStringStorage(ConnectionFactory db)
     {
         this.db = db;
 
