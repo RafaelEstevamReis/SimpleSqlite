@@ -424,33 +424,6 @@
             </summary>
             <returns>Key's value or NULL</returns>
         </member>
-        <member name="T:Simple.Sqlite.KeyValueStringStorage">
-            <summary>
-            A Simple KeyValue storage
-            </summary>
-        </member>
-        <member name="P:Simple.Sqlite.KeyValueStringStorage.Item(System.String)">
-            <summary>
-            Gets or Sets Values for Keys
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.KeyValueStringStorage.#ctor(Simple.Sqlite.ConnectionFactory)">
-            <summary>
-            Creates a new KeyValueStorage using a ConnectionFactory
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.KeyValueStringStorage.SetKey(System.String,System.String)">
-            <summary>
-            Sets a new KeyValue pair
-            </summary>
-        </member>
-        <member name="M:Simple.Sqlite.KeyValueStringStorage.GetKey(System.String)">
-            <summary>
-            Gets the Value from a Key
-            Inexistent keys returns as null
-            </summary>
-            <returns>Key's value or NULL</returns>
-        </member>
         <member name="T:Simple.Sqlite.ConfigurationDB">
             <summary>
             Represents a easy to use configuration set
