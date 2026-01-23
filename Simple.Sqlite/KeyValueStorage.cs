@@ -53,7 +53,7 @@ public class KeyValueStorage
     public T? GetKey<T>(string key)
     {
         using var cnn = db.GetConnection();
-        var values = cnn.Query<T>("SELECT Value FROM KVStorageTable WHERE Key = @Key", new { Key = normalizeKey(key) })
+        var values = cnn.Query<T>($"SELECT Value FROM KVStorageTable WHERE {nameof(KVStorageTable.Key)} = @Key", new { Key = normalizeKey(key) })
                         .ToArray();
 
         if (values.Length == 0) return default;
