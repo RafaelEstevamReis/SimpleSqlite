@@ -41,7 +41,7 @@ public class SqliteDB
     public SqliteDB(string fileName, bool executeBackup)
     {
         var fi = new FileInfo(fileName);
-        if (!fi.Directory.Exists) fi.Directory.Create();
+        if (!fi.Directory!.Exists) fi.Directory.Create();
 
         DatabaseFileName = fi.FullName;
         if (executeBackup)
