@@ -187,6 +187,24 @@
             <param name="delimiter">CSV delimiter char</param>
             <param name="quote">CSV quote char</param>
         </member>
+        <member name="M:Simple.Sqlite.CsvIngestionExtensions.LoadFromCsvZippedFile``1(Simple.Sqlite.ISqliteConnection,System.String,System.Func{System.String,System.Boolean},System.Func{System.String[],``0},System.Int32,System.Text.Encoding,System.Char,System.Char)">
+            <summary>
+            Load a Zipped CSV file into a database. 
+            For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.CsvIngestionExtensions.LoadFromCsvStream``1(Simple.Sqlite.ISqliteConnection,System.IO.Stream,System.Text.Encoding,System.Func{System.String[],``0},System.Int32,System.Char,System.Char)">
+            <summary>
+            Load a CSV file stream into a database. 
+            For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.CsvIngestionExtensions.LoadFromCsvStream``1(Simple.Sqlite.ISqliteConnection,System.IO.StreamReader,System.Func{System.String[],``0},System.Int32,System.Char,System.Char)">
+            <summary>
+            Load a CSV stream into a database. 
+            For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
+            </summary>
+        </member>
         <member name="T:Simple.Sqlite.ExecuteExtension">
             <summary>
             Extension for "Execute" stuff
@@ -427,12 +445,12 @@
             Sets a new KeyValue pair
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.KeyValueStorage.GetKey``1(System.String,System.String)">
+        <member name="M:Simple.Sqlite.KeyValueStorage.GetKey``1(System.String,System.String,``0)">
             <summary>
             Gets the Value from a Key of a category
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.KeyValueStorage.GetKey``1(System.String)">
+        <member name="M:Simple.Sqlite.KeyValueStorage.GetKey``1(System.String,``0)">
             <summary>
             Gets the Value from a Key
             Inexistent keys returns as null
