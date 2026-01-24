@@ -61,21 +61,21 @@ public class KeyValueStorage
     /// <summary>
     /// Gets the Value from a Key of a category
     /// </summary>
-    public T? GetKey<T>(string category, string key)
-        => GetKey<T>(buildCategorizedKey(category, key));
+    public T? GetKey<T>(string category, string key, T @default)
+        => GetKey<T>(buildCategorizedKey(category, key), @default);
 
     /// <summary>
     /// Gets the Value from a Key
     /// Inexistent keys returns as null
     /// </summary>
     /// <returns>Key's value or NULL</returns>
-    public T? GetKey<T>(string key)
+    public T? GetKey<T>(string key, T @default)
     {
         using var cnn = db.GetConnection();
         var values = cnn.Query<T>($"SELECT Value FROM KVStorageTable WHERE {nameof(KVStorageTable.Key)} = @Key", new { Key = normalizeKey(key) })
                         .ToArray();
 
-        if (values.Length == 0) return default;
+        if (values.Length == 0) return @default;
         return values[0];
     }
 
