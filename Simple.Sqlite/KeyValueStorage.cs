@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 
 /// <summary>
-/// A Simple KeyValue storage
+/// A Simple KeyValue storage of SimpleTypes for user preferences and settings
 /// </summary>
 public class KeyValueStorage
 {

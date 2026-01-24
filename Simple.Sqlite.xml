@@ -422,7 +422,7 @@
         </member>
         <member name="T:Simple.Sqlite.KeyValueStorage">
             <summary>
-            A Simple KeyValue storage
+            A Simple KeyValue storage of SimpleTypes for user preferences and settings
             </summary>
         </member>
         <member name="M:Simple.Sqlite.KeyValueStorage.#ctor(Simple.Sqlite.ConnectionFactory)">
