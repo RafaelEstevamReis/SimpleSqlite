@@ -138,6 +138,43 @@
             the REPLACE conflict resolution algorithm works like ABORT
             </summary>
         </member>
+        <member name="T:Simple.Sqlite.CsvIngestionExtensions">
+            <summary>
+            Extension for Ingesting CSVs
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.CsvIngestionExtensions.LoadFromCsvFile``1(Simple.Sqlite.ISqliteConnection,System.String,System.Func{System.String[],``0},System.Int32,System.Text.Encoding,System.Char,System.Char)">
+            <summary>
+            Load a CSV file into a database. 
+            For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
+            </summary>
+            <typeparam name="T">Table class</typeparam>
+            <param name="connection">Connection to be used</param>
+            <param name="csvFile">FilePath of CSV file to be ingested</param>
+            <param name="mapping">T mapping</param>
+            <param name="bufferSize">Buffer size to be used on ingestion</param>
+            <param name="encoding">CSV Enconding</param>
+            <param name="delimiter">CSV delimiter char</param>
+            <param name="quote">CSV quote char</param>
+        </member>
+        <member name="M:Simple.Sqlite.CsvIngestionExtensions.LoadFromCsvZippedFile``1(Simple.Sqlite.ISqliteConnection,System.String,System.Func{System.String,System.Boolean},System.Func{System.String[],``0},System.Int32,System.Text.Encoding,System.Char,System.Char)">
+            <summary>
+            Load a Zipped CSV file into a database. 
+            For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.CsvIngestionExtensions.LoadFromCsvStream``1(Simple.Sqlite.ISqliteConnection,System.IO.Stream,System.Text.Encoding,System.Func{System.String[],``0},System.Int32,System.Char,System.Char)">
+            <summary>
+            Load a CSV file stream into a database. 
+            For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
+            </summary>
+        </member>
+        <member name="M:Simple.Sqlite.CsvIngestionExtensions.LoadFromCsvStream``1(Simple.Sqlite.ISqliteConnection,System.IO.StreamReader,System.Func{System.String[],``0},System.Int32,System.Char,System.Char)">
+            <summary>
+            Load a CSV stream into a database. 
+            For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
+            </summary>
+        </member>
         <member name="T:Simple.Sqlite.ExecuteExtension">
             <summary>
             Extension for "Execute" stuff
