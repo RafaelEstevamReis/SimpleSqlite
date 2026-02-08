@@ -161,7 +161,7 @@
             Extension for "Backup" related stuff
             </summary>
         </member>
-        <member name="M:Simple.Sqlite.BackupExtension.CreateBackup(Simple.Sqlite.ISqliteConnection,System.String)">
+        <member name="M:Simple.Sqlite.BackupExtension.BackupDatabase(Simple.Sqlite.ISqliteConnection,System.String)">
             <summary>
              Backup of the connected database
             </summary>

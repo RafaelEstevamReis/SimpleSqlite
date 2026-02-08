@@ -1,6 +1,7 @@
 ﻿namespace Simple.Sqlite;
 
 using Microsoft.Data.Sqlite;
+using System;
 
 /// <summary>
 /// Extension for "Backup" related stuff
@@ -12,7 +13,7 @@ public static class BackupExtension
     /// </summary>
     /// <param name="source">Source database</param>
     /// <param name="fileName">Destination database filename</param>
-    public static void CreateBackup(this ISqliteConnection source, string fileName)
+    public static void BackupDatabase(this ISqliteConnection source, string fileName)
     {
         SqliteConnectionStringBuilder sb = new SqliteConnectionStringBuilder
         {
@@ -23,4 +24,7 @@ public static class BackupExtension
         destination.Open();
         source.connection.BackupDatabase(destination); //, "main", "main", -1, null, 0);
     }
+    [Obsolete("Use BackupDatabase instead")]
+    public static void CreateBackup(this ISqliteConnection source, string fileName)
+        => BackupDatabase(source, fileName);
 }
