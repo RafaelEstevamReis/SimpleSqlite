@@ -142,6 +142,7 @@ public class Column : IColumn
         else if (info.Type == typeof(long?)) dataType = SqliteType.INTEGER;
         else if (info.Type == typeof(ulong)) dataType = SqliteType.INTEGER;
         else if (info.Type == typeof(ulong?)) dataType = SqliteType.INTEGER;
+        else if (info.Type == typeof(DatabaseWrapper.IdGeneration.Id)) dataType = SqliteType.INTEGER;
         // Others Mapped of NUMERIC
         else if (info.Type == typeof(bool)) dataType = SqliteType.INTEGER;
         else if (info.Type == typeof(bool?)) dataType = SqliteType.INTEGER;
