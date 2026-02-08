@@ -22,6 +22,7 @@
 	<ItemGroup>
 		<Compile Include="..\Simple.Sqlite\Attributes\StrictTableAttibute.cs" Link="Attributes\StrictTableAttibute.cs" />
 		<Compile Include="..\Simple.Sqlite\Enums.cs" Link="Enums.cs" />
+		<Compile Include="..\Simple.Sqlite\Extension\CsvIngestionExtensions.cs" Link="Extensions\CsvIngestionExtensions.cs" />
 		<Compile Include="..\Simple.Sqlite\Extension\ExecuteExtension.cs" Link="Extensions\ExecuteExtension.cs" />
 		<Compile Include="..\Simple.Sqlite\Extension\GetDataExtension.cs" Link="Extensions\GetDataExtension.cs" />
 		<Compile Include="..\Simple.Sqlite\Extension\InsertExtension.cs" Link="Extensions\InsertExtension.cs" />
@@ -31,9 +32,9 @@
 		<Compile Include="..\Simple.Sqlite\Extension\QueryExtension.cs" Link="Extensions\QueryExtension.cs" />
 		<Compile Include="..\Simple.Sqlite\Extension\TableSchemaExtension.cs" Link="Extensions\TableSchemaExtension.cs" />
 		<Compile Include="..\Simple.Sqlite\Helpers\HelperFunctions.cs" Link="Helpers\HelperFunctions.cs" />
-		<Compile Include="..\Simple.Sqlite\Schema\ColumnSchema.cs" Link="ColumnSchema.cs" />
-		<Compile Include="..\Simple.Sqlite\Schema\TableMapper.cs" Link="TableMapper.cs" />
-		<Compile Include="..\Simple.Sqlite\Schema\TableSchema.cs" Link="TableSchema.cs" />
+		<Compile Include="..\Simple.Sqlite\Schema\ColumnSchema.cs" Link="Schema\ColumnSchema.cs" />
+		<Compile Include="..\Simple.Sqlite\Schema\TableMapper.cs" Link="Schema\TableMapper.cs" />
+		<Compile Include="..\Simple.Sqlite\Schema\TableSchema.cs" Link="Schema\TableSchema.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="..\README-NuGet.md">
@@ -42,7 +43,7 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Simple.DatabaseWrapper" Version="1.3.19" />
+		<PackageReference Include="Simple.DatabaseWrapper" Version="1.4.0" />
 		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.2" />
 		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.11" />
 	</ItemGroup>
@@ -50,5 +51,6 @@
 		<Folder Include="Extensions\" />
 		<Folder Include="Attributes\" />
 		<Folder Include="Helpers\" />
+		<Folder Include="Schema\" />
 	</ItemGroup>
 </Project>
