@@ -44,7 +44,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Simple.DatabaseWrapper" Version="1.5.0" />
-		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.2" />
+		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="10.0.3" />
 		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.11" />
 	</ItemGroup>
 	<ItemGroup>
