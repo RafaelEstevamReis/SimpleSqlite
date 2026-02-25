@@ -1,7 +1,7 @@
 ﻿namespace Simple.Sqlite;
 
 using Simple.DatabaseWrapper;
-using Simple.DatabaseWrapper.Helpers;
+using Simple.DatabaseWrapper.Parsers;
 using System;
 using System.IO;
 using System.Text;
