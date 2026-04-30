@@ -35,7 +35,7 @@ public class TableMapper : IColumnMapper
     /// <summary>
     /// Allows last added table to be editted
     /// </summary>
-    [Obsolete($"Use {nameof(EditTable)} instead")]
+    [Obsolete($"Use {nameof(EditTable)} instead", true)]
     public ITableMapper ConfigureTable(Action<ITable> Options) => EditTable(Options);
     /// <summary>
     /// Allows last added table to be editted
