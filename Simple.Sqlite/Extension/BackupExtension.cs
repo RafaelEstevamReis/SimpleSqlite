@@ -15,7 +15,7 @@ public static class BackupExtension
     /// <param name="fileName">Destination database filename</param>
     public static void BackupDatabase(this ISqliteConnection source, string fileName)
     {
-        SqliteConnectionStringBuilder sb = new SqliteConnectionStringBuilder
+        var sb = new SqliteConnectionStringBuilder
         {
             DataSource = fileName,
             //Version = 3
@@ -24,6 +24,7 @@ public static class BackupExtension
         destination.Open();
         source.connection.BackupDatabase(destination); //, "main", "main", -1, null, 0);
     }
+
     [Obsolete("Use BackupDatabase instead")]
     public static void CreateBackup(this ISqliteConnection source, string fileName)
         => BackupDatabase(source, fileName);
