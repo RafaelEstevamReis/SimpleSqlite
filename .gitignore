@@ -351,3 +351,5 @@ MigrationBackup/
 
 .vscode/
 **/Ignore.**
+Simple.Sqlite.Cipher.xml
+Simple.Sqlite.xml
