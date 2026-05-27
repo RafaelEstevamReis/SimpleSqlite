@@ -108,8 +108,9 @@ public class ConnectionFactory
             connection = SqliteConnection,
         };
     }
+
     /// <summary>
-    /// Opens a non-Shared in memory connection
+    /// Opens a Shared in memory connection
     /// </summary>
     /// <param name="sharedName">Data source shared name</param>
     public static ISqliteConnection CreateInMemoryShared(string sharedName)
