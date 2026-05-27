@@ -44,8 +44,8 @@ public static class CsvIngestionExtensions
             if (string.IsNullOrEmpty(entry.Name)) continue;
             if (!entryFilter(entry.FullName)) continue;
 
-            using var steam = entry.Open();
-            LoadFromCsvStream(connection, steam, encoding ?? Encoding.UTF8, mapping, bufferSize, delimiter, quote);
+            using var stream = entry.Open();
+            LoadFromCsvStream(connection, stream, encoding ?? Encoding.UTF8, mapping, bufferSize, delimiter, quote);
         }
     }
 #endif
