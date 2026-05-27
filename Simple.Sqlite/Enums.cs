@@ -80,3 +80,31 @@ public enum OnConflict
     /// </summary>
     Replace
 }
+
+public enum JournalMode
+{
+    /// <summary>
+    /// The default mode. Rollback journals are deleted after each transaction
+    /// </summary>
+    DELETE,
+    /// <summary>
+    /// Write-Ahead Logging. Changes are written to a separate -wal file instead of the main database
+    /// </summary>
+    WAL,
+    /// <summary>
+    /// Similar to DELETE, but truncates the journal file to zero length instead of deleting it
+    /// </summary>
+    TRUNCATE,
+    /// <summary>
+    /// Overwrites the journal header with zeros but leaves the file on disk
+    /// </summary>
+    PERSIST,
+    /// <summary>
+    /// Stores the rollback journal in RAM rather than on disk
+    /// </summary>
+    MEMORY,
+    /// <summary>
+    /// Disables the rollback journal entirely
+    /// </summary>
+    OFF
+}
