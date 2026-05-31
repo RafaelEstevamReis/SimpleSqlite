@@ -1,5 +1,6 @@
 ﻿namespace Simple.Sqlite;
 
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
@@ -53,6 +54,14 @@ public static class TableSchemaExtension
     {
         return Connection.Query<string>("SELECT name FROM sqlite_master WHERE type='index' ORDER BY name;", null)
                          .Where(o => include_sqlite_indexes || !o.StartsWith("sqlite_"))
+                         .ToArray();
+    }
+    /// <summary>
+    /// Get TableInfo using PRAGMA table_info function
+    /// </summary>
+    public static SqliteTableInfo[] GetTableInfo(this ISqliteConnection Connection, string tableName)
+    {
+        return Connection.Query<SqliteTableInfo>($"PRAGMA table_info({tableName});")
                          .ToArray();
     }
 }

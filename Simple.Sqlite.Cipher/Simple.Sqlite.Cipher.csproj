@@ -33,6 +33,7 @@
 		<Compile Include="..\Simple.Sqlite\Extension\TableSchemaExtension.cs" Link="Extensions\TableSchemaExtension.cs" />
 		<Compile Include="..\Simple.Sqlite\Helpers\HelperFunctions.cs" Link="Helpers\HelperFunctions.cs" />
 		<Compile Include="..\Simple.Sqlite\Schema\ColumnSchema.cs" Link="Schema\ColumnSchema.cs" />
+		<Compile Include="..\Simple.Sqlite\Schema\SqliteTableInfo.cs" Link="Schema\SqliteTableInfo.cs" />
 		<Compile Include="..\Simple.Sqlite\Schema\TableMapper.cs" Link="Schema\TableMapper.cs" />
 		<Compile Include="..\Simple.Sqlite\Schema\TableSchema.cs" Link="Schema\TableSchema.cs" />
 	</ItemGroup>

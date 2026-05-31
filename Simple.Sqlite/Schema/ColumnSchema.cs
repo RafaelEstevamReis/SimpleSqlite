@@ -72,7 +72,7 @@ public class Column : IColumn
         if (pi.Type.IsGenericType && pi.Type.Name == "Nullable`1")
         {
             allowNulls = true;
-        }            
+        }
 
         // was specified? then overide
         if (pi.Is(DatabaseWrapper.ColumnAttributes.AllowNull)) allowNulls = true;
@@ -162,7 +162,7 @@ public class Column : IColumn
             var policy = info.GetAttribute<EnumPolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
             if (policy != null && policy.Policy == EnumPolicyAttribute.Policies.AsText) dataType = SqliteType.TEXT;
         }
-        else 
+        else
         {
             dataType = SqliteType.ANY;
         }
