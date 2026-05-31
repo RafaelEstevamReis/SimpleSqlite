@@ -148,7 +148,7 @@ public class TableMapper : IColumnMapper
     private bool checkMigration(IColumn[] tableReferenceColumns, IEnumerable<SqliteTableInfo> tableInfoColumns, out IColumn[] newColumns, out IColumn[] changedColumns, out SqliteTableInfo[] removedColumns)
     {
         // Removed columns are on tableInfo but not on reference
-        removedColumns = tableInfoColumns.Where(o => !tableInfoColumns.Any(r => o.Name.Equals(r.Name, StringComparison.OrdinalIgnoreCase)))
+        removedColumns = tableInfoColumns.Where(o => !tableReferenceColumns.Any(r => o.name.Equals(r.ColumnName, StringComparison.OrdinalIgnoreCase)))
                                          .ToArray();
 
         List<IColumn> lstNewColumns = [];
@@ -156,7 +156,7 @@ public class TableMapper : IColumnMapper
 
         foreach (var refColumn in tableReferenceColumns)
         {
-            var tableInfoColunm = tableInfoColumns.FirstOrDefault(tic => tic.Name.Equals(refColumn.ColumnName, StringComparison.OrdinalIgnoreCase));
+            var tableInfoColunm = tableInfoColumns.FirstOrDefault(tic => tic.name.Equals(refColumn.ColumnName, StringComparison.OrdinalIgnoreCase));
             // New
             if (tableInfoColunm is null)
             {
@@ -165,8 +165,8 @@ public class TableMapper : IColumnMapper
             }
 
             // Changed?
-            var changedNN = tableInfoColunm.NotNull != (!refColumn.AllowNulls);
-            var changedDefault = defaultValueComparator(tableInfoColunm.Dflt_value, refColumn.DefaultValue);
+            var changedNN = tableInfoColunm.notnull != (!refColumn.AllowNulls);
+            var changedDefault = defaultValueChangedComparator(tableInfoColunm.dflt_value, refColumn.DefaultValue);
 
             if (changedNN || changedDefault)
             {
@@ -182,9 +182,17 @@ public class TableMapper : IColumnMapper
                 || newColumns.Length != 0;
     }
 
-    private bool defaultValueComparator(string? dflt_value, object defaultValue)
+    private bool defaultValueChangedComparator(string? dflt_value, object defaultValue)
     {
-        throw new NotImplementedException();
+        if (dflt_value is null && defaultValue is null) return false; // Booth NULL
+        if (dflt_value is null || defaultValue is null) return true; // Only One NULL
+
+        if (defaultValue is string sDefVal)
+        {
+            return dflt_value == $"'{sDefVal}'";
+        }
+
+        return dflt_value == $"'{defaultValue}'";
     }
 
     /// <summary>

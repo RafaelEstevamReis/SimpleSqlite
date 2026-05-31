@@ -81,12 +81,12 @@ public class Column : IColumn
         bool isUnique = pi.Is(DatabaseWrapper.ColumnAttributes.Unique);
 
         object? defVal = null;
-        List<string> indexes = new List<string>();
+        List<string> indexes = [];
         foreach (var attr in pi.DBAttributes)
         {
             if (attr.Attribute is DefaultValueAttribute def)
             {
-                defVal = def;
+                defVal = def.DefaultValue;
                 continue;
             }
             if (attr.Attribute is IndexAttribute ix)
@@ -175,8 +175,8 @@ public class Column : IColumn
     public string ExportColumnDefinitionAsStatement()
     {
         if (string.IsNullOrEmpty(ColumnName)) throw new ArgumentNullException("ColumnName can not be null");
-        if (ColumnName.Any(c => char.IsWhiteSpace(c))) throw new ArgumentNullException("ColumnName can not contain whitespaces");
-        if (ColumnName.Any(c => char.IsSymbol(c))) throw new ArgumentNullException("ColumnName can not contain symbols");
+        if (ColumnName.Any(char.IsWhiteSpace)) throw new ArgumentNullException("ColumnName can not contain whitespaces");
+        if (ColumnName.Any(char.IsSymbol)) throw new ArgumentNullException("ColumnName can not contain symbols");
 
         StringBuilder sb = new StringBuilder();
 
@@ -194,7 +194,18 @@ public class Column : IColumn
 
         if (DefaultValue != null)
         {
-            sb.Append($"DEFAULT '{DefaultValue}'");
+            if (DefaultValue is string sDefVal)
+            {
+                sb.Append($"DEFAULT '{DefaultValue}'");
+            }
+            else if (DefaultValue is int or long or uint or ulong or byte)
+            {
+                sb.Append($"DEFAULT {DefaultValue}");
+            }
+            else
+            {
+                sb.Append($"DEFAULT '{DefaultValue}'");
+            }
         }
 
         return sb.ToString();
@@ -208,8 +219,8 @@ public class Column : IColumn
     public string ExportAddColumnAsStatement()
     {
         if (string.IsNullOrEmpty(ColumnName)) throw new ArgumentNullException("ColumnName can not be null");
-        if (ColumnName.Any(c => char.IsWhiteSpace(c))) throw new ArgumentNullException("ColumnName can not contain whitespaces");
-        if (ColumnName.Any(c => char.IsSymbol(c))) throw new ArgumentNullException("ColumnName can not contain symbols");
+        if (ColumnName.Any(char.IsWhiteSpace)) throw new ArgumentNullException("ColumnName can not contain whitespaces");
+        if (ColumnName.Any(char.IsSymbol)) throw new ArgumentNullException("ColumnName can not contain symbols");
 
         StringBuilder sb = new StringBuilder();
 
@@ -238,7 +249,18 @@ public class Column : IColumn
 
         if (DefaultValue != null)
         {
-            sb.Append($"DEFAULT '{DefaultValue}'");
+            if (DefaultValue is string sDefVal)
+            {
+                sb.Append($"DEFAULT '{DefaultValue}'");
+            }
+            else if (DefaultValue is int or long or uint or ulong or byte)
+            {
+                sb.Append($"DEFAULT {DefaultValue}");
+            }
+            else
+            {
+                sb.Append($"DEFAULT '{DefaultValue}'");
+            }
         }
 
         return sb.ToString();
