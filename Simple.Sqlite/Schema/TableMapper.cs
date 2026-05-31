@@ -88,15 +88,16 @@ public class TableMapper : IColumnMapper
         else
         {
             // migrate ?
-            var dbColumns = connection.GetTableColumnNames(t.TableName);
-            var newColumns = t.Columns
-                              .Where(c => !dbColumns.Contains(c.ColumnName))
-                              .ToArray();
+            var dbColumns = connection.GetTableInfo(t.TableName);
+            bool needToMigrateColumns = checkMigration(tableReferenceColumns: t.Columns, tableInfoColumns: dbColumns, out var newColumns, out var changedColumns, out var removedColumns);
 
-            foreach (var c in newColumns)
+            if (needToMigrateColumns)
             {
-                string addColumn = c.ExportAddColumnAsStatement();
-                connection.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
+                foreach (var c in newColumns)
+                {
+                    string addColumn = c.ExportAddColumnAsStatement();
+                    connection.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
+                }
             }
 
             result = new TableCommitResult()
@@ -143,6 +144,49 @@ public class TableMapper : IColumnMapper
 
         return null;
     }
+
+    private bool checkMigration(IColumn[] tableReferenceColumns, IEnumerable<SqliteTableInfo> tableInfoColumns, out IColumn[] newColumns, out IColumn[] changedColumns, out SqliteTableInfo[] removedColumns)
+    {
+        // Removed columns are on tableInfo but not on reference
+        removedColumns = tableInfoColumns.Where(o => !tableInfoColumns.Any(r => o.Name.Equals(r.Name, StringComparison.OrdinalIgnoreCase)))
+                                         .ToArray();
+
+        List<IColumn> lstNewColumns = [];
+        List<IColumn> lstUpdatedColumns = [];
+
+        foreach (var refColumn in tableReferenceColumns)
+        {
+            var tableInfoColunm = tableInfoColumns.FirstOrDefault(tic => tic.Name.Equals(refColumn.ColumnName, StringComparison.OrdinalIgnoreCase));
+            // New
+            if (tableInfoColunm is null)
+            {
+                lstNewColumns.Add(refColumn);
+                continue;
+            }
+
+            // Changed?
+            var changedNN = tableInfoColunm.NotNull != (!refColumn.AllowNulls);
+            var changedDefault = defaultValueComparator(tableInfoColunm.Dflt_value, refColumn.DefaultValue);
+
+            if (changedNN || changedDefault)
+            {
+                lstUpdatedColumns.Add(refColumn);
+            }
+        }
+
+        newColumns = lstNewColumns.ToArray();
+        changedColumns = lstUpdatedColumns.ToArray();
+
+        return removedColumns.Length != 0
+                || changedColumns.Length != 0
+                || newColumns.Length != 0;
+    }
+
+    private bool defaultValueComparator(string? dflt_value, object defaultValue)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Class for the table commit results
     /// </summary>
