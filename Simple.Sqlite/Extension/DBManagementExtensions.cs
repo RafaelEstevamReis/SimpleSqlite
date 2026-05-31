@@ -15,6 +15,7 @@ public static class DBManagementExtensions
     /// <summary>
     /// Vacuums current database into a New File
     /// </summary>
+    /// <param name="source">Source sqlite connection to be used</param>
     /// <param name="destinationFilePath">New File to be Vacuum to. If a file already exists the command will fail with an error</param>
     public static void VacuumIntoFile(this ISqliteConnection source, string destinationFilePath)
     {
