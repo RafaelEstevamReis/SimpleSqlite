@@ -33,6 +33,7 @@ public enum SqliteType
     /// </summary>
     ANY,
 }
+
 /// <summary>
 /// OnConflict clause options
 /// </summary>
@@ -107,4 +108,28 @@ public enum JournalMode
     /// Disables the rollback journal entirely
     /// </summary>
     OFF
+}
+
+public enum SynchronousMode
+{
+    /// <summary>
+    /// With synchronous OFF (0), SQLite continues without syncing as soon as it has handed data off to the operating system. If the application running SQLite crashes, the data will be safe, but the database might become corrupted if the operating system crashes or the computer loses power before that data has been written to non-volatile storage. On the other hand, commits can be much faster with synchronous OFF.
+    /// Setting synchronous to OFF is a good option when creating a new database from scratch, in a scenario where the process of creating the database can be repeated if a power loss occurs in the middle, and when performance is critical.
+    /// </summary>
+    OFF = 0,
+    /// <summary>
+    /// When synchronous is NORMAL (1), the SQLite database engine will still sync at the most critical moments, but less often than in FULL mode. There is a very small (though non-zero) chance that a power failure at just the wrong time could corrupt the database in journal_mode=DELETE on an older filesystem. WAL mode is safe from corruption with synchronous=NORMAL, and probably DELETE mode is safe too on modern filesystems. WAL mode is always consistent with synchronous=NORMAL, but WAL mode does lose durability. A transaction committed in WAL mode with synchronous=NORMAL might roll back following a power loss or system crash. Transactions are durable across application crashes regardless of the synchronous setting or journal mode.
+    /// The synchronous = NORMAL setting provides the best balance between performance and safety for most applications running in WAL mode. You lose durability across power lose with synchronous NORMAL in WAL mode, but that is not important for most applications. Transactions are still atomic, consistent, and isolated, which are the most important characteristics in most use cases.
+    /// </summary>
+    NORMAL = 1,
+    /// <summary>
+    /// When synchronous is FULL (2), the SQLite database engine will use the xSync method of the VFS to ensure that all content is safely written to the disk surface prior to continuing. This ensures that an operating system crash or power failure will not corrupt the database.
+    /// FULL is the default synchronous mode for a rollback journal. FULL is atomic, consistent, isolated, and durable (ACID) in WAL mode and is atomic, consistent, and isolated with a rollback journal. FULL might also be durable using a rollback journal, depending on the underlying filesystem.FULL is not necessarily durable across a power loss in rollback mode, so if durability is desired, it is best to set the synchronous mode to EXTRA.
+    /// </summary>
+    FULL = 2,
+    /// <summary>
+    /// EXTRA synchronous is like FULL with the addition that the directory containing a rollback journal is synced after that journal is unlinked to commit a transaction in DELETE mode. EXTRA provides additional durability if the commit is followed closely by a power loss. Without EXTRA, depending on the underlying filesystem, it is possible that a single transaction that commits right before a power loss might get rolled back upon reboot. The database will not go corrupt. But the last transaction might go missing, thus violating durability, if EXTRA is not set.
+    /// EXTRA is no different from FULL in WAL mode.
+    /// </summary>
+    EXTRA = 3,
 }

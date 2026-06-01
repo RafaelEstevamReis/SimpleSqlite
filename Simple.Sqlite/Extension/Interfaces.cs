@@ -22,6 +22,10 @@ public interface ISqliteConnection : IDisposable
     public SqliteConnection GetUnderlyingConnection();
     ISqliteTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified);
 }
+
+/// <summary>
+/// SqliteTransaction interface wrapper
+/// </summary>
 public interface ISqliteTransaction : IDisposable
 {
     internal ISqliteConnection connection { get; }

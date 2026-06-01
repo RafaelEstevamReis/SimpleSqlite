@@ -30,4 +30,12 @@ public static class DBManagementExtensions
         source.Execute($"PRAGMA journal_mode = {journalMode};");
     }
 
+    /// <summary>
+    /// Sets current database Synchronous mode
+    /// </summary>
+    public static void SetSchemaSynchronous(this ISqliteConnection source, SynchronousMode synchronousMode)
+    {
+        source.Execute($"PRAGMA schema.synchronous = {synchronousMode};");
+    }
+
 }
