@@ -34,7 +34,7 @@ public static class CsvIngestionExtensions
     /// Load a Zipped CSV file into a database. 
     /// For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
     /// </summary>
-    public static void LoadFromCsvZippedFile<T>(this ISqliteConnection connection, string zipFile, Func<string, bool> entryFilter, Func<string[], T> mapping, int bufferSize = 10_000, Encoding? encoding = null, char delimiter = ';', char quote = '"')
+    public static void LoadFromCsvZippedFile<T>(this ISqliteConnection connection, string zipFile, Func<string, bool> entryFilter, Func<string[], T> mapping, int bufferSize = 10_000, Encoding? encoding = null, char delimiter = ';', char quote = '"', OnConflict conflictResolution = OnConflict.Ignore)
     {
         using var fs = File.OpenRead(zipFile);
         using var zip = new System.IO.Compression.ZipArchive(fs, System.IO.Compression.ZipArchiveMode.Read);
@@ -45,7 +45,7 @@ public static class CsvIngestionExtensions
             if (!entryFilter(entry.FullName)) continue;
 
             using var stream = entry.Open();
-            LoadFromCsvStream(connection, stream, encoding ?? Encoding.UTF8, mapping, bufferSize, delimiter, quote);
+            LoadFromCsvStream(connection, stream, encoding ?? Encoding.UTF8, mapping, bufferSize, delimiter, quote, conflictResolution);
         }
     }
 #endif
@@ -54,21 +54,21 @@ public static class CsvIngestionExtensions
     /// Load a CSV file stream into a database. 
     /// For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
     /// </summary>
-    public static void LoadFromCsvStream<T>(this ISqliteConnection connection, Stream dataStream, Encoding encoding, Func<string[], T> mapping, int bufferSize = 10_000, char delimiter = ';', char quote = '"')
+    public static void LoadFromCsvStream<T>(this ISqliteConnection connection, Stream dataStream, Encoding encoding, Func<string[], T> mapping, int bufferSize = 10_000, char delimiter = ';', char quote = '"', OnConflict conflictResolution = OnConflict.Ignore)
     {
         using var sr = new StreamReader(dataStream, encoding);
-        LoadFromCsvStream(connection, sr, mapping, bufferSize, delimiter, quote);
+        LoadFromCsvStream(connection, sr, mapping, bufferSize, delimiter, quote, conflictResolution);
     }
 
     /// <summary>
     /// Load a CSV stream into a database. 
     /// For custom CSV ingestion try DatabaseWrapper.CsvParser functions and insert with BulkInsert
     /// </summary>
-    public static void LoadFromCsvStream<T>(this ISqliteConnection connection, StreamReader csvStream, Func<string[], T> mapping, int bufferSize = 10_000, char delimiter = ';', char quote = '"')
+    public static void LoadFromCsvStream<T>(this ISqliteConnection connection, StreamReader csvStream, Func<string[], T> mapping, int bufferSize = 10_000, char delimiter = ';', char quote = '"', OnConflict conflictResolution = OnConflict.Ignore)
     {
-        using DataBuffer<T> buffer = new DataBuffer<T>(bufferSize, data =>
+        using var buffer = new DataBuffer<T>(bufferSize, data =>
         {
-            connection.BulkInsert<T>(data, OnConflict.Ignore);
+            connection.BulkInsert(data, conflictResolution);
         });
         var csvRows = CsvParser.ParseCsv(csvStream, delimiter: delimiter, quote: quote);
 
