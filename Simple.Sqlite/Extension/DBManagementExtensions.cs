@@ -1,4 +1,6 @@
-﻿namespace Simple.Sqlite.Extension;
+﻿namespace Simple.Sqlite;
+
+using System.Linq;
 
 /// <summary>
 /// Extension for managing a database
@@ -35,7 +37,24 @@ public static class DBManagementExtensions
     /// </summary>
     public static void SetSchemaSynchronous(this ISqliteConnection source, SynchronousMode synchronousMode)
     {
-        source.Execute($"PRAGMA schema.synchronous = {synchronousMode};");
+        source.Execute($"PRAGMA synchronous = {synchronousMode};");
+    }
+
+    /// <summary>
+    /// Checks current database integrity
+    /// </summary>
+    public static string[] IntegrityCheck(this ISqliteConnection source)
+    {
+        return source.Query<string>("PRAGMA integrity_check;").ToArray();
+    }
+
+    /// <summary>
+    /// Checks quickly current database integrity. 
+    /// Uniqueness and index matching are not checked.
+    /// </summary>
+    public static string[] IntegrityCheckQuick(this ISqliteConnection source)
+    {
+        return source.Query<string>("PRAGMA quick_check;").ToArray();
     }
 
 }
