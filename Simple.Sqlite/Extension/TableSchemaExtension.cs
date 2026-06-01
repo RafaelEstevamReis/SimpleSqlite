@@ -1,6 +1,5 @@
 ﻿namespace Simple.Sqlite;
 
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
@@ -23,8 +22,9 @@ public static class TableSchemaExtension
 
         return dt;
     }
+
     /// <summary>
-    /// Gets columns names for a table
+    /// Gets columns names for a table selecting 0 rows from it
     /// </summary>
     public static string[] GetTableColumnNames(this ISqliteConnection Connection, string tableName)
     {
@@ -34,12 +34,12 @@ public static class TableSchemaExtension
 
         using var reader = cmd.ExecuteReader();
         return Enumerable.Range(0, reader.FieldCount)
-                         .Select(idx => reader.GetName(idx))
+                         .Select(reader.GetName)
                          .ToArray();
     }
 
     /// <summary>
-    /// Get all tables
+    /// Get all tables querying sqlite_master for type='table'
     /// </summary>
     public static string[] GetAllTables(this ISqliteConnection Connection, bool include_sqlite_tables = true)
     {
@@ -47,6 +47,7 @@ public static class TableSchemaExtension
                          .Where(o => include_sqlite_tables || !o.StartsWith("sqlite_"))
                          .ToArray();
     }
+
     /// <summary>
     /// Get all indexes
     /// </summary>
@@ -56,12 +57,22 @@ public static class TableSchemaExtension
                          .Where(o => include_sqlite_indexes || !o.StartsWith("sqlite_"))
                          .ToArray();
     }
+
     /// <summary>
     /// Get TableInfo using PRAGMA table_info function
     /// </summary>
     public static SqliteTableInfo[] GetTableInfo(this ISqliteConnection Connection, string tableName)
     {
         return Connection.Query<SqliteTableInfo>($"PRAGMA table_info({tableName});")
+                         .ToArray();
+    }
+
+    /// <summary>
+    /// Get TableList using PRAGMA table_list function
+    /// </summary>
+    public static SqliteTableList[] GetTableList(this ISqliteConnection Connection)
+    {
+        return Connection.Query<SqliteTableList>("PRAGMA table_list;")
                          .ToArray();
     }
 }

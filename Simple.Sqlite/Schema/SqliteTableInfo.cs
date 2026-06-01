@@ -27,3 +27,32 @@ public class SqliteTableInfo
     /// </summary>
     public int pk {  get; set; }
 }
+
+public class SqliteTableList
+{
+    /// <summary>
+    /// the schema in which the table or view appears (for example "main" or "temp")
+    /// </summary>
+    public string schema { get; set; } = string.Empty;
+    /// <summary>
+    /// the name of the table or view
+    /// </summary>
+    public string name { get; set; } = string.Empty;
+    /// <summary>
+    /// the type of object - one of "table", "view", "shadow" (for shadow tables), or "virtual" for virtual tables
+    /// </summary>
+    public string type { get; set; } = string.Empty;
+    /// <summary>
+    /// the number of columns in the table, including generated columns and hidden columns
+    /// </summary>
+    public long ncol { get; set; }
+    /// <summary>
+    /// if the table is a WITHOUT ROWID table or 0 if is not
+    /// </summary>
+    public bool wr { get; set; }
+    /// <summary>
+    /// 1 if the table is a STRICT table or 0 if it is not
+    /// </summary>
+    public bool strict { get; set; }
+
+}
