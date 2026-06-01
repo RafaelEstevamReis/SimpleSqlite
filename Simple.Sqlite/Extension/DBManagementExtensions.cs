@@ -40,6 +40,11 @@ public static class DBManagementExtensions
         source.Execute($"PRAGMA synchronous = {synchronousMode};");
     }
 
+    public static void Optimize(this ISqliteConnection source)
+    {
+        source.Execute("PRAGMA optimize;");
+    }
+
     /// <summary>
     /// Checks current database integrity
     /// </summary>
