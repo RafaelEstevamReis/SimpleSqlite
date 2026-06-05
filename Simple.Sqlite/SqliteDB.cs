@@ -253,6 +253,7 @@ public class SqliteDB
     /// Creates an online backup of the current database.
     /// Can be used to save an InMemory database
     /// </summary>
+    [Obsolete("Use BackupDatabase instead")]
     public void CreateBackup(string fileName)
     {
         using var source = db.GetConnection();
