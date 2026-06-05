@@ -1,10 +1,10 @@
-# SqliteWrapper
+# Simple.Sqlite
 A very simple Sqlite wrapper to plug spiders with it
 
 ## Compatibility
 
 Huge compatibility, supports:
-* NET 8.0
+* NET 8.0+
 * NET 6.0
 * NetCore 3.1
 * Net Framework 4.5+
