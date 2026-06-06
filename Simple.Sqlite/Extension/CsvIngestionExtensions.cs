@@ -4,6 +4,7 @@ using Simple.DatabaseWrapper;
 using Simple.DatabaseWrapper.Parsers;
 using System;
 using System.IO;
+using System.Net.Security;
 using System.Text;
 
 /// <summary>
@@ -83,4 +84,43 @@ public static class CsvIngestionExtensions
 
         buffer.Flush();
     }
+
+#if NET6_0_OR_GREATER
+    public static void LoadFromCsvZippedFile(this ISqliteConnection connection, string zipFile, Func<string, bool> entryFilter, string tableName, string[] columnNames, Func<FastCsvReader, int, object> fieldMapping, int bufferSize = 10_000, Encoding? encoding = null, char delimiter = ';', char quote = '"', OnConflict conflictResolution = OnConflict.Ignore)
+    {
+        var buffer = new DataBuffer<object[]>(bufferSize, data =>
+        {
+            connection.BulkInsertRaw(tableName, columnNames, data, conflictResolution);
+        });
+
+        using var fs = File.OpenRead(zipFile);
+        using var zip = new System.IO.Compression.ZipArchive(fs, System.IO.Compression.ZipArchiveMode.Read);
+
+        foreach (var entry in zip.Entries)
+        {
+            if (string.IsNullOrEmpty(entry.Name)) continue;
+            if (!entryFilter(entry.FullName)) continue;
+
+            using var dataStream = entry.Open();
+            using var sr = new StreamReader(dataStream, encoding ?? Encoding.UTF8);
+
+            var reader = new FastCsvReader(sr, delimiter, quote);
+            while (reader.Read())
+            {
+                if (reader.FieldCount != columnNames.Length)
+                {
+                    throw new InvalidOperationException($"Column size mismatch. Row FieldCount: {reader.FieldCount} Expected Columns: {columnNames.Length}");
+                }
+
+                var objArray = new object[reader.FieldCount];
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    objArray[i] = fieldMapping(reader, i);
+                }
+                buffer.Add(objArray);
+            }
+            buffer.Flush();
+        }
+    }
+#endif
 }
