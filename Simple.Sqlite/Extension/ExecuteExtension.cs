@@ -32,7 +32,7 @@ public static class ExecuteExtension
         //using var cmd = connection.connection.CreateCommand();
         //cmd.CommandText = query;
         using var cmd = new Microsoft.Data.Sqlite.SqliteCommand(query, connection.connection, transaction?.transaction);
-        HelperFunctions.fillParameters(cmd, parameters, connection.typeCollection);
+        HelperFunctions.FillParameters(cmd, parameters, connection.typeCollection);
 
         return cmd.ExecuteNonQuery();
     }
@@ -65,7 +65,7 @@ public static class ExecuteExtension
         //cmd.CommandText = query;
 
         using var cmd = new Microsoft.Data.Sqlite.SqliteCommand(query, connection.connection, transaction?.transaction);
-        HelperFunctions.fillParameters(cmd, parameters, connection.typeCollection);
+        HelperFunctions.FillParameters(cmd, parameters, connection.typeCollection);
 
         var obj = cmd.ExecuteScalar();
 

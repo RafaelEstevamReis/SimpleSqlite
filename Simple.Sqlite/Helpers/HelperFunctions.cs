@@ -12,31 +12,44 @@ using System.Linq;
 internal class HelperFunctions
 {
     internal static bool handleGuidAsByteArray = true;
-    internal static void fillParameters(SqliteCommand cmd, object? parameters, ReaderCachedCollection typeCollection)
+    internal static void FillParameters(SqliteCommand cmd, object? parameters, ReaderCachedCollection typeCollection)
     {
         if (parameters == null) return;
 
-        var type = typeCollection.GetInfo(parameters.GetType());
+        var type = GetCommandParameters(parameters, typeCollection);
 
-        foreach (var p in type.Items)
+        foreach (var p in type)
         {
-            if (!p.CanRead) continue;
-            var value = TypeHelper.ReadParamValue(p, parameters, handleGuidAsByteArray);
-            adjustInsertValue(ref value, p, parameters);
-
-            if (value is null) value = DBNull.Value;
-
-            cmd.Parameters.AddWithValue(p.Name, value);
+            cmd.Parameters.AddWithValue(p.name, p.value);
         }
     }
-    internal static IEnumerable<string> getParametersNames(object parameters, ReaderCachedCollection typeCollection)
+    internal static IEnumerable<(string name, object value)> GetCommandParameters(object? parameters, ReaderCachedCollection typeCollection)
+    {
+        if (parameters == null) return [];
+
+        return typeCollection
+            .GetInfo(parameters.GetType())
+            .Items
+            .Where(p => p.CanRead)
+            .Select(p =>
+            {
+                var value = TypeHelper.ReadParamValue(p, parameters, handleGuidAsByteArray);
+                adjustInsertValue(ref value, p, parameters);
+
+                if (value is null) value = DBNull.Value;
+
+                return (p.Name, value);
+            });
+    }
+
+    internal static IEnumerable<string> GetParametersNames(object parameters, ReaderCachedCollection typeCollection)
     {
         return typeCollection.GetInfo(parameters.GetType())
                    .Items
                    .Where(p => p.CanRead)
                    .Select(p => p.Name);
     }
-    internal static void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
+    private static void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
     {
         if (value is Uri uri)
         {
@@ -98,12 +111,17 @@ internal class HelperFunctions
                          .ToArray();
     }
 
-    internal static string buildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string? tableName = null)
+    internal static string BuildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string? tableName = null)
     {
         var info = typeCollection.GetInfo<T>();
         if (tableName == null) tableName = info.TypeName;
 
         var names = getNames(info, !info.IsAnonymousType);
+        return BuildInsertSql(names, resolution, tableName);
+    }
+
+    internal static string BuildInsertSql(IEnumerable<string> names, OnConflict resolution, string tableName)
+    {
         var fields = string.Join(",", names);
         var values = string.Join(",", names.Select(n => $"@{n}"));
 
@@ -125,6 +143,7 @@ internal class HelperFunctions
             return $"INSERT OR {txtConflict} INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
         }
     }
+
     private static IEnumerable<string> getNames(TypeInfo type, bool needWrite)
     {
         return type.Items

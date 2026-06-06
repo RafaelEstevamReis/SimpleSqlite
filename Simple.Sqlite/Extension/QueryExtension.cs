@@ -72,7 +72,7 @@ public static class QueryExtension
         var tColumns = tInfo.GetNames().ToArray();
 
         string baseQuery = $"SELECT * FROM {tInfo.TypeName} WHERE ";
-        var filterColumns = HelperFunctions.getParametersNames(parameters, connection.typeCollection);
+        var filterColumns = HelperFunctions.GetParametersNames(parameters, connection.typeCollection);
 
         var pairs = filterColumns.Select(c =>
         {
@@ -94,7 +94,7 @@ public static class QueryExtension
     static IEnumerable<T> _query<T>(ISqliteConnection connection, ISqliteTransaction? transaction, string query, object? parameters)
     {
         using var cmd = new Microsoft.Data.Sqlite.SqliteCommand(query, connection.connection, transaction?.transaction);
-        HelperFunctions.fillParameters(cmd, parameters, connection.typeCollection);
+        HelperFunctions.FillParameters(cmd, parameters, connection.typeCollection);
 
         using var reader = cmd.ExecuteReader();
 
