@@ -96,7 +96,7 @@ public class TableMapper : IColumnMapper
                 foreach (var c in newColumns)
                 {
                     string addColumn = c.ExportAddColumnAsStatement();
-                    connection.Execute($"ALTER TABLE {t.TableName} {addColumn}", null);
+                    connection.Execute($"ALTER TABLE {Helpers.HelperFunctions.QuoteName(t.TableName)} {addColumn}", null);
                 }
             }
 
@@ -136,8 +136,8 @@ public class TableMapper : IColumnMapper
                                           .Select(o => o.ColumnName)
                                           .ToArray();
 
-            string columnList = string.Join(", ", columns);
-            connection.Execute($"CREATE INDEX {ix} ON {t.TableName} ({columnList});", null);
+            string columnList = string.Join(", ", columns.Select(Helpers.HelperFunctions.QuoteName));
+            connection.Execute($"CREATE INDEX {Helpers.HelperFunctions.QuoteName(ix)} ON {Helpers.HelperFunctions.QuoteName(t.TableName)} ({columnList});", null);
         }
 
         if (result.WasTableCreated || result.ColumnsAdded.Length > 0 || result.IndexesAdded.Length > 0) return result;

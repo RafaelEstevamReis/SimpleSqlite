@@ -180,7 +180,7 @@ public class Column : IColumn
 
         StringBuilder sb = new StringBuilder();
 
-        sb.Append(ColumnName);
+        sb.Append(Helpers.HelperFunctions.QuoteName(ColumnName));
         sb.Append(" ");
 
         sb.Append(SqliteType.ToString());
@@ -226,7 +226,7 @@ public class Column : IColumn
 
         sb.Append(" ADD COLUMN ");
 
-        sb.Append(ColumnName);
+        sb.Append(Helpers.HelperFunctions.QuoteName(ColumnName));
         sb.Append(" ");
 
         sb.Append(SqliteType.ToString());

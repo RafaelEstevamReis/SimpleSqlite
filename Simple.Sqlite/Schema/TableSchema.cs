@@ -58,7 +58,7 @@ public class Table : ITable
         StringBuilder sb = new StringBuilder();
 
         sb.Append("CREATE TABLE IF NOT EXISTS ");
-        sb.Append(TableName);
+        sb.Append(Helpers.HelperFunctions.QuoteName(TableName));
         sb.Append("(\n");
 
         var columns = string.Join(",", Columns.Select(c => c.ExportColumnDefinitionAsStatement()));
