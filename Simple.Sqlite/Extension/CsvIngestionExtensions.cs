@@ -23,10 +23,11 @@ public static class CsvIngestionExtensions
     /// <param name="encoding">CSV Encoding</param>
     /// <param name="delimiter">CSV delimiter char</param>
     /// <param name="quote">CSV quote char</param>
-    public static void LoadFromCsvFile<T>(this ISqliteConnection connection, string csvFile, Func<string[], T> mapping, int bufferSize = 10_000, Encoding? encoding = null, char delimiter = ';', char quote = '"')
+    /// <param name="conflictResolution">Conflict resolution policy</param>
+    public static void LoadFromCsvFile<T>(this ISqliteConnection connection, string csvFile, Func<string[], T> mapping, int bufferSize = 10_000, Encoding? encoding = null, char delimiter = ';', char quote = '"', OnConflict conflictResolution = OnConflict.Ignore)
     {
         using var fs = File.OpenRead(csvFile);
-        LoadFromCsvStream(connection, fs, encoding ?? Encoding.UTF8, mapping, bufferSize, delimiter, quote);
+        LoadFromCsvStream(connection, fs, encoding ?? Encoding.UTF8, mapping, bufferSize, delimiter, quote, conflictResolution);
     }
 
 #if !NET472
@@ -87,7 +88,7 @@ public static class CsvIngestionExtensions
 #if NET6_0_OR_GREATER
     public static void LoadFromCsvZippedFile(this ISqliteConnection connection, string zipFile, Func<string, bool> entryFilter, string tableName, string[] columnNames, Func<FastCsvReader, int, object> fieldMapping, int bufferSize = 10_000, Encoding? encoding = null, char delimiter = ';', char quote = '"', OnConflict conflictResolution = OnConflict.Ignore)
     {
-        var buffer = new DataBuffer<object[]>(bufferSize, data =>
+        using var buffer = new DataBuffer<object[]>(bufferSize, data =>
         {
             connection.BulkInsertRaw(tableName, columnNames, data, conflictResolution);
         });
