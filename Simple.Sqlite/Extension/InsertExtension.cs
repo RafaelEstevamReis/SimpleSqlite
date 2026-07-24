@@ -75,6 +75,10 @@ public static class InsertExtension
         bool first = true;
         foreach (var itemFields in items)
         {
+            if (itemFields.Length != columnNames.Length)
+            {
+                throw new InvalidOperationException($"Column size mismatch. Row FieldCount: {itemFields.Length} Expected Columns: {columnNames.Length}");
+            }
             if (first)
             {
                 for (int i = 0; i < itemFields.Length; i++)
