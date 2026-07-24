@@ -15,14 +15,16 @@ public static class BackupExtension
     /// <param name="fileName">Destination database filename</param>
     public static void BackupDatabase(this ISqliteConnection source, string fileName)
     {
+        var fi = new System.IO.FileInfo(fileName);
+        if (!fi.Directory!.Exists) fi.Directory.Create();
+
         var sb = new SqliteConnectionStringBuilder
         {
             DataSource = fileName,
-            //Version = 3
         };
         using var destination = new SqliteConnection(sb.ToString());
         destination.Open();
-        source.connection.BackupDatabase(destination); //, "main", "main", -1, null, 0);
+        source.connection.BackupDatabase(destination);
     }
 
     [Obsolete("Use BackupDatabase instead")]

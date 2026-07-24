@@ -196,7 +196,7 @@ public class Column : IColumn
         {
             if (DefaultValue is string sDefVal)
             {
-                sb.Append($"DEFAULT '{DefaultValue}'");
+                sb.Append($"DEFAULT '{sDefVal.Replace("'", "''")}'");
             }
             else if (DefaultValue is int or long or uint or ulong or byte)
             {
@@ -251,7 +251,7 @@ public class Column : IColumn
         {
             if (DefaultValue is string sDefVal)
             {
-                sb.Append($"DEFAULT '{DefaultValue}'");
+                sb.Append($"DEFAULT '{sDefVal.Replace("'", "''")}'");
             }
             else if (DefaultValue is int or long or uint or ulong or byte)
             {

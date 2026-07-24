@@ -189,10 +189,10 @@ public class TableMapper : IColumnMapper
 
         if (defaultValue is string sDefVal)
         {
-            return dflt_value == $"'{sDefVal}'";
+            return dflt_value != $"'{sDefVal}'";
         }
 
-        return dflt_value == $"'{defaultValue}'";
+        return dflt_value != $"'{defaultValue}'";
     }
 
     /// <summary>

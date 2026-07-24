@@ -40,6 +40,9 @@ public static class DBManagementExtensions
         source.Execute($"PRAGMA synchronous = {synchronousMode};");
     }
 
+    /// <summary>
+    /// Runs PRAGMA optimize
+    /// </summary>
     public static void Optimize(this ISqliteConnection source)
     {
         source.Execute("PRAGMA optimize;");
