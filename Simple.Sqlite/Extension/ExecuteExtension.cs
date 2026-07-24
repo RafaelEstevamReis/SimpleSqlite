@@ -69,10 +69,13 @@ public static class ExecuteExtension
 
         var obj = cmd.ExecuteScalar();
 
+        // Empty result set (null) or SQL NULL (DBNull) => default
+        if (obj is null || obj is DBNull) return default!;
+
         // In SQLite DateTime is returned as STRING after aggregate operations
         if (typeof(T) == typeof(DateTime))
         {
-            if (DateTime.TryParse(obj?.ToString(), out DateTime dt))
+            if (DateTime.TryParse(obj.ToString(), out DateTime dt))
             {
                 return (T)(object)dt;
             }
