@@ -46,14 +46,7 @@ public class ConnectionFactory
     /// <returns>An open connection of the database</returns>
     public ISqliteConnection GetConnection()
     {
-        var SqliteConnection = new SqliteConnection(ConnectionString);
-        SqliteConnection.Open();
-
-        return new Connection()
-        {
-            typeCollection = new DatabaseWrapper.TypeReader.ReaderCachedCollection(),
-            connection = SqliteConnection,
-        };
+        return open(ConnectionString);
     }
 
     /// <summary>
@@ -83,15 +76,7 @@ public class ConnectionFactory
     /// </summary>
     public static ISqliteConnection CreateConnection(string databaseFile)
     {
-        var cnnString = sqliteFileToCnnString(databaseFile);
-        var SqliteConnection = new SqliteConnection(cnnString);
-        SqliteConnection.Open();
-
-        return new Connection()
-        {
-            typeCollection = new DatabaseWrapper.TypeReader.ReaderCachedCollection(),
-            connection = SqliteConnection,
-        };
+        return open(sqliteFileToCnnString(databaseFile));
     }
    
     /// <summary>
@@ -99,14 +84,7 @@ public class ConnectionFactory
     /// </summary>
     public static ISqliteConnection CreateInMemory()
     {
-        var SqliteConnection = new SqliteConnection("Data Source=:memory:");
-        SqliteConnection.Open();
-
-        return new Connection()
-        {
-            typeCollection = new DatabaseWrapper.TypeReader.ReaderCachedCollection(),
-            connection = SqliteConnection,
-        };
+        return open("Data Source=:memory:");
     }
 
     /// <summary>
@@ -115,14 +93,13 @@ public class ConnectionFactory
     /// <param name="sharedName">Data source shared name</param>
     public static ISqliteConnection CreateInMemoryShared(string sharedName)
     {
-        var SqliteConnection = new SqliteConnection($"Data Source={sharedName};Mode=Memory;Cache=Shared");
-        SqliteConnection.Open();
-
-        return new Connection()
+        var sb = new SqliteConnectionStringBuilder
         {
-            typeCollection = new DatabaseWrapper.TypeReader.ReaderCachedCollection(),
-            connection = SqliteConnection,
+            DataSource = sharedName,
+            Mode = SqliteOpenMode.Memory,
+            Cache = SqliteCacheMode.Shared,
         };
+        return open(sb.ToString());
     }
 
     /// <summary>
@@ -147,6 +124,17 @@ public class ConnectionFactory
     public static void ClearAllPools()
     {
         SqliteConnection.ClearAllPools();
+    }
+
+    private static ISqliteConnection open(string connectionString)
+    {
+        var cnn = new SqliteConnection(connectionString);
+        cnn.Open();
+        return new Connection()
+        {
+            typeCollection = new DatabaseWrapper.TypeReader.ReaderCachedCollection(),
+            connection = cnn,
+        };
     }
 
 #if DEBUG
