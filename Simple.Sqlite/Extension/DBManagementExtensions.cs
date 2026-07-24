@@ -21,7 +21,7 @@ public static class DBManagementExtensions
     /// <param name="destinationFilePath">New File to be Vacuum to. If a file already exists the command will fail with an error</param>
     public static void VacuumIntoFile(this ISqliteConnection source, string destinationFilePath)
     {
-        source.Execute($"VACUUM INTO '{destinationFilePath}'");
+        source.Execute($"VACUUM INTO '{destinationFilePath.Replace("'", "''")}'");
     }
 
     /// <summary>

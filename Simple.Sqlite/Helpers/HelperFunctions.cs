@@ -111,6 +111,16 @@ internal class HelperFunctions
                          .ToArray();
     }
 
+    internal static string QuoteName(string name)
+    {
+        // rowid pseudo-columns must stay unquoted to keep their special meaning
+        if (string.Equals(name, "rowid", StringComparison.OrdinalIgnoreCase)) return name;
+        if (string.Equals(name, "_rowid_", StringComparison.OrdinalIgnoreCase)) return name;
+        if (string.Equals(name, "oid", StringComparison.OrdinalIgnoreCase)) return name;
+
+        return "\"" + name.Replace("\"", "\"\"") + "\"";
+    }
+
     internal static string BuildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string? tableName = null)
     {
         var info = typeCollection.GetInfo<T>();
@@ -122,12 +132,12 @@ internal class HelperFunctions
 
     internal static string BuildInsertSql(IEnumerable<string> names, OnConflict resolution, string tableName)
     {
-        var fields = string.Join(",", names);
+        var fields = string.Join(",", names.Select(QuoteName));
         var values = string.Join(",", names.Select(n => $"@{n}"));
 
         if (resolution == OnConflict.Abort)
         {
-            return $"INSERT INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
+            return $"INSERT INTO {QuoteName(tableName)} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
         }
         else
         {
@@ -140,7 +150,7 @@ internal class HelperFunctions
                 _ => throw new ArgumentException($"Invalid resolution: {resolution}"),
             };
 
-            return $"INSERT OR {txtConflict} INTO {tableName} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
+            return $"INSERT OR {txtConflict} INTO {QuoteName(tableName)} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
         }
     }
 

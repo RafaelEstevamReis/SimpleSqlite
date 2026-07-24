@@ -79,10 +79,10 @@ public static class QueryExtension
             var columnParamName = c;
             var columnName = tColumns.First(cn => cn.Equals(columnParamName, StringComparison.InvariantCultureIgnoreCase));
 
-            return $"{columnName} = @{columnParamName}";
+            return $"{HelperFunctions.QuoteName(columnName)} = @{columnParamName}";
         });
 
-        return $"SELECT * FROM {tInfo.TypeName} WHERE {string.Join(" AND ", pairs)}";
+        return $"SELECT * FROM {HelperFunctions.QuoteName(tInfo.TypeName)} WHERE {string.Join(" AND ", pairs)}";
     }
 
     static IEnumerable<T> query<T>(ISqliteConnection connection, ISqliteTransaction? transaction, string query, object? parameters, bool buffered)

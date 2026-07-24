@@ -15,7 +15,7 @@ public static class TableSchemaExtension
     {
         using var cmd = Connection.connection.CreateCommand();
 
-        cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
+        cmd.CommandText = $"SELECT * FROM {Helpers.HelperFunctions.QuoteName(tableName)} LIMIT 0";
 
         using var reader = cmd.ExecuteReader();
         var dt = reader.GetSchemaTable();
@@ -30,7 +30,7 @@ public static class TableSchemaExtension
     {
         using var cmd = Connection.connection.CreateCommand();
 
-        cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
+        cmd.CommandText = $"SELECT * FROM {Helpers.HelperFunctions.QuoteName(tableName)} LIMIT 0";
 
         using var reader = cmd.ExecuteReader();
         return Enumerable.Range(0, reader.FieldCount)
@@ -63,7 +63,7 @@ public static class TableSchemaExtension
     /// </summary>
     public static SqliteTableInfo[] GetTableInfo(this ISqliteConnection Connection, string tableName)
     {
-        return Connection.Query<SqliteTableInfo>($"PRAGMA table_info({tableName});")
+        return Connection.Query<SqliteTableInfo>($"PRAGMA table_info({Helpers.HelperFunctions.QuoteName(tableName)});")
                          .ToArray();
     }
 

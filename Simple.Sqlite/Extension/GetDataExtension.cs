@@ -36,7 +36,7 @@ public static class GetDataExtension
         if (tableName is null) throw new ArgumentNullException(nameof(tableName));
         if (keyColumn is null) throw new ArgumentNullException(nameof(keyColumn));
 
-        var data = connection.Query<T>($"SELECT * FROM {tableName} WHERE {keyColumn} = @keyValue LIMIT 1 ", new { keyValue });
+        var data = connection.Query<T>($"SELECT * FROM {Helpers.HelperFunctions.QuoteName(tableName)} WHERE {Helpers.HelperFunctions.QuoteName(keyColumn)} = @keyValue LIMIT 1 ", new { keyValue });
         // Need to complete enumeration
         return data.ToArray().FirstOrDefault();
     }
@@ -49,12 +49,12 @@ public static class GetDataExtension
     /// Select all values from a table
     /// </summary>
     public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection, string tableName, bool buffered = true)
-        => connection.Query<T>($"SELECT * FROM {tableName} ", null, buffered);
+        => connection.Query<T>($"SELECT * FROM {Helpers.HelperFunctions.QuoteName(tableName)} ", null, buffered);
 
     /// <summary>
     /// Select filtered values from the table T WHERE filterColumn = filterValue
     /// </summary>
     public static IEnumerable<T> GetWhere<T>(this ISqliteConnection connection, string filterColumn, object filterValue)
-        => connection.Query<T>($"SELECT * FROM {typeof(T).Name} WHERE {filterColumn} = @filterValue ", new { filterValue });
+        => connection.Query<T>($"SELECT * FROM {Helpers.HelperFunctions.QuoteName(typeof(T).Name)} WHERE {Helpers.HelperFunctions.QuoteName(filterColumn)} = @filterValue ", new { filterValue });
 
 }
