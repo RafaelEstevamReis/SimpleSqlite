@@ -71,7 +71,6 @@ public static class QueryExtension
         var tInfo = connection.typeCollection.GetInfo(typeof(T));
         var tColumns = tInfo.GetNames().ToArray();
 
-        string baseQuery = $"SELECT * FROM {tInfo.TypeName} WHERE ";
         var filterColumns = HelperFunctions.GetParametersNames(parameters, connection.typeCollection);
 
         var pairs = filterColumns.Select(c =>
@@ -82,7 +81,7 @@ public static class QueryExtension
             return $"{HelperFunctions.QuoteName(columnName)} = @{columnParamName}";
         });
 
-        return $"SELECT * FROM {HelperFunctions.QuoteName(tInfo.TypeName)} WHERE {string.Join(" AND ", pairs)}";
+        return $"SELECT * FROM {HelperFunctions.QuoteName(connection.GetTableNameFor<T>())} WHERE {string.Join(" AND ", pairs)}";
     }
 
     static IEnumerable<T> query<T>(ISqliteConnection connection, ISqliteTransaction? transaction, string query, object? parameters, bool buffered)

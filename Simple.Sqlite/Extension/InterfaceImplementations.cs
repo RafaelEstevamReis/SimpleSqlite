@@ -10,6 +10,7 @@ internal class Connection : ISqliteConnection
 
     SqliteConnection ISqliteConnection.connection => connection;
     ReaderCachedCollection ISqliteConnection.typeCollection => typeCollection;
+    string ISqliteConnection.GetTableNameFor<T>() => typeCollection.GetInfo<T>().TypeName;
 
     public string DatabaseFilePath => connection.DataSource;
     public SqliteConnection GetUnderlyingConnection() => connection;

@@ -13,6 +13,10 @@ public interface ISqliteConnection : IDisposable
     internal SqliteConnection connection { get; }
     internal ReaderCachedCollection typeCollection { get; }
     /// <summary>
+    /// Resolves the table name used for type T
+    /// </summary>
+    internal string GetTableNameFor<T>();
+    /// <summary>
     /// Database's file path
     /// </summary>
     public string DatabaseFilePath { get; }

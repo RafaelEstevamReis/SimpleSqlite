@@ -21,7 +21,7 @@ public static class InsertExtension
     /// <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
     /// <returns>Returns the integer Primary Key or __ROWID__ of the inserted row</returns>
     public static long Insert<T>(this ISqliteConnection connection, T item, OnConflict resolution = OnConflict.Abort, string? tableName = null)
-          => connection.ExecuteScalar<long>(HelperFunctions.BuildInsertSql<T>(connection.typeCollection, resolution, tableName), item);
+          => connection.ExecuteScalar<long>(HelperFunctions.BuildInsertSql<T>(connection.typeCollection, resolution, tableName ?? connection.GetTableNameFor<T>()), item);
     /// <summary>
     /// Inserts a value into a table with a transaction
     /// </summary>
@@ -32,7 +32,7 @@ public static class InsertExtension
     /// <param name="tableName">The name of the table, NULL to use `T` type name as the name of the table</param>
     /// <returns>Returns the integer Primary Key or __ROWID__ of the inserted row</returns>
     public static long Insert<T>(this ISqliteTransaction transaction, T item, OnConflict resolution = OnConflict.Abort, string? tableName = null)
-         => transaction.ExecuteScalar<long>(HelperFunctions.BuildInsertSql<T>(transaction.connection.typeCollection, resolution, tableName), item);
+         => transaction.ExecuteScalar<long>(HelperFunctions.BuildInsertSql<T>(transaction.connection.typeCollection, resolution, tableName ?? transaction.connection.GetTableNameFor<T>()), item);
 
     /// <summary>
     /// Inserts multiple values into a table efficiently using a transaction
@@ -46,7 +46,7 @@ public static class InsertExtension
     public static long[] BulkInsert<T>(this ISqliteConnection connection, IEnumerable<T> items, OnConflict resolution = OnConflict.Abort, string? tableName = null)
     {
         List<long> ids = [];
-        string sql = HelperFunctions.BuildInsertSql<T>(connection.typeCollection, resolution, tableName);
+        string sql = HelperFunctions.BuildInsertSql<T>(connection.typeCollection, resolution, tableName ?? connection.GetTableNameFor<T>());
 
         using var trn = connection.connection.BeginTransaction();
 

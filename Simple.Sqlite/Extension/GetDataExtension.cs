@@ -26,7 +26,7 @@ public static class GetDataExtension
                            .FirstOrDefault()
                     ?? "_rowid_";
 
-        return Get<T>(connection, info.TypeName, column, keyValue);
+        return Get<T>(connection, connection.GetTableNameFor<T>(), column, keyValue);
     }
     /// <summary>
     /// Select a value from a table using specified column and value
@@ -44,7 +44,7 @@ public static class GetDataExtension
     /// Select all values from a table `T`
     /// </summary>
     public static IEnumerable<T> GetAll<T>(this ISqliteConnection connection, bool buffered = true)
-        => GetAll<T>(connection, connection.typeCollection.GetInfo<T>().TypeName, buffered);
+        => GetAll<T>(connection, connection.GetTableNameFor<T>(), buffered);
     /// <summary>
     /// Select all values from a table
     /// </summary>
@@ -55,6 +55,6 @@ public static class GetDataExtension
     /// Select filtered values from the table T WHERE filterColumn = filterValue
     /// </summary>
     public static IEnumerable<T> GetWhere<T>(this ISqliteConnection connection, string filterColumn, object filterValue)
-        => connection.Query<T>($"SELECT * FROM {Helpers.HelperFunctions.QuoteName(connection.typeCollection.GetInfo<T>().TypeName)} WHERE {Helpers.HelperFunctions.QuoteName(filterColumn)} = @filterValue ", new { filterValue });
+        => connection.Query<T>($"SELECT * FROM {Helpers.HelperFunctions.QuoteName(connection.GetTableNameFor<T>())} WHERE {Helpers.HelperFunctions.QuoteName(filterColumn)} = @filterValue ", new { filterValue });
 
 }

@@ -121,10 +121,9 @@ internal class HelperFunctions
         return "\"" + name.Replace("\"", "\"\"") + "\"";
     }
 
-    internal static string BuildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string? tableName = null)
+    internal static string BuildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string tableName)
     {
         var info = typeCollection.GetInfo<T>();
-        if (tableName == null) tableName = info.TypeName;
 
         var names = getNames(info, !info.IsAnonymousType);
         return BuildInsertSql(names, resolution, tableName);
