@@ -17,7 +17,7 @@ public static class TableSchemaExtension
 
         cmd.CommandText = $"SELECT * FROM {tableName} LIMIT 0";
 
-        var reader = cmd.ExecuteReader();
+        using var reader = cmd.ExecuteReader();
         var dt = reader.GetSchemaTable();
 
         return dt;
