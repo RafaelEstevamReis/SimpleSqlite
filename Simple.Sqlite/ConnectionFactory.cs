@@ -164,7 +164,7 @@ public class ConnectionFactory
         }
         return true;
     }
-    public static void buidEmptyWalFile(string fileName)
+    public static void buildEmptyWalFile(string fileName)
     {
         string tmpFileName = "tmp.db.gz";
 

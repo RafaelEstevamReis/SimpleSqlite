@@ -12,7 +12,7 @@ public static class ExecuteExtension
     /// Executes a query
     /// </summary>
     /// <param name="connection">The connection to be used</param>
-    /// <param name="query">SQL to be eecuted</param>
+    /// <param name="query">SQL to be executed</param>
     /// <param name="parameters">object with parameters</param>
     /// <returns>Returns affected rows. -1 for selects</returns>
     public static int Execute(this ISqliteConnection connection, string query, object? parameters = null)
@@ -21,7 +21,7 @@ public static class ExecuteExtension
     /// Executes a query in a transaction
     /// </summary>
     /// <param name="transaction">The transaction to be used</param>
-    /// <param name="query">SQL to be eecuted</param>
+    /// <param name="query">SQL to be executed</param>
     /// <param name="parameters">object with parameters</param>
     /// <returns>Returns affected rows. -1 for selects</returns>
     public static int Execute(this ISqliteTransaction transaction, string query, object? parameters = null)
@@ -43,7 +43,7 @@ public static class ExecuteExtension
     /// </summary>
     /// <typeparam name="T">Value type</typeparam>
     /// <param name="connection">The connection to be used</param>
-    /// <param name="query">Query yo be executed</param>
+    /// <param name="query">Query to be executed</param>
     /// <param name="parameters">object with parameters</param>
     /// <returns>Scalar value</returns>
     public static T ExecuteScalar<T>(this ISqliteConnection connection, string query, object? parameters = null)
@@ -53,7 +53,7 @@ public static class ExecuteExtension
     /// </summary>
     /// <typeparam name="T">Value type</typeparam>
     /// <param name="transaction">The transaction to be used</param>
-    /// <param name="query">Query yo be executed</param>
+    /// <param name="query">Query to be executed</param>
     /// <param name="parameters">object with parameters</param>
     /// <returns>Scalar value</returns>
     public static T ExecuteScalar<T>(this ISqliteTransaction transaction, string query, object? parameters = null)

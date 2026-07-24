@@ -11,7 +11,7 @@ internal class Connection : ISqliteConnection
     SqliteConnection ISqliteConnection.connection => connection;
     ReaderCachedCollection ISqliteConnection.typeCollection => typeCollection;
 
-    public string DatabasFilePath => connection.DataSource;
+    public string DatabaseFilePath => connection.DataSource;
     public SqliteConnection GetUnderlyingConnection() => connection;
 
     public ISqliteTransaction BeginTransaction(System.Data.IsolationLevel isolationLevel = System.Data.IsolationLevel.Unspecified)

@@ -16,7 +16,7 @@ public static class QueryExtension
     /// </summary>
     /// <typeparam name="T">Returning model type</typeparam>
     /// <param name="connection">The connection to be used</param>
-    /// <param name="query">Query yo be executed</param>
+    /// <param name="query">Query to be executed</param>
     /// <param name="parameters">Query parameters</param>
     /// <param name="buffered">Defines if the results should be buffered in memory</param>
     /// <returns>A collection of values mapped from the result rows</returns>
@@ -27,7 +27,7 @@ public static class QueryExtension
     /// </summary>
     /// <typeparam name="T">Returning model type</typeparam>
     /// <param name="transaction">The transaction to be used</param>
-    /// <param name="query">Query yo be executed</param>
+    /// <param name="query">Query to be executed</param>
     /// <param name="parameters">Query parameters</param>
     /// <param name="buffered">Defines if the results should be buffered in memory</param>
     /// <returns>A collection of values mapped from the result rows</returns>
@@ -39,7 +39,7 @@ public static class QueryExtension
     /// </summary>
     /// <typeparam name="T">Returning model type</typeparam>
     /// <param name="connection">The connection to be used</param>
-    /// <param name="parameters">Columns to be filtered. A Where clause will be builded with the paramters property's name.</param>
+    /// <param name="parameters">Columns to be filtered. A Where clause will be built with the parameters property's name.</param>
     /// <param name="buffered">Defines if the results should be buffered in memory</param>
     /// <returns>A collection of values mapped from the result rows</returns>
     public static IEnumerable<T> Query<T>(this ISqliteConnection connection, object? parameters, bool buffered = true)
@@ -50,7 +50,7 @@ public static class QueryExtension
     /// </summary>
     /// <typeparam name="T">Returning model type</typeparam>
     /// <param name="transaction">The transaction to be used</param>
-    /// <param name="parameters">Columns to be filtered. A Where clause will be builded with the paramters property's name.</param>
+    /// <param name="parameters">Columns to be filtered. A Where clause will be built with the parameters property's name.</param>
     /// <param name="buffered">Defines if the results should be buffered in memory</param>
     /// <returns>A collection of values mapped from the result rows</returns>
     public static IEnumerable<T> Query<T>(this ISqliteTransaction transaction, object? parameters, bool buffered = true)

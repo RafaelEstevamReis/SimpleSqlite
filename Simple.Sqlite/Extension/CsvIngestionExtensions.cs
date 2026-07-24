@@ -4,7 +4,6 @@ using Simple.DatabaseWrapper;
 using Simple.DatabaseWrapper.Parsers;
 using System;
 using System.IO;
-using System.Net.Security;
 using System.Text;
 
 /// <summary>
@@ -21,7 +20,7 @@ public static class CsvIngestionExtensions
     /// <param name="csvFile">FilePath of CSV file to be ingested</param>
     /// <param name="mapping">T mapping</param>
     /// <param name="bufferSize">Buffer size to be used on ingestion</param>
-    /// <param name="encoding">CSV Enconding</param>
+    /// <param name="encoding">CSV Encoding</param>
     /// <param name="delimiter">CSV delimiter char</param>
     /// <param name="quote">CSV quote char</param>
     public static void LoadFromCsvFile<T>(this ISqliteConnection connection, string csvFile, Func<string[], T> mapping, int bufferSize = 10_000, Encoding? encoding = null, char delimiter = ';', char quote = '"')

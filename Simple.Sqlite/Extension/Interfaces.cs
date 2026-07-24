@@ -15,7 +15,7 @@ public interface ISqliteConnection : IDisposable
     /// <summary>
     /// Database's file path
     /// </summary>
-    public string DatabasFilePath { get; }
+    public string DatabaseFilePath { get; }
     /// <summary>
     /// Gets the underlying SqliteConnection
     /// </summary>

@@ -14,7 +14,7 @@ namespace Test.SampleWithExtensions
             // this example uses [1]
 
             using var cnn = ConnectionFactory.CreateConnection("myExtendedStuff.db");
-            Console.WriteLine($"Database is at {cnn.DatabasFilePath}");
+            Console.WriteLine($"Database is at {cnn.DatabaseFilePath}");
 
             // Create a DB Schema
             var result = cnn.CreateTables()
