@@ -63,7 +63,7 @@ public class TableMapper : IColumnMapper
 
         foreach (var t in tables)
         {
-            var tResult = commitTable(t, existingTable: tableNames.Contains(t.TableName));
+            var tResult = commitTable(t, existingTable: tableNames.Contains(t.TableName, StringComparer.OrdinalIgnoreCase));
             if (tResult != null) results.Add(tResult);
         }
 
@@ -82,7 +82,7 @@ public class TableMapper : IColumnMapper
             {
                 TableName = t.TableName,
                 WasTableCreated = true,
-                ColumnsAdded = new string[0],
+                ColumnsAdded = [],
             };
         }
         else
@@ -117,7 +117,7 @@ public class TableMapper : IColumnMapper
                                   .ToArray();
         result.IndexesAdded = newIndexes;
 
-        var allColumnsInexes = t.Columns.Select(c => (Column)c) // IColumn still don't have Attributes
+        var allColumnsIndexes = t.Columns.Select(c => (Column)c) // IColumn still don't have Attributes
                                 .SelectMany(k =>
                                 {
                                     var attr = k.Attributes.Select(o => o.Attribute).OfType<IndexAttribute>();
@@ -131,7 +131,7 @@ public class TableMapper : IColumnMapper
                                 .ToArray();
         foreach (var ix in newIndexes)
         {
-            var columns = allColumnsInexes.Where(o => o.IndexName == ix)
+            var columns = allColumnsIndexes.Where(o => o.IndexName == ix)
                                           .OrderBy(o => o.ColumnOrder)
                                           .Select(o => o.ColumnName)
                                           .ToArray();
