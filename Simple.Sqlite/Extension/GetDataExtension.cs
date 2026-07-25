@@ -54,7 +54,10 @@ public static class GetDataExtension
     /// <summary>
     /// Select filtered values from the table T WHERE filterColumn = filterValue
     /// </summary>
-    public static IEnumerable<T> GetWhere<T>(this ISqliteConnection connection, string filterColumn, object filterValue)
-        => connection.Query<T>($"SELECT * FROM {Helpers.HelperFunctions.QuoteName(connection.GetTableNameFor<T>())} WHERE {Helpers.HelperFunctions.QuoteName(filterColumn)} = @filterValue ", new { filterValue });
+    public static IEnumerable<T> GetWhere<T>(this ISqliteConnection connection, string filterColumn, object filterValue, bool buffered = true)
+    {
+        if (filterColumn is null) throw new ArgumentNullException(nameof(filterColumn));
+        return connection.Query<T>($"SELECT * FROM {Helpers.HelperFunctions.QuoteName(connection.GetTableNameFor<T>())} WHERE {Helpers.HelperFunctions.QuoteName(filterColumn)} = @filterValue ", new { filterValue }, buffered);
+    }
 
 }
