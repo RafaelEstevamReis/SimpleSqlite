@@ -29,8 +29,6 @@ public static class ExecuteExtension
 
     private static int execute(ISqliteConnection connection, ISqliteTransaction? transaction, string query, object? parameters = null)
     {
-        //using var cmd = connection.connection.CreateCommand();
-        //cmd.CommandText = query;
         using var cmd = new Microsoft.Data.Sqlite.SqliteCommand(query, connection.connection, transaction?.transaction);
         HelperFunctions.FillParameters(cmd, parameters, connection.typeCollection);
 
@@ -61,9 +59,6 @@ public static class ExecuteExtension
 
     static T executeScalar<T>(this ISqliteConnection connection, ISqliteTransaction? transaction, string query, object? parameters = null)
     {
-        //using var cmd = connection.connection.CreateCommand();
-        //cmd.CommandText = query;
-
         using var cmd = new Microsoft.Data.Sqlite.SqliteCommand(query, connection.connection, transaction?.transaction);
         HelperFunctions.FillParameters(cmd, parameters, connection.typeCollection);
 
@@ -72,8 +67,10 @@ public static class ExecuteExtension
         // Empty result set (null) or SQL NULL (DBNull) => default
         if (obj is null || obj is DBNull) return default!;
 
+        var targetType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
         // In SQLite DateTime is returned as STRING after aggregate operations
-        if (typeof(T) == typeof(DateTime))
+        if (targetType == typeof(DateTime))
         {
             if (DateTime.TryParse(obj.ToString(), out DateTime dt))
             {
@@ -81,6 +78,6 @@ public static class ExecuteExtension
             }
             return default!;
         }
-        return (T)Convert.ChangeType(obj, typeof(T))!;
+        return (T)Convert.ChangeType(obj, targetType)!;
     }
 }
