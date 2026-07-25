@@ -76,7 +76,8 @@ public static class QueryExtension
         var pairs = filterColumns.Select(c =>
         {
             var columnParamName = c;
-            var columnName = tColumns.First(cn => cn.Equals(columnParamName, StringComparison.InvariantCultureIgnoreCase));
+            var columnName = tColumns.FirstOrDefault(cn => cn.Equals(columnParamName, StringComparison.InvariantCultureIgnoreCase))
+                ?? throw new ArgumentException($"No column on '{tInfo.TypeName}' matches filter parameter '{columnParamName}'", nameof(parameters));
 
             return $"{HelperFunctions.QuoteName(columnName)} = @{columnParamName}";
         });
