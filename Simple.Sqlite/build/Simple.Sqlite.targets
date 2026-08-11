@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<!--
+		SQLitePCLRaw.lib.e_sqlite3 2.1.12 removed the win-arm (ARM32) native binary, but its
+		auto-generated .NET Framework targets still declare a Content item pointing at
+		runtimes\win-arm\native\e_sqlite3.dll. Any net4x class library then fails with:
+
+			MSB3030: could not copy ...\runtimes\win-arm\native\e_sqlite3.dll because it was not found
+
+		Staying on 2.1.11 is not an option: it ships SQLite 3.49.1, affected by CVE-2025-6965
+		(GHSA-2m69-gcr7-jv3q, High). 2.1.12 ships SQLite 3.53.3 and is not flagged.
+	-->
+	<Target Name="_SimpleSqlite_RemoveMissingNativeContent" BeforeTargets="AssignTargetPaths">
+		<ItemGroup>
+			<Content Remove="@(Content)"
+			         Condition="$([System.String]::Copy('%(Content.Identity)').ToLowerInvariant().Contains('sqlitepclraw')) AND !Exists('%(Content.FullPath)')" />
+		</ItemGroup>
+	</Target>
+</Project>

@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net9.0;net8.0;net7.0;net6.0;netcoreapp3.1;netstandard2.0;netstandard2.1;NET48;NET472;NET461</TargetFrameworks>
 		<LangVersion>13.0</LangVersion>
-		<Version>1.6.0</Version>
+		<Version>1.6.1</Version>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Authors>RafaelEstevam.net</Authors>
@@ -32,4 +32,9 @@
 		<PackageReference Include="Simple.DatabaseWrapper" Version="1.6.1" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.11" />
 	</ItemGroup>
+	<ItemGroup>
+		<None Remove="build\Simple.Sqlite.targets" />
+		<None Include="build\Simple.Sqlite.targets" Pack="true" PackagePath="build\net461\Simple.Sqlite.targets;buildTransitive\net461\Simple.Sqlite.targets" />
+	</ItemGroup>
+	<Import Project="build\Simple.Sqlite.targets" />
 </Project>
