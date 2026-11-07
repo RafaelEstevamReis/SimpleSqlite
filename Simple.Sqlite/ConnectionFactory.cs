@@ -57,6 +57,21 @@ public class ConnectionFactory
         var cnnString = sqliteFileToCnnString(databaseFile, readOnly ? SqliteOpenMode.ReadOnly : SqliteOpenMode.ReadWriteCreate);
         return new ConnectionFactory(cnnString);
     }
+    /// <summary>
+    /// Creates a Factory to an Immutable sqlite. Opens without locking nor journaling
+    /// </summary>
+    public static ConnectionFactory FromImmutableFile(string databaseFile)
+    {
+        // immutable=1 is a URI query parameter: only a "file:" DataSource triggers SQLITE_OPEN_URI,
+        // and it must be appended to the DataSource, not to the connection string
+        var uri = new Uri(Path.GetFullPath(databaseFile)).AbsoluteUri;
+        var sb = new SqliteConnectionStringBuilder
+        {
+            DataSource = uri + "?immutable=1",
+            Mode = SqliteOpenMode.ReadOnly,
+        };
+        return new ConnectionFactory(sb.ToString());
+    }
 
     protected static string sqliteFileToCnnString(string databaseFile, SqliteOpenMode mode = SqliteOpenMode.ReadWriteCreate)
     {
@@ -78,7 +93,7 @@ public class ConnectionFactory
     {
         return open(sqliteFileToCnnString(databaseFile));
     }
-   
+
     /// <summary>
     /// Opens a non-Shared in memory connection
     /// </summary>
