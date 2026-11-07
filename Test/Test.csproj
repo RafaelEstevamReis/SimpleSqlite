@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Simple.Brazilian" Version="1.4.2" />
-    <PackageReference Include="Simple.DatabaseWrapper" Version="1.6.1" />
+    <PackageReference Include="Simple.DatabaseWrapper" Version="1.6.2" />
   </ItemGroup>
 
   <ItemGroup>
