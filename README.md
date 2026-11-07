@@ -127,9 +127,19 @@ cnn.BulkInsert(lotsOfData);
 
 _Tip: For multi-million insertion, 5k blocks are a good start point_
 
+### DateTime and Timezones
+
+`DateTime` values are stored as ISO-8601 text, and the `DateTime.Kind` drives the persisted format:
+
+| Kind | Stored as | Round-trip |
+|---|---|---|
+| `Utc` | `yyyy-MM-dd HH:mm:ss.FFFFFF'Z'` | `Kind=Utc` preserved |
+| `Local` | converted to UTC, then stored with `'Z'` | returns as UTC instant |
+| `Unspecified` | plain text, no suffix (legacy format) | `Kind=Unspecified` |
+
 ### Migration
 
-This library has a very simple Migration tah can:
+This library has a very simple Migration that can:
 * Create new tables 
 * Add columns to existing tables
 

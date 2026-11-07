@@ -5,6 +5,7 @@ using Simple.DatabaseWrapper.Attributes;
 using Simple.DatabaseWrapper.Helpers;
 using Simple.DatabaseWrapper.TypeReader;
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -65,6 +66,22 @@ internal class HelperFunctions
             }
         }
 
+        if (value is DateTime dateTime)
+        {
+            // Local      -> converted to Utc
+            // Utc        -> persisted with a 'Z' suffix
+            // Unspecified-> persisted as-is, without suffix (backwards compatible)
+            if (dateTime.Kind == DateTimeKind.Utc)
+            {
+                value = dateTime.ToString("yyyy-MM-dd HH:mm:ss.FFFFFF'Z'", CultureInfo.InvariantCulture);
+            }
+            else if (dateTime.Kind == DateTimeKind.Local)
+            {
+                value = dateTime.ToUniversalTime()
+                                 .ToString("yyyy-MM-dd HH:mm:ss.FFFFFF'Z'", CultureInfo.InvariantCulture);
+            }
+        }
+
         // Process Only Primary Keys
         if (!p.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey)) return;
 
@@ -103,7 +120,6 @@ internal class HelperFunctions
             }
         }
     }
-
     internal static string[] getSchemaColumns(IDataReader reader)
     {
         return Enumerable.Range(0, reader.FieldCount)
