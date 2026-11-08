@@ -1,6 +1,7 @@
 ﻿namespace Simple.Sqlite.Helpers;
 
 using Microsoft.Data.Sqlite;
+using Simple.Sqlite.Attributes;
 using Simple.DatabaseWrapper.Attributes;
 using Simple.DatabaseWrapper.Helpers;
 using Simple.DatabaseWrapper.TypeReader;
@@ -68,17 +69,28 @@ internal class HelperFunctions
 
         if (value is DateTime dateTime)
         {
-            // Local      -> converted to Utc
-            // Utc        -> persisted with a 'Z' suffix
-            // Unspecified-> persisted as-is, without suffix (backwards compatible)
-            if (dateTime.Kind == DateTimeKind.Utc)
+            var policy = p.GetAttribute<DateTimePolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
+            if (policy != null && policy.Policy == DateTimePolicyAttribute.Policies.EpochMs)
             {
-                value = dateTime.ToString("yyyy-MM-dd HH:mm:ss.FFFFFF'Z'", CultureInfo.InvariantCulture);
+                // Strict write: Local is converted to Utc first, Unspecified is written as-is (assumed Utc wall time)
+                var utc = dateTime.Kind == DateTimeKind.Local ? dateTime.ToUniversalTime() : dateTime;
+                // TimeSpan.Zero: Unspecified must be taken as UTC wall time, not local offset
+                value = new DateTimeOffset(utc, TimeSpan.Zero).ToUnixTimeMilliseconds();
             }
-            else if (dateTime.Kind == DateTimeKind.Local)
+            else
             {
-                value = dateTime.ToUniversalTime()
-                                 .ToString("yyyy-MM-dd HH:mm:ss.FFFFFF'Z'", CultureInfo.InvariantCulture);
+                // Local      -> converted to Utc
+                // Utc        -> persisted with a 'Z' suffix
+                // Unspecified-> persisted as-is, without suffix (backwards compatible)
+                if (dateTime.Kind == DateTimeKind.Utc)
+                {
+                    value = dateTime.ToString("yyyy-MM-dd HH:mm:ss.FFFFFF'Z'", CultureInfo.InvariantCulture);
+                }
+                else if (dateTime.Kind == DateTimeKind.Local)
+                {
+                    value = dateTime.ToUniversalTime()
+                                     .ToString("yyyy-MM-dd HH:mm:ss.FFFFFF'Z'", CultureInfo.InvariantCulture);
+                }
             }
         }
 

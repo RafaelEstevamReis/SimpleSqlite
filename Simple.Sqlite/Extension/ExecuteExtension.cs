@@ -2,6 +2,7 @@
 
 using Simple.Sqlite.Helpers;
 using System;
+using System.Globalization;
 
 /// <summary>
 /// Extension for "Execute" stuff
@@ -72,7 +73,13 @@ public static class ExecuteExtension
         // In SQLite DateTime is returned as STRING after aggregate operations
         if (targetType == typeof(DateTime))
         {
-            if (DateTime.TryParse(obj.ToString(), out DateTime dt))
+            // INTEGER storage is epoch in milliseconds (DateTimePolicy EpochMs)
+            if (obj is long epochMs)
+            {
+                return (T)(object)DateTimeOffset.FromUnixTimeMilliseconds(epochMs).UtcDateTime;
+            }
+            if (DateTime.TryParse(obj.ToString(), CultureInfo.InvariantCulture,
+                    DateTimeStyles.AdjustToUniversal, out DateTime dt))
             {
                 return (T)(object)dt;
             }

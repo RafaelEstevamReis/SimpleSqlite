@@ -21,6 +21,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Include="..\Simple.Sqlite\Attributes\StrictTableAttribute.cs" Link="Attributes\StrictTableAttribute.cs" />
+		<Compile Include="..\Simple.Sqlite\Attributes\DateTimePolicyAttribute.cs" Link="Attributes\DateTimePolicyAttribute.cs" />
 		<Compile Include="..\Simple.Sqlite\Enums.cs" Link="Enums.cs" />
 		<Compile Include="..\Simple.Sqlite\Extension\CsvIngestionExtensions.cs" Link="Extensions\CsvIngestionExtensions.cs" />
 		<Compile Include="..\Simple.Sqlite\Extension\ExecuteExtension.cs" Link="Extensions\ExecuteExtension.cs" />

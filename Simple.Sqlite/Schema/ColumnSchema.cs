@@ -1,6 +1,7 @@
 ﻿namespace Simple.Sqlite;
 
 using Simple.DatabaseWrapper.Attributes;
+using Simple.Sqlite.Attributes;
 using Simple.DatabaseWrapper.Interfaces;
 using Simple.DatabaseWrapper.TypeReader;
 using System;
@@ -146,8 +147,18 @@ public class Column : IColumn
         // Others Mapped of NUMERIC
         else if (info.Type == typeof(bool)) dataType = SqliteType.INTEGER;
         else if (info.Type == typeof(bool?)) dataType = SqliteType.INTEGER;
-        else if (info.Type == typeof(DateTime)) dataType = SqliteType.ANY;
-        else if (info.Type == typeof(DateTime?)) dataType = SqliteType.ANY;
+        else if (info.Type == typeof(DateTime))
+        {
+            dataType = SqliteType.ANY;
+            var policy = info.GetAttribute<DateTimePolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
+            if (policy != null && policy.Policy == DateTimePolicyAttribute.Policies.EpochMs) dataType = SqliteType.INTEGER;
+        }
+        else if (info.Type == typeof(DateTime?))
+        {
+            dataType = SqliteType.ANY;
+            var policy = info.GetAttribute<DateTimePolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
+            if (policy != null && policy.Policy == DateTimePolicyAttribute.Policies.EpochMs) dataType = SqliteType.INTEGER;
+        }
         else if (info.Type == typeof(TimeSpan)) dataType = SqliteType.ANY;
         else if (info.Type == typeof(TimeSpan?)) dataType = SqliteType.ANY;
         // Other
