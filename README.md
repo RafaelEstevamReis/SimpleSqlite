@@ -137,6 +137,28 @@ _Tip: For multi-million insertion, 5k blocks are a good start point_
 | `Local` | converted to UTC, then stored with `'Z'` | returns as UTC instant |
 | `Unspecified` | plain text, no suffix (legacy format) | `Kind=Unspecified` |
 
+#### Epoch storage
+
+Decorate a property with `[DateTimePolicy(EpochMs)]` to store it as Unix epoch in milliseconds (INTEGER) instead of text:
+
+~~~C#
+public class LogEntry
+{
+    [DateTimePolicy(DateTimePolicyAttribute.Policies.EpochMs)]
+    public DateTime Timestamp { get; set; }
+}
+~~~
+
+| Kind | Stored as |
+|---|---|
+| `Utc` | epoch in milliseconds |
+| `Local` | converted to UTC first, then epoch in milliseconds |
+| `Unspecified` | assumed UTC wall time, stored as-is |
+
+The column is created with INTEGER affinity (works on `STRICT` tables). Reading is tolerant: an INTEGER cell is
+decoded as epoch, a TEXT cell (legacy data) is parsed as ISO-8601 — mixed columns work. Epoch is always UTC by
+definition, so values round-trip with `Kind=Utc`.
+
 ### Migration
 
 This library has a very simple Migration that can:
