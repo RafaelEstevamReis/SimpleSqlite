@@ -16,13 +16,44 @@ internal class HelperFunctions
 {
     internal static bool handleGuidAsByteArray = true;
 
-    // class-level [DateTimePolicy] cache: reflection per insert would be too costly in bulk paths
     private static readonly ConcurrentDictionary<Type, bool> epochTypes = new();
-
     internal static bool IsEpochType(Type type)
-        => epochTypes.GetOrAdd(type, static t => t.IsDefined(typeof(DateTimePolicyAttribute), false)
+                                => epochTypes.GetOrAdd(type, static t => t.IsDefined(typeof(DateTimePolicyAttribute), false)
                                               && Attribute.GetCustomAttribute(t, typeof(DateTimePolicyAttribute), false)
                                                            is DateTimePolicyAttribute { Policy: DateTimePolicyAttribute.Policies.EpochMs });
+
+    internal static string BuildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string tableName)
+    {
+        var info = typeCollection.GetInfo<T>();
+
+        var names = getNames(info, !info.IsAnonymousType);
+        return BuildInsertSql(names, resolution, tableName);
+    }
+
+    internal static string BuildInsertSql(IEnumerable<string> names, OnConflict resolution, string tableName)
+    {
+        var fields = string.Join(",", names.Select(QuoteName));
+        var values = string.Join(",", names.Select(n => $"@{n}"));
+
+        if (resolution == OnConflict.Abort)
+        {
+            return $"INSERT INTO {QuoteName(tableName)} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
+        }
+        else
+        {
+            string txtConflict = resolution switch
+            {
+                OnConflict.RollBack => "ROLLBACK",
+                OnConflict.Fail => "FAIL",
+                OnConflict.Ignore => "IGNORE",
+                OnConflict.Replace => "REPLACE",
+                _ => throw new ArgumentException($"Invalid resolution: {resolution}"),
+            };
+
+            return $"INSERT OR {txtConflict} INTO {QuoteName(tableName)} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
+        }
+    }
+
     internal static void FillParameters(SqliteCommand cmd, object? parameters, ReaderCachedCollection typeCollection)
     {
         if (parameters == null) return;
@@ -34,6 +65,7 @@ internal class HelperFunctions
             cmd.Parameters.AddWithValue(p.name, p.value);
         }
     }
+
     internal static IEnumerable<(string name, object value)> GetCommandParameters(object? parameters, ReaderCachedCollection typeCollection)
     {
         if (parameters == null) return [];
@@ -60,6 +92,24 @@ internal class HelperFunctions
                    .Where(p => p.CanRead)
                    .Select(p => p.Name);
     }
+
+    internal static string[] getSchemaColumns(IDataReader reader)
+    {
+        return Enumerable.Range(0, reader.FieldCount)
+                         .Select(idx => reader.GetName(idx))
+                         .ToArray();
+    }
+
+    internal static string QuoteName(string name)
+    {
+        // rowid pseudo-columns must stay unquoted to keep their special meaning
+        if (string.Equals(name, "rowid", StringComparison.OrdinalIgnoreCase)) return name;
+        if (string.Equals(name, "_rowid_", StringComparison.OrdinalIgnoreCase)) return name;
+        if (string.Equals(name, "oid", StringComparison.OrdinalIgnoreCase)) return name;
+
+        return "\"" + name.Replace("\"", "\"\"") + "\"";
+    }
+
     private static void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
     {
         if (value is Uri uri)
@@ -118,7 +168,7 @@ internal class HelperFunctions
         }
         else if (p.Type == typeof(Guid))
         {
-            // Se for Guid <=> Guid, preencher os EMPTY
+            // If Guid <=> Guid, fill all EMPTY ones
             if (value is Guid guid)
             {
                 if (guid != Guid.Empty) return;
@@ -126,11 +176,11 @@ internal class HelperFunctions
                 // Write back to the object
                 p.SetValue(parameters, value);
             }
-            // Se for byte[] <=> Guid, preencher os [0,0,0,..]
+            // If byte[] <=> Guid, fill all [0,0,0,..]
             if (value is byte[] b)
             {
-                // Se todos forem zero, inicializar
-                if (b.All(o => o == 0))
+                // If all zero, initialize
+                if (isAllZeros(b))
                 {
                     var newGuid = Guid.NewGuid();
                     value = newGuid.ToByteArray();
@@ -138,54 +188,6 @@ internal class HelperFunctions
                     p.SetValue(parameters, newGuid);
                 }
             }
-        }
-    }
-    internal static string[] getSchemaColumns(IDataReader reader)
-    {
-        return Enumerable.Range(0, reader.FieldCount)
-                         .Select(idx => reader.GetName(idx))
-                         .ToArray();
-    }
-
-    internal static string QuoteName(string name)
-    {
-        // rowid pseudo-columns must stay unquoted to keep their special meaning
-        if (string.Equals(name, "rowid", StringComparison.OrdinalIgnoreCase)) return name;
-        if (string.Equals(name, "_rowid_", StringComparison.OrdinalIgnoreCase)) return name;
-        if (string.Equals(name, "oid", StringComparison.OrdinalIgnoreCase)) return name;
-
-        return "\"" + name.Replace("\"", "\"\"") + "\"";
-    }
-
-    internal static string BuildInsertSql<T>(ReaderCachedCollection typeCollection, OnConflict resolution, string tableName)
-    {
-        var info = typeCollection.GetInfo<T>();
-
-        var names = getNames(info, !info.IsAnonymousType);
-        return BuildInsertSql(names, resolution, tableName);
-    }
-
-    internal static string BuildInsertSql(IEnumerable<string> names, OnConflict resolution, string tableName)
-    {
-        var fields = string.Join(",", names.Select(QuoteName));
-        var values = string.Join(",", names.Select(n => $"@{n}"));
-
-        if (resolution == OnConflict.Abort)
-        {
-            return $"INSERT INTO {QuoteName(tableName)} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
-        }
-        else
-        {
-            string txtConflict = resolution switch
-            {
-                OnConflict.RollBack => "ROLLBACK",
-                OnConflict.Fail => "FAIL",
-                OnConflict.Ignore => "IGNORE",
-                OnConflict.Replace => "REPLACE",
-                _ => throw new ArgumentException($"Invalid resolution: {resolution}"),
-            };
-
-            return $"INSERT OR {txtConflict} INTO {QuoteName(tableName)} ({fields}) VALUES ({values}); SELECT last_insert_rowid();";
         }
     }
 
@@ -196,5 +198,16 @@ internal class HelperFunctions
                    .Where(o => o.CanRead)
                    .Where(o => !needWrite || o.CanWrite) // Be careful with NOTs and ORs
                    .Select(o => o.Name);
+    }
+
+    private static bool isAllZeros(byte[] array)
+    {
+        if (array == null || array.Length == 0) return true;
+
+#if NET8_0_OR_GREATER
+        return array.AsSpan().IndexOfAnyExcept((byte)0) == -1;
+#else
+        return Array.TrueForAll(array, element => element == 0);
+#endif
     }
 }
