@@ -1,7 +1,6 @@
 ﻿namespace Simple.Sqlite;
 
 using Simple.DatabaseWrapper.Attributes;
-using Simple.Sqlite.Attributes;
 using Simple.DatabaseWrapper.Interfaces;
 using Simple.DatabaseWrapper.TypeReader;
 using System;
@@ -62,7 +61,7 @@ public class Column : IColumn
     /// </summary>
     public static IColumn FromInfo(TypeInfo info, TypeItemInfo pi)
     {
-        SqliteType dataType = mapType(pi);
+        SqliteType dataType = mapType(pi, info);
 
         //Props
         bool isKey = pi.Is(DatabaseWrapper.ColumnAttributes.PrimaryKey);
@@ -118,7 +117,7 @@ public class Column : IColumn
     /// Creates a column schema from a Type
     /// </summary>
 
-    private static SqliteType mapType(TypeItemInfo info)
+    private static SqliteType mapType(TypeItemInfo info, TypeInfo? tableInfo = null)
     {
         SqliteType dataType;
         // Texts
@@ -150,14 +149,12 @@ public class Column : IColumn
         else if (info.Type == typeof(DateTime))
         {
             dataType = SqliteType.ANY;
-            var policy = info.GetAttribute<DateTimePolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
-            if (policy != null && policy.Policy == DateTimePolicyAttribute.Policies.EpochMs) dataType = SqliteType.INTEGER;
+            if (tableInfo != null && Helpers.HelperFunctions.IsEpochType(tableInfo.NativeType)) dataType = SqliteType.INTEGER;
         }
         else if (info.Type == typeof(DateTime?))
         {
             dataType = SqliteType.ANY;
-            var policy = info.GetAttribute<DateTimePolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
-            if (policy != null && policy.Policy == DateTimePolicyAttribute.Policies.EpochMs) dataType = SqliteType.INTEGER;
+            if (tableInfo != null && Helpers.HelperFunctions.IsEpochType(tableInfo.NativeType)) dataType = SqliteType.INTEGER;
         }
         else if (info.Type == typeof(TimeSpan)) dataType = SqliteType.ANY;
         else if (info.Type == typeof(TimeSpan?)) dataType = SqliteType.ANY;
@@ -189,7 +186,7 @@ public class Column : IColumn
         if (ColumnName.Any(char.IsWhiteSpace)) throw new ArgumentNullException("ColumnName can not contain whitespaces");
         if (ColumnName.Any(char.IsSymbol)) throw new ArgumentNullException("ColumnName can not contain symbols");
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.Append(Helpers.HelperFunctions.QuoteName(ColumnName));
         sb.Append(" ");
@@ -233,7 +230,7 @@ public class Column : IColumn
         if (ColumnName.Any(char.IsWhiteSpace)) throw new ArgumentNullException("ColumnName can not contain whitespaces");
         if (ColumnName.Any(char.IsSymbol)) throw new ArgumentNullException("ColumnName can not contain symbols");
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.Append(" ADD COLUMN ");
 

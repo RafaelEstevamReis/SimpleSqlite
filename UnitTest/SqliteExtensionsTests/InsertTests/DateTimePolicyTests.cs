@@ -7,12 +7,11 @@ using Xunit;
 
 public class DateTimePolicyTests
 {
+    [DateTimePolicy(DateTimePolicyAttribute.Policies.EpochMs)]
     class EpochModel
     {
         public int Id { get; set; }
-        [DateTimePolicy(DateTimePolicyAttribute.Policies.EpochMs)]
         public DateTime Moment { get; set; }
-        [DateTimePolicy(DateTimePolicyAttribute.Policies.EpochMs)]
         public DateTime? Nullable { get; set; }
     }
     class PlainModel
@@ -21,10 +20,10 @@ public class DateTimePolicyTests
         public DateTime Moment { get; set; }
     }
     [StrictTable]
+    [DateTimePolicy(DateTimePolicyAttribute.Policies.EpochMs)]
     class StrictEpoch
     {
         public int Id { get; set; }
-        [DateTimePolicy(DateTimePolicyAttribute.Policies.EpochMs)]
         public DateTime Moment { get; set; }
     }
 

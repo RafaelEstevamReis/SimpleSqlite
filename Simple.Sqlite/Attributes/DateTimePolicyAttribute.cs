@@ -3,9 +3,9 @@ namespace Simple.Sqlite.Attributes;
 using System;
 
 /// <summary>
-/// Specify DateTime handling policy
+/// Specify DateTime handling policy for all DateTime properties of a table
 /// </summary>
-[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+[AttributeUsage(AttributeTargets.Class)]
 public class DateTimePolicyAttribute : Attribute
 {
     /// <summary>

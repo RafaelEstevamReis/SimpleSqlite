@@ -10,10 +10,19 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Collections.Concurrent;
 
 internal class HelperFunctions
 {
     internal static bool handleGuidAsByteArray = true;
+
+    // class-level [DateTimePolicy] cache: reflection per insert would be too costly in bulk paths
+    private static readonly ConcurrentDictionary<Type, bool> epochTypes = new();
+
+    internal static bool IsEpochType(Type type)
+        => epochTypes.GetOrAdd(type, static t => t.IsDefined(typeof(DateTimePolicyAttribute), false)
+                                              && Attribute.GetCustomAttribute(t, typeof(DateTimePolicyAttribute), false)
+                                                           is DateTimePolicyAttribute { Policy: DateTimePolicyAttribute.Policies.EpochMs });
     internal static void FillParameters(SqliteCommand cmd, object? parameters, ReaderCachedCollection typeCollection)
     {
         if (parameters == null) return;
@@ -69,8 +78,7 @@ internal class HelperFunctions
 
         if (value is DateTime dateTime)
         {
-            var policy = p.GetAttribute<DateTimePolicyAttribute>(DatabaseWrapper.ColumnAttributes.Other);
-            if (policy != null && policy.Policy == DateTimePolicyAttribute.Policies.EpochMs)
+            if (IsEpochType(parameters.GetType()))
             {
                 // Strict write: Local is converted to Utc first, Unspecified is written as-is (assumed Utc wall time)
                 var utc = dateTime.Kind == DateTimeKind.Local ? dateTime.ToUniversalTime() : dateTime;
