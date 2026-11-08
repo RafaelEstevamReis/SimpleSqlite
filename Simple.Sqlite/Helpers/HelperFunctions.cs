@@ -65,6 +65,23 @@ internal class HelperFunctions
             cmd.Parameters.AddWithValue(p.name, p.value);
         }
     }
+    /// <summary>
+    /// Fills the command parameters, resolving the [DateTimePolicy] of the table <typeparamref name="T"/>:
+    /// when the table is epoch, every DateTime parameter is bound as epoch in milliseconds
+    /// </summary>
+    internal static void FillParameters<T>(SqliteCommand cmd, object? parameters, ReaderCachedCollection typeCollection)
+    {
+        if (parameters == null) return;
+
+        bool forceEpoch = IsEpochType(typeof(T));
+
+        var type = GetCommandParameters(parameters, typeCollection, forceEpoch);
+
+        foreach (var p in type)
+        {
+            cmd.Parameters.AddWithValue(p.name, p.value);
+        }
+    }
 
     internal static IEnumerable<(string name, object value)> GetCommandParameters(object? parameters, ReaderCachedCollection typeCollection)
     {
@@ -78,6 +95,28 @@ internal class HelperFunctions
             {
                 var value = TypeHelper.ReadParamValue(p, parameters, handleGuidAsByteArray);
                 adjustInsertValue(ref value, p, parameters);
+
+                if (value is null) value = DBNull.Value;
+
+                return (p.Name, value);
+            });
+    }
+
+    /// <summary>
+    /// Builds the command parameters; when <paramref name="forceEpoch"/> is set
+    /// </summary>
+    internal static IEnumerable<(string name, object value)> GetCommandParameters(object? parameters, ReaderCachedCollection typeCollection, bool forceEpoch)
+    {
+        if (parameters == null) return [];
+
+        return typeCollection
+            .GetInfo(parameters.GetType())
+            .Items
+            .Where(p => p.CanRead)
+            .Select(p =>
+            {
+                var value = TypeHelper.ReadParamValue(p, parameters, handleGuidAsByteArray);
+                adjustInsertValue(ref value, p, parameters, forceEpoch);
 
                 if (value is null) value = DBNull.Value;
 
@@ -110,7 +149,7 @@ internal class HelperFunctions
         return "\"" + name.Replace("\"", "\"\"") + "\"";
     }
 
-    private static void adjustInsertValue(ref object value, TypeItemInfo p, object parameters)
+    private static void adjustInsertValue(ref object value, TypeItemInfo p, object parameters, bool forceEpoch = false)
     {
         if (value is Uri uri)
         {
@@ -128,7 +167,7 @@ internal class HelperFunctions
 
         if (value is DateTime dateTime)
         {
-            if (IsEpochType(parameters.GetType()))
+            if (forceEpoch || IsEpochType(parameters.GetType()))
             {
                 // Strict write: Local is converted to Utc first, Unspecified is written as-is (assumed Utc wall time)
                 var utc = dateTime.Kind == DateTimeKind.Local ? dateTime.ToUniversalTime() : dateTime;

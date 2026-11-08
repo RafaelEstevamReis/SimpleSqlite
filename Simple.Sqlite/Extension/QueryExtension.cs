@@ -94,7 +94,7 @@ public static class QueryExtension
     static IEnumerable<T> _query<T>(ISqliteConnection connection, ISqliteTransaction? transaction, string query, object? parameters)
     {
         using var cmd = new Microsoft.Data.Sqlite.SqliteCommand(query, connection.connection, transaction?.transaction);
-        HelperFunctions.FillParameters(cmd, parameters, connection.typeCollection);
+        HelperFunctions.FillParameters<T>(cmd, parameters, connection.typeCollection);
 
         using var reader = cmd.ExecuteReader();
 

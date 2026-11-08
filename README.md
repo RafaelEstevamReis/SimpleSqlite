@@ -139,12 +139,12 @@ _Tip: For multi-million insertion, 5k blocks are a good start point_
 
 #### Epoch storage
 
-Decorate a property with `[DateTimePolicy(EpochMs)]` to store it as Unix epoch in milliseconds (INTEGER) instead of text:
+Decorate the model class with `[DateTimePolicy(EpochMs)]` to store it's `DateTime` properties as Unix epoch in milliseconds:
 
 ~~~C#
+[DateTimePolicy(DateTimePolicyAttribute.Policies.EpochMs)]
 public class LogEntry
 {
-    [DateTimePolicy(DateTimePolicyAttribute.Policies.EpochMs)]
     public DateTime Timestamp { get; set; }
 }
 ~~~
@@ -158,6 +158,18 @@ public class LogEntry
 The column is created with INTEGER affinity (works on `STRICT` tables). Reading is tolerant: an INTEGER cell is
 decoded as epoch, a TEXT cell (legacy data) is parsed as ISO-8601 — mixed columns work. Epoch is always UTC by
 definition, so values round-trip with `Kind=Utc`.
+
+**Query parameters**: on `Query<T>`/`GetWhere<T>` (any entry point that knows the model), every `DateTime` parameter
+is bound as epoch automatically, the model type drives it:
+
+~~~C#
+// both params bind as epoch because T (LogEntry) is an epoch model
+var rows = cnn.Query<LogEntry>("SELECT * FROM LogEntry WHERE Timestamp >= @from AND Timestamp < @to",
+                               new { from, to });   // DateTime values
+~~~
+
+`ExecuteScalar<T>`/`Execute` and `Query<T>` with a simple `T` (`long`, `int`, ...) have no table context: convert
+the parameter yourself (`new DateTimeOffset(dt).ToUnixTimeMilliseconds()`).
 
 ### Migration
 
